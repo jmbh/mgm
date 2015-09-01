@@ -3,10 +3,10 @@
 \alias{mgm}
 \docType{package}
 \title{
-Estimate Markov random fields
+Estimation of Mixed Graphical Models
 }
 \description{
-Estimates Markov random fields with L1-constrained neighborhood regression. 
+Estimation of Mixed Graphical Models using L1-constrained neighborhood regression. 
 }
 \details{
 \tabular{ll}{

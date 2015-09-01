@@ -4,7 +4,7 @@
 \title{
 Samples from a mgm}
 \description{
-Samples from a mixed exponential Markov random field.}
+Samples from a mixed Graphical Model involving thresholds and pairwise interactions}
 \usage{
 mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 1000)
 }

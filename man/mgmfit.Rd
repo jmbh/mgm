@@ -2,10 +2,10 @@
 \alias{mgmfit}
 
 \title{
-Estimating mixed Markov fields
+Estimation of Mixed Graphical Models
 }
 \description{
-Estimates a mixed Markov random field using L1-constrained neighborhood regression.}
+Estimation of Mixed Graphical Models using L1-constrained neighborhood regression.}
 \usage{
 mgmfit(data, type, lev, lambda.sel="CV", folds = 10, gam = .25, d=1, rule.reg = "AND", rule.cat = "OR", pbar = "TRUE")
 }
