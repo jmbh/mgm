@@ -29,7 +29,7 @@ A list in which each entry corresponds to a variable; categorical variables have
 Optional; A matrix specifying all parameters in the model. This provides a possibility to exactly specify all parameters instead of using the default mapping from the weighted adjacency matrix to the model parameter matrix as described below (Details). If provided, \code{graph} will be ignored.
 }
   \item{nIter}{
-Iterations in the Gibbs Sampler
+Iterations in the Gibbs sampler
 }
 }
 \details{
@@ -41,16 +41,11 @@ n x p data matrix
 \references{
 Yang, E., Baker, Y., Ravikumar, P., Allen, G., & Liu, Z. (2014). Mixed graphical models via exponential families. In Proceedings of the Seventeenth International Conference on Artificial Intelligence and Statistics (pp. 1042-1050).
 
-Wainwright, M. J., & Jordan, M. I. (2008). Graphical models, exponential families, and variational inference. Foundations and Trends® in Machine Learning, 1(1-2), 1-305.
+Wainwright, M. J., & Jordan, M. I. (2008). Graphical models, exponential families, and variational inference. Foundations and Trends in Machine Learning, 1(1-2), 1-305.
 }
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \examples{
 
@@ -59,7 +54,7 @@ type <- c("g", "c") # one Gaussian, one categorical
 lev <- c(1,3) # the categorical variable has 3 categories
 graph <- matrix(0,2,2) 
 graph[1,2] <- graph[2,1] <- .5 # we have an edge with weight .5 between the two nodes
-thresh <- list(c(0), c(0,0,0)) # all thresholds are zero (for the categorical variables each categoriy has a threshold)
+thresh <- list(c(0), c(0,0,0)) # all thresholds are zero 
 data <- mgmsampler(n, type, lev, graph, thresh, parmatrix=NA, nIter=1000)
 head(data)
 

@@ -2,8 +2,7 @@ useDynLib(mgm)
 importFrom(Rcpp, evalCpp)
 importFrom(matrixcalc, is.positive.definite)
 import(glmnet)
-export(mgmfit, mgmsampler, confusion, print.mgm)
-
+export(mgmfit, mgmsampler, confusion,print.mgm)
 
 
 

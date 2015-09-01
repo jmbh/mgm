@@ -22,13 +22,14 @@ Jonas Haslbeck}
 
 \examples{
 
+\dontrun{
 #create some data from a mixed graphical model
 n <- 100 # number of samples
 type <- c("g", "c", "c") # one gaussian, two categorical
-lev <- c(1,3, 2) # the categorical variable have 3 and 2 categories, respectively
+lev <- c(1,3, 2) # the categ variables: 3 and 2 categories
 graph <- matrix(0,3,3) 
-graph[1,2] <- graph[2,1] <- .5 # we have an edge with weight .5 between node 1 and 2
-thresh <- list(c(0), c(0,0,0), c(0,0)) # all thresholds are zero (for the categorical variables each categoriy has a threshold)
+graph[1,2] <- graph[2,1] <- .5 # edge weight .5
+thresh <- list(c(0), c(0,0,0), c(0,0))
 data <- mgmsampler(n, type, lev, graph, thresh, parmatrix=NA, nIter=1000)
 
 #fit a mixed graphical model
@@ -37,7 +38,7 @@ grapht <- graph
 grapht[grapht!=0] <- 1 #binarize true graph
 
 confusion(grapht, fit$adj) #compute derivatives of confusion matrix
-
+}
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

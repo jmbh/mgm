@@ -1,5 +1,5 @@
 
 
-print.mgm <- function(output_list) {
-  print(list("adj" = output_list$adj, "wadj" = output_list$wadj))
+print.mgm <- function(x, ...) {
+  print(list("adj" = x$adj, "wadj" = x$wadj))
 }

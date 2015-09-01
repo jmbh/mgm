@@ -14,6 +14,14 @@ mgmfit <- function(
 
 {
   
+  
+  dev_glmnet <- function (object, ...) 
+  {
+    dev = object$dev
+    nulldev = object$nulldev
+    (1 - dev) * nulldev
+  }
+  
   # step 1: sanity checks & info from data
   stopifnot(ncol(data)==length(type)) # type vector has to match data
   stopifnot(ncol(data)==length(lev)) # level vector has to match data
@@ -140,7 +148,7 @@ mgmfit <- function(
       LL_sat <- 1/2 * fit$nulldev + LL_null
       
       # calc LL for all lambdas
-      dev <- glmnet:::deviance.glmnet(fit)
+      dev <- dev_glmnet(fit)
       
       LL <- - 1/2 * dev + LL_sat
       
@@ -287,33 +295,35 @@ mgmfit <- function(
   mpar.matrix.sym <- (model.par.matrix+t(model.par.matrix)) / 2
   
   #create list mapping: parameters <-> variables as input for qgraph "group"-argument
-  parvar.map <- parvar.map.label <-  vector("list", length=nNode)
+  indvar.map <- indvar.map.label <-  vector("list", length=nNode)
   ind_map <- 1
   for(m in 1:nNode){
     
     #create indices list for qgraph
-    parvar.map[[m]] <- ind_map:(ind_map+lev[m]-1)
+    indvar.map[[m]] <- ind_map:(ind_map+lev[m]-1)
     
     #create labels for qgraph
     if(lev[m]==1)
     {
-      parvar.map.label[[m]] <- m
+      indvar.map.label[[m]] <- m
     } else {
-      parvar.map.label[[m]] <- paste(m, 1:lev[m], sep = ".")
+      indvar.map.label[[m]] <- paste(m, 1:lev[m], sep = ".")
     }
     ind_map <- ind_map + lev[m]
   }
   
-  parvar.map.label_all <- do.call(c, parvar.map.label)
+  indvar.map.label_all <- do.call(c, indvar.map.label)
   
   #dichotomize
   adj <- (wadj!=0)*1
   
   # step 6: output
   output_list <- list("adj"=adj, "wadj"=wadj, "wpar.matrix" = model.par.matrix, 
-                      "wpar.matrix.sym"=mpar.matrix.sym, "parvar.map"=parvar.map, 
-                      "parvar.map.labels"=parvar.map.label_all, "lambda"=m_lambdas[,1])
-  class(output_list) <- "mgm"
+                      "wpar.matrix.sym"=mpar.matrix.sym, "indvar.map"=indvar.map, 
+                      "indvar.map.labels"=indvar.map.label_all, "lambda"=m_lambdas[,1])
+  
+
+class(output_list) <- "mgm"
   
   return(output_list)
   
