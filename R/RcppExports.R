@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 mMRFCsampler <- function(Data, n, nNodes, type_c, levels, nIter, thresh_m, graphe, inde) {
-    .Call('mMRF_mMRFCsampler', PACKAGE = 'mMRF', Data, n, nNodes, type_c, levels, nIter, thresh_m, graphe, inde)
+    .Call('mgm_mMRFCsampler', PACKAGE = 'mgm', Data, n, nNodes, type_c, levels, nIter, thresh_m, graphe, inde)
 }
 
