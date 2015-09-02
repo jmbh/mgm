@@ -23,7 +23,7 @@ p-vector containing the number of levels for each variable p (lev=1 for all cont
 }
 
   \item{lambda.sel}{
-Procedure to select the lambda-parameter for L1-penalized regressions. The two options are cross validation "CV" (default) and "EBIC"; While cross validation is used in the paper (see below), the Extended Bayesian Information Criterion (EBIC, see Barber et al., 2015) is a useful alternative in cases where the cross validation-requirement that all categories are present in each fold is not met, because some categories are only present in few cases.
+Procedure to select the lambda-parameter for L1-penalized regressions. The two options are cross validation "CV" (default) and "EBIC". While cross-validation is used in the paper (see below), the Extended Bayesian Information Criterion (EBIC, see Barber et al., 2015) is a useful alternative in cases where the cross-validation requirement that all categories are present in each fold is not met.
 }
   \item{folds}{
 The number of folds to be used for cross-validation in case lambda.sel="CV". Defaults to folds=10.}
@@ -34,7 +34,7 @@ Gamma hyperparameter when lambda.sel="EBIC". Defaults to gam=.25 (Barber et al.,
 Degrees of augmented interactions. The degree of augmented interactions reflects our belief about the maximal degree in the true graph. (see Loh & Wainwright, 2013)
 }
   \item{rule.cat}{
-Rule for combining parameters of interactions including categorical variables. The default, the "OR"-rule sets an edge to present when at least one parameter is non-zero. This corresponds to a conditional independence graph (Markov random field). Optionally, one can provide a matrix with the dimension of the parameter matrix to specify a costumized rule when to set an edge to present. Ones in this matrix indicate, that the parameter has to be present to render the corresponding edge present and a zero indicates that the parameter does not have to be zero in order to render the corresponding edge present. A matrix of ones would indicate that for each interaction, all parameters have to be nonzero to render the corresponding edge present. A matrix of zeros is equivalent to the "OR"-rule.
+Rule for combining parameters of interactions including categorical variables. The default, the "OR"-rule sets an edge to present when at least one parameter is non-zero. This corresponds to a conditional independence graph (Markov random field). Optionally, one can provide a matrix with the dimension of the parameter matrix to specify a costumized rule when to set an edge to present. Ones in this matrix indicate that the parameter has to be present to render the corresponding edge present and a zero indicates that the parameter does not have to be zero in order to render the corresponding edge present. A matrix of ones would indicate that for each interaction, all parameters have to be nonzero to render the corresponding edge present. A matrix of zeros is equivalent to the "OR"-rule.
 
 
 The "OR"-rule determines conditional dependence if at least one parameter is non-zero. The "AND"-rule determines conditional dependence if all parameters are non-zero.
