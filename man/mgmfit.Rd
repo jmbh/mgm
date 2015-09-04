@@ -7,7 +7,7 @@ Estimation of Mixed Graphical Models
 \description{
 Estimation of Mixed Graphical Models using L1-constrained neighborhood regression.}
 \usage{
-mgmfit(data, type, lev, lambda.sel="CV", folds = 10, gam = .25, 
+mgmfit(data, type, lev, lambda.sel="EBIC", folds = 10, gam = .25, 
        d=1, rule.reg = "AND", rule.cat = "OR", pbar = "TRUE")
 }
 %- maybe also 'usage' for other objects documented here.
@@ -23,7 +23,7 @@ p-vector containing the number of levels for each variable p (lev=1 for all cont
 }
 
   \item{lambda.sel}{
-Procedure to select the lambda-parameter for L1-penalized regressions. The two options are cross validation "CV" (default) and "EBIC". While cross-validation is used in the paper (see below), the Extended Bayesian Information Criterion (EBIC, see Barber et al., 2015) is a useful alternative in cases where the cross-validation requirement that all categories are present in each fold is not met.
+Procedure to select the lambda-parameter for L1-penalized regressions. The two options are cross validation "CV" and "EBIC" (default). While cross-validation is used in the paper (see below), the Extended Bayesian Information Criterion (EBIC, see Barber et al., 2015) is a useful alternative in cases where the cross-validation requirement that all categories are present in each fold is not met.
 }
   \item{folds}{
 The number of folds to be used for cross-validation in case lambda.sel="CV". Defaults to folds=10.}
