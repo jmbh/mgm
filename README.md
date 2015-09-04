@@ -2,7 +2,7 @@
 
 The package provides functions to a) fit a mixed graphical model to data and b) to sample from a mixed graphical model including pairwise interactions. 
 
-The stable version can be downloaded via CRAN:
+The stable version can be installed via CRAN:
 
 install.packages("mgm")
 
