@@ -34,7 +34,7 @@ mgmfit <- function(
   # step 2: prepare data
   data <- as.data.frame(data) #necessary for formula input
   colnames(data) <- paste("V",1:nNode, sep="") #necessary for formula input
-  
+  data[,type=="g"] <- scale(data[,type=="g"]) #scale all gaussians to N(0,1)
   
   #compare entered and empirical levels  
   emp_lev <- numeric(nNode) + 1
@@ -103,7 +103,6 @@ mgmfit <- function(
     } else if(type[v]=="p") {
       fam <- "poisson"
     }
-    
     
     # step 4.2: select alpha & call glmnet
     

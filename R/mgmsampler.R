@@ -11,10 +11,12 @@ mgmsampler <- function(
   
   lev <- as.numeric(lev)
   # some checks on the input
-  stopifnot(isSymmetric(graph))
-  stopifnot(length(type)==nrow(graph))
   stopifnot(length(type)==length(lev))
-  stopifnot(sum(diag(graph)!=0)==0)
+  if(is.na(parmatrix)==TRUE){
+    stopifnot(isSymmetric(graph))
+    stopifnot(length(type)==nrow(graph))
+    stopifnot(sum(diag(graph)!=0)==0)
+  }
   
   # check: is the within-gaussian covariance matrix positive definite?
   g_cov <- graph[type=="g",type=="g"] #select within-gaussian cov matrix
