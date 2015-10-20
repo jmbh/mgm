@@ -14,7 +14,6 @@ mgmfit <- function(
 
 {
   
-  
   dev_glmnet <- function (object, ...) 
   {
     dev = object$dev
