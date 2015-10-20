@@ -8,7 +8,7 @@ Estimation of Mixed Graphical Models
 Estimation of Mixed Graphical Models using L1-constrained neighborhood regression.}
 \usage{
 mgmfit(data, type, lev, lambda.sel="EBIC", folds = 10, gam = .25, 
-       d=1, rule.reg = "AND", rule.cat = "OR", pbar = "TRUE")
+       d=2, rule.reg = "AND", rule.cat = "OR", pbar = "TRUE")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -6,7 +6,7 @@ mgmfit <- function(
   lambda.sel="EBIC", #method for penalization parameter (lambda) -selection 
   folds=10, #folds in case CV is used for lambda selection
   gam=.25, #tuning parameter for EBIC, in case EBIC is used for lambda selection
-  d=1, #maximal degree of the true graph
+  d=2, #maximal degree of the true graph
   rule.reg="AND", #parameter-aggregation of categorical variables
   rule.cat="OR",  #either "OR"- conditional independence; or matrix that specifies costumized rules
   pbar = TRUE # shows a progress bar if TRUE
@@ -32,7 +32,6 @@ mgmfit <- function(
   nNode <- ncol(data)
   
   # step 2: prepare data
-  #data[,type!="c" & type!="p"] <- scale(data[,type!="c" & type!="p"]) #standardize continuous variables
   data <- as.data.frame(data) #necessary for formula input
   colnames(data) <- paste("V",1:nNode, sep="") #necessary for formula input
   
@@ -238,7 +237,7 @@ mgmfit <- function(
       out <- numeric(0)
       for(i in 1:nNode)
       {
-        out.n <- mean(abs(x[dummy.ind==i])) #without abs, this keeps the sign; but because of the glmnet parameterization in categoricals it burries nonzero coefficients in the binary case
+        out.n <- mean(abs(x[dummy.ind==i])) # this burries the sign; however it makes no sense in the categorical case, for continuous it can be recovered via the model.par.mat in the output
         if(rule=="AND") {
           out.n <- out.n * (sum(x[dummy.ind==i]==0)<1) #the second term = 0 when not all coefficients are nonzero
         }
