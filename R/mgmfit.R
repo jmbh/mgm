@@ -246,6 +246,7 @@ mgmfit <- function(
     
     # averaging over rows
     m.p.m.2 <-  apply(m.p.m.1, 2, function(x) {
+      
       out <- numeric()
       for(i in 1:nNode)
       {
@@ -258,6 +259,8 @@ mgmfit <- function(
       }
       out <- matrix(out, ncol=1)
     })
+    
+    return(m.p.m.2)
     
   } #end of function
   

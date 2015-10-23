@@ -2,9 +2,9 @@
 \alias{mgmsampler}
 
 \title{
-Samples from a mgm}
+Samples from a mixed Graphical Model}
 \description{
-Samples from a mixed Graphical Model involving thresholds and pairwise interactions}
+Samples from a pairwise mixed Graphical Model}
 \usage{
 mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 1000)
 }
