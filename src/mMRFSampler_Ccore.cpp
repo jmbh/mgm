@@ -3,7 +3,6 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 
-
 NumericVector mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector type_c,
                    NumericVector levels, int nIter, NumericMatrix thresh_m,
                    NumericMatrix graphe, IntegerVector inde) {
@@ -248,15 +247,16 @@ for(int p=0; p<n; p++) { // loop cases
         natpar = thresh_m(node,0) + sum(potcat) + sum(potcon);
 
         if(type_c[node]==2) { //gauss
-          if (exp(natpar)>(10^70)) Rcpp::stop("mu > 10^70 for Gaussian node");
+          if (exp(natpar)>(10^300)) Rcpp::stop("Value of Gaussian node approaches Inf (> 10^300) in Gibbs sampler");
+          if (exp(natpar)>(10^300)) Rcpp::stop("Value of Gaussian node approaches -Inf (< - 10^300) in Gibbs sampler");
           Data(p,node) = R::rnorm(natpar,1);
         } else if(type_c[node]==3) { //pois
           if (natpar<=0) Rcpp::stop("Lambda <= 0 for poisson node.");
-          if (natpar>(10^70)) Rcpp::stop("Lambda > 10^70 for Poisson node");
+          if (natpar>(10^300)) Rcpp::stop("Value of Poisson node approaches Inf (> 10^300) in Gibbs sampler");
           Data(p,node) = R::rpois(natpar);
         } else if(type_c[node]==4) { //exp
           if (natpar<=0) Rcpp::stop("Lambda <= 0 for exponential node.");
-          if (natpar>(10^70)) Rcpp::stop("Lambda > 10^70 for Exponential node");
+          if (natpar>(10^300)) Rcpp::stop("Value of Exponential node approaches Inf (> 10^300) in Gibbs sampler");
           Data(p,node) = R::rexp(natpar); // Rccp parameterization of rexp: scale instead of rate!!
         }
 
