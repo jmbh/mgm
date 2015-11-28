@@ -247,8 +247,8 @@ for(int p=0; p<n; p++) { // loop cases
         natpar = thresh_m(node,0) + sum(potcat) + sum(potcon);
 
         if(type_c[node]==2) { //gauss
-          if (exp(natpar)>(10^300)) Rcpp::stop("Value of Gaussian node approaches Inf (> 10^300) in Gibbs sampler");
-          if (exp(natpar)>(10^300)) Rcpp::stop("Value of Gaussian node approaches -Inf (< - 10^300) in Gibbs sampler");
+          if (natpar>(10^300)) Rcpp::stop("Value of Gaussian node approaches Inf (> 10^300) in Gibbs sampler");
+          if (natpar>(10^300)) Rcpp::stop("Value of Gaussian node approaches -Inf (< - 10^300) in Gibbs sampler");
           Data(p,node) = R::rnorm(natpar,1);
         } else if(type_c[node]==3) { //pois
           if (natpar<=0) Rcpp::stop("Lambda <= 0 for poisson node.");

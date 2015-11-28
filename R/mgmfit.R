@@ -85,6 +85,10 @@ mgmfit <- function(
   # step 4: estimation
   for(v in seq_len(nNode))
   {
+    
+    
+    
+    
     # step 4.1: compute design matrix (adding interactions as a function of d)
     if(d>(nNode-1)) {
       stop("Order of interactions can be maximal the number of predictors!")
