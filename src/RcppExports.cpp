@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // mMRFCsampler
-NumericVector mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector type_c, NumericVector levels, int nIter, NumericMatrix thresh_m, NumericMatrix graphe, IntegerVector inde);
+NumericMatrix mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector type_c, NumericVector levels, int nIter, NumericMatrix thresh_m, NumericMatrix graphe, IntegerVector inde);
 RcppExport SEXP mgm_mMRFCsampler(SEXP DataSEXP, SEXP nSEXP, SEXP nNodesSEXP, SEXP type_cSEXP, SEXP levelsSEXP, SEXP nIterSEXP, SEXP thresh_mSEXP, SEXP grapheSEXP, SEXP indeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;

@@ -6,7 +6,7 @@ mgmsampler <- function(
   graph, #graph structure
   thresh, #thresholds, for every node (& category)
   parmatrix = NA, #possibility to provide costum function to create model parameter matrix
-  nIter = 1000 #number of samples for each node
+  nIter = 250 #number of samples for each node
 ){
   
   lev <- as.numeric(lev)
@@ -39,7 +39,6 @@ mgmsampler <- function(
   Data <- matrix(0, n, nNodes)  # create empty data matrix
   inde <- as.numeric(colnames(graphe))
   colnames(graphe) <- rownames(graphe) <- NULL
-  
   
   #transform thresh into a matrix (C doesnt take lists)
   thresh_m <- matrix(0, nrow=length(thresh), ncol=max(lev))
