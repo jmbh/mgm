@@ -244,23 +244,23 @@ NumericMatrix mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector 
           natpar = thresh_m(node,0) + sum(potcat) + sum(potcon);
           
           double epsi;
-          epsi = pow(10,3); //limiting mean values
-
+          epsi = pow(10,300); //limiting mean values
+          
           if(type_c[node]==2) { //gauss
-            //Rcpp::Rcout << "LOOP VAR" << natpar << std::endl;
+            //Rcpp::Rcout << "LOOP VAR " << node << " mean " << natpar << std::endl;
             if (natpar>(epsi)) {
               //Rcpp::Rcout << "bin ich schon drin oder was " << (natpar-epsi)*10000 << std::endl;
-              Rcpp::stop("Value of Gaussian node approaches Inf (> 10^3) in Gibbs sampler"); 
+              Rcpp::stop("Value of Gaussian node approaches Inf (> 10^300) in Gibbs sampler. Gaussian Submatrix (Covariance matrix) is not positive definite."); 
             }
-            if (natpar<(-epsi)) Rcpp::stop("Value of Gaussian node approaches -Inf (< -10^3) in Gibbs sampler");
+            if (natpar<(-epsi)) Rcpp::stop("Value of Gaussian node approaches -Inf (< -10^300) in Gibbs sampler. Gaussian Submatrix (Covariance matrix) is not positive definite.");
             Data(p,node) = R::rnorm(natpar,1);
           } else if(type_c[node]==3) { //pois
-            if (natpar<=0) Rcpp::stop("Lambda <= 0 for poisson node.");
-            if (natpar>(epsi)) Rcpp::stop("Value of Poisson node approaches Inf (> 10^10) in Gibbs sampler");
+            if (natpar<=0) Rcpp::stop("Lambda <= 0 for poisson node. Check the sign of the specified means and edge weights.");
+            if (natpar>(epsi)) Rcpp::stop("Value of Poisson node approaches Inf (> 10^300) in Gibbs sampler. Check the sign of the specified means and edge weights.");
             Data(p,node) = R::rpois(natpar);
           } else if(type_c[node]==4) { //exp
-            if (natpar<=0) Rcpp::stop("Lambda <= 0 for exponential node.");
-            if (natpar>(epsi)) Rcpp::stop("Value of Exponential node approaches Inf (> 10^10) in Gibbs sampler");
+            if (natpar<=0) Rcpp::stop("Lambda <= 0 for exponential node. Check the sign of the specified means and edge weights.");
+            if (natpar>(epsi)) Rcpp::stop("Value of Exponential node approaches Inf (> 10^300) in Gibbs sampler.  Check the sign of the specified means and edge weights.");
             Data(p,node) = R::rexp(natpar); // Rccp parameterization of rexp: scale instead of rate!!
           }
           
