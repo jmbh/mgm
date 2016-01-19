@@ -6,7 +6,8 @@ mgmsampler <- function(
   graph, #graph structure
   thresh, #thresholds, for every node (& category)
   parmatrix = NA, #possibility to provide costum function to create model parameter matrix
-  nIter = 250 #number of samples for each node
+  nIter = 250, #number of samples for each node
+  varadj = .2 # additive constant to conditional variances before normalization; avoids partial correlations close to 1
 ){
   
   lev <- as.numeric(lev)
@@ -29,17 +30,17 @@ mgmsampler <- function(
     graph.g <- -abs(graph.g)
     
     # define diagonal in inverse covariance matrix
-    diag(graph.g) <- - (colSums(graph.g) - rep(.01, sum(type=="g"))) 
+    diag(graph.g) <- - (colSums(graph.g) - rep(varadj, sum(type=="g"))) 
     
     #rescale to unit conditional variance
     graph.g.re <- round(cov2cor(graph.g),10) 
-
+    
     stopifnot(is.positive.definite(graph.g.re)) #check
     graph.g.re.e <- graph.g.re; diag(graph.g.re.e) <- 0 #zero diagonal to put it back in the graph
     graph[type=="g", type=="g"] <- graph.g.re.e #put back in the graph
     
   }
-
+  
   if(is.na(parmatrix)==TRUE) {
     graphe <- potts_parameter(graph, type, lev, thresh) #create model.parameter.matrix
   } else {

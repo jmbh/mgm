@@ -1,5 +1,6 @@
 useDynLib(mgm)
 importFrom(Rcpp, evalCpp)
+importFrom("stats", "cov2cor")
 importFrom(matrixcalc, is.positive.definite)
 importFrom("stats", "as.formula", "coef", "dnorm", "dpois",
              "model.matrix")
@@ -7,5 +8,6 @@ importFrom("utils", "setTxtProgressBar", "txtProgressBar")
 import(glmnet)
 export(mgmfit, mgmsampler, confusion,print.mgm)
 S3method(print, mgm)
+
 
 

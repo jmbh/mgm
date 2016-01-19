@@ -147,7 +147,6 @@ mgmfit <- function(
       
       # calc LL for all lambdas
       dev <- dev_glmnet(fit)
-      
       LL <- - 1/2 * dev + LL_sat
       
       n_lambdas <- length(fit$lambda)
@@ -168,9 +167,9 @@ mgmfit <- function(
       
       # calc all EBICs
       EBIC_lambda <- -2*LL + n_neighbors * log(n) + 2*gam*n_neighbors*log(ncol(X)) 
-      lambda_select <- fit$lambda[which(EBIC_lambda==min(EBIC_lambda))]
+      EBIC_lambda_nNA <- EBIC_lambda[!is.na(EBIC_lambda)]
+      lambda_select <- fit$lambda[!is.na(EBIC_lambda)][which.min(EBIC_lambda_nNA)]
       coefs <- coef(fit, s=lambda_select) #lambda value with highest EBIC
-      
       
       # lambda selection with CV
     } else {

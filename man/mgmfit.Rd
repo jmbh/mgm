@@ -10,7 +10,6 @@ Estimation of Mixed Graphical Models using L1-constrained neighborhood regressio
 mgmfit(data, type, lev, lambda.sel="EBIC", folds = 10, gam = .25, 
        d=2, rule.reg = "AND", rule.cat = "OR", pbar = "TRUE")
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
 n x p data matrix

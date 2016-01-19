@@ -4,11 +4,11 @@
 \title{
 Samples from a mixed Graphical Model}
 \description{
-Samples from a pairwise mixed Graphical Model}
+Samples from a pairwise Mixed Graphical Model}
 \usage{
-mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 1000)
+mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 250)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{n}{
 Number of samples
@@ -33,12 +33,17 @@ Iterations in the Gibbs sampler
 }
 }
 \details{
-In case of interactions involving categorical variables with more than m=2 categories, there are more than one one parameter describing the interaction. As we use the overcomplete representation, in case of an interaction between two categorical variables, we have m^2 parameters, in case of an interaction between a cateogircal and a continuous variable we have m parameters. In case of Catogorical-Categorical interactions, we use the Potts-parameterization (see e.g. Wainwright & Jordan, 2009), where the value of all non-zero parameters is given bei the weighted adjacency matrix. In case of Categorical-Continous interactions, parameters for categories m > |m|/2 have a nonzero parameter with the value is given by the weighted adjacency matrix. All categories m >=  |m|/2 have zero parameters. Please note that this mapping is absolutely arbitrary. In the offical release of the package, the user will be able to specify the mapping herself.
+For interactions involving categorical variables with more than m = 2 categories, there are more than one parameter describing the interaction. As we use the overcomplete representation, in case of an interaction between two categorical variables with each m categories, we have m^2 parameters, whereas in case of an interaction between a cateogircal and a continuous variable we have m parameters. For catogorical-categorical interactions, we use the parameterization of the Potts model (see e.g. Wainwright & Jordan, 2008) extended to the case of interactions between categorical variables with different number of categories. All non-zero elements in the parameter matrix is assigned the value specified in the weighted adjacency matrix. In case of Categorical-Continous interactions, parameters for categories m > |m|/2 have a nonzero parameter with the value is given by the weighted adjacency matrix. All categories m >=  |m|/2 have zero parameters. Please note that this mapping is arbitrary. Other parameters can be specified by using the \code{parmatrix} argument.
+
+The specified adjacency matrix has to satisfy two contraints. First, (if applicable) the Gaussian part of the weighted adjacency matrix (specifying pairwise interactions between Gaussian variables) has to be positive definite when all partial variances are equal to 1. The sampling function rescales all weighted edges between Gaussian variables in order to enforce this. Second, the weighted adjacency matrix and the thresholds have defined such that exponential and poisson random variables cannot take values smaller or equal to zero. Specifically, this means that one has to specify strictly positive thresholds for those variables and no edges with a negative edge weight can be connected to those variables (for details see Haslbeck & Waldorp, 2015).
+
 }
 \value{
 n x p data matrix
 }
 \references{
+Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.
+
 Yang, E., Baker, Y., Ravikumar, P., Allen, G., & Liu, Z. (2014). Mixed graphical models via exponential families. In Proceedings of the Seventeenth International Conference on Artificial Intelligence and Statistics (pp. 1042-1050).
 
 Wainwright, M. J., & Jordan, M. I. (2008). Graphical models, exponential families, and variational inference. Foundations and Trends in Machine Learning, 1(1-2), 1-305.

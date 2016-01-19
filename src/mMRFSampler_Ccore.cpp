@@ -130,12 +130,22 @@ NumericMatrix mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector 
               
             } // end: other nodes
             
-            potential_stor[l] =  exp(thresh_m(node,l) + sum(potcat) + sum(potcon));
+            double potraw =  thresh_m(node,l) + sum(potcat) + sum(potcon);
+            
+            // to avoid infinite values when taking exp(potraw); this unelegant thresholdung makes no difference in our setting
+            if(potraw>100) {potraw = 100;}
+            
+            //debug
+           // Rcpp::Rcout << "iter " << iter << " case " << p << " node " << node << " potraw " << potraw << std::endl;
+            
+            potential_stor[l] =  exp(potraw);
             
           } // end: loop categories
           
           //sample state proportional to potentials
           double samplesum = sum(potential_stor);
+          
+          
           double randomNumber = R::runif(0, samplesum);
           double newsum = 0;
           for (int ind=0; ; ind++) {
@@ -243,15 +253,16 @@ NumericMatrix mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector 
           double natpar;
           natpar = thresh_m(node,0) + sum(potcat) + sum(potcon);
           
+          //limiting mean values to avoid infinite values in case the model is misspecified
+          double bas;
+          bas = 10;
+          double po;
+          po= 300;
           double epsi;
-          epsi = pow(10,300); //limiting mean values
+          epsi = pow(bas,po); 
           
           if(type_c[node]==2) { //gauss
-            //Rcpp::Rcout << "LOOP VAR " << node << " mean " << natpar << std::endl;
-            if (natpar>(epsi)) {
-              //Rcpp::Rcout << "bin ich schon drin oder was " << (natpar-epsi)*10000 << std::endl;
-              Rcpp::stop("Value of Gaussian node approaches Inf (> 10^300) in Gibbs sampler. Gaussian Submatrix (Covariance matrix) is not positive definite."); 
-            }
+            if (natpar>(epsi)) Rcpp::stop("Value of Gaussian node approaches Inf (> 10^300) in Gibbs sampler. Gaussian Submatrix (Covariance matrix) is not positive definite.");
             if (natpar<(-epsi)) Rcpp::stop("Value of Gaussian node approaches -Inf (< -10^300) in Gibbs sampler. Gaussian Submatrix (Covariance matrix) is not positive definite.");
             Data(p,node) = R::rnorm(natpar,1);
           } else if(type_c[node]==3) { //pois
@@ -261,7 +272,7 @@ NumericMatrix mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector 
           } else if(type_c[node]==4) { //exp
             if (natpar<=0) Rcpp::stop("Lambda <= 0 for exponential node. Check the sign of the specified means and edge weights.");
             if (natpar>(epsi)) Rcpp::stop("Value of Exponential node approaches Inf (> 10^300) in Gibbs sampler.  Check the sign of the specified means and edge weights.");
-            Data(p,node) = R::rexp(natpar); // Rccp parameterization of rexp: scale instead of rate!!
+            Data(p,node) = R::rexp(natpar); // Rccp parameterization of rexp: scale instead of rate
           }
           
           
