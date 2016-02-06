@@ -24,7 +24,7 @@ mgmfit <- function(
   # step 1: sanity checks & info from data
   stopifnot(ncol(data)==length(type)) # type vector has to match data
   stopifnot(ncol(data)==length(lev)) # level vector has to match data
-  if(sum(apply(data, 2, function(x) class(x)!="numeric"))>0) stop("Only numeric values permitted!")
+  if(sum(apply(data, 2, function(x) sum(class(x)!="numeric",class(x)!="integer")>1))>0) stop("Only numeric/integer values permitted!")
   if(sum(apply(cbind(data[,type=="p"],rep(1,nrow(data))), 2, function(x) sum(x-round(x))))>0) stop("Only integers permitted for Poisson random variables!")
   
   n <- nrow(data)
@@ -73,9 +73,10 @@ mgmfit <- function(
   ind <- as.numeric(unlist(apply(dummy_matrix,1,function(x) { rep(x[2],x[1])})))
   
   
-  # step 3: create storage for parameters
-  model.par.matrix <- matrix(0, sum(emp_lev), sum(emp_lev))
-  m_lambdas <- matrix(0,nNode,2) #storing lambda threshold and actual lambda
+  ## step 3: create storage for parameters
+  model.par.matrix <- matrix(NA, sum(emp_lev), sum(emp_lev)) # interaction parameter
+  m_lambdas <- matrix(0,nNode,2) # lambda threshold and regularization lambdas
+  l_intercepts <- list()
   
   #progress bar
   if(pbar==TRUE) {
@@ -91,7 +92,6 @@ mgmfit <- function(
       stop("Order of interactions can be maximal the number of predictors!")
     } else if (d==1){ form <- as.formula(paste(colnames(data)[v],"~ (.)"))
     } else { form <- as.formula(paste(colnames(data)[v],"~ (.)^",d)) }
-    
     
     X <- model.matrix(form, data=data)[,-1]
     
@@ -178,11 +178,12 @@ mgmfit <- function(
       lambda_select <-  fit$lambda.min
       coefs <- coef(fit, s=lambda_select)
       
-    } # end of estimation; 
+    } # end of estimation of node p
     
     
     #list to matrix; cut out intercepts
     coefsm <- matrix(do.call(rbind,lapply(coefs, as.numeric)),nrow=emp_lev[v])[,-1]
+    l_intercepts[[v]] <- matrix(do.call(rbind,lapply(coefs, as.numeric)),nrow=emp_lev[v])[,1]
     
     # step 4.3: save lambda + save & apply tau threshold
     m_lambdas[v,2] <- bound <- sqrt(d) * sqrt(sum(coefsm^2)) * sqrt(log(nNode)/n)
@@ -190,13 +191,13 @@ mgmfit <- function(
     coefsm[abs(coefsm)<bound]<-0 # apply tau threshold
     
     
-    # step 4.4: write into model.par.matrix
+    ## step 4.4: write into model.par.matrix
     
-    #select corresponding row in model par matrix & fill in
-    #get correct dummy
+    # select corresponding row in model par matrix & fill in
+    # get correct dummy
     dummy_par.sort.v <- dummy_par.sort[ind!=v]
     
-    #select corresponding row(s) in model par matrix & fill in
+    ## select corresponding row(s) in model par matrix & fill in
     # continuous
     if(emp_lev[v]==1) {
       exp.n.c <- length(model.par.matrix[ind==v,ind!=v][dummy_par.sort.v]) #number of coefficients
@@ -211,6 +212,8 @@ mgmfit <- function(
       }
     }
     
+    # collect intercepts
+    
     #progress bar
     if(pbar==TRUE) {
       setTxtProgressBar(pb, v)
@@ -220,8 +223,6 @@ mgmfit <- function(
   } # end variable-loop
   
   # step 5: derivates on model parameter matrix
-  
-  
   # 5.1: aggregate on within categories
   
   f_agg_cats <- function(model.par.matrix, rule) {
@@ -232,7 +233,7 @@ mgmfit <- function(
     # averaging over  columns
     m.p.m.1 <-  t(apply(m.p.m, 1, function(x) {
       
-      out <- numeric(0)
+      out <- numeric()
       for(i in 1:nNode)
       {
         out.n <- mean(abs(x[dummy.ind==i])) # this burries the sign; however it makes no sense in the categorical case, for continuous it can be recovered via the model.par.mat in the output
@@ -281,7 +282,6 @@ mgmfit <- function(
     m.p.m.2 <- f_agg_cats(model.par.matrix, "OR")  
   }
   
-  
   ### 5.3: aggregate across two regressions
   
   if(rule.reg=="AND") {
@@ -290,52 +290,34 @@ mgmfit <- function(
     m.p.m.2 <- m.p.m.2 * m.p.m.2_nonzero
   }
   
-  #make matrices symmetric (taking the average)
+  # make adjacency matrix symmetric
   wadj <- (m.p.m.2 + t(m.p.m.2))/2 #adjacency matrix
-  mpar.matrix.sym <- (model.par.matrix+t(model.par.matrix)) / 2
-  
-  #create list mapping: parameters <-> variables as input for qgraph "group"-argument
-  indvar.map <- indvar.map.label <-  vector("list", length=nNode)
+
+  #create list mapping: parameters <-> variables
+  indvar.map <-  vector("list", length=nNode)
   ind_map <- 1
-  for(m in 1:nNode){
-    
-    #create indices list for qgraph
-    indvar.map[[m]] <- ind_map:(ind_map+lev[m]-1)
-    
-    #create labels for qgraph
-    if(lev[m]==1)
-    {
-      indvar.map.label[[m]] <- m
-    } else {
-      indvar.map.label[[m]] <- paste(m, 1:lev[m], sep = ".")
-    }
+  for(m in 1:nNode) { 
+    indvar.map[[m]] <- ind_map:(ind_map+lev[m]-1) 
     ind_map <- ind_map + lev[m]
-  }
-  
-  indvar.map.label_all <- do.call(c, indvar.map.label)
+    }
   
   #dichotomize
   adj <- (wadj!=0)*1
   
+  
+  ## give the input in the output list
+  call <- list('type'=type, 'lev'=lev, 'lambda.sel'=lambda.sel, 'folds'=folds, 
+               'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, 'rule.cat'=rule.cat)
+  
   # step 6: output
   output_list <- list("adj"=adj, "wadj"=wadj, "wpar.matrix" = model.par.matrix, 
-                      "wpar.matrix.sym"=mpar.matrix.sym, "indvar.map"=indvar.map, 
-                      "indvar.map.labels"=indvar.map.label_all, "lambda"=m_lambdas[,1])
+                      "indvar.map"=indvar.map, "intercepts"=l_intercepts, 
+                      "lambda"=m_lambdas[,1], 'call'=call)
   
-
 class(output_list) <- "mgm"
   
   return(output_list)
-  
 } 
-
-
-
-
-
-
-
-
 
 
 
