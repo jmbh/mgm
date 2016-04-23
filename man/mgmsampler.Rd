@@ -6,7 +6,7 @@ Samples from a mixed Graphical Model}
 \description{
 Samples from a pairwise Mixed Graphical Model}
 \usage{
-mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 250)
+mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 250, varadj = .2)
 }
 
 \arguments{
@@ -29,13 +29,18 @@ A list in which each entry corresponds to a variable; categorical variables have
 Optional; A matrix specifying all parameters in the model. This provides a possibility to exactly specify all parameters instead of using the default mapping from the weighted adjacency matrix to the model parameter matrix as described below (Details). If provided, \code{graph} will be ignored.
 }
   \item{nIter}{
-Iterations in the Gibbs sampler
+The number of iterations in the Gibbs sampler
+}
+  \item{varadj}{
+Additive constant to conditional Gaussian variances before normalization. This avoids partial correlations close to 1.
 }
 }
 \details{
-For interactions involving categorical variables with more than m = 2 categories, there are more than one parameter describing the interaction. As we use the overcomplete representation, in case of an interaction between two categorical variables with each m categories, we have m^2 parameters, whereas in case of an interaction between a cateogircal and a continuous variable we have m parameters. For catogorical-categorical interactions, we use the parameterization of the Potts model (see e.g. Wainwright & Jordan, 2008) extended to the case of interactions between categorical variables with different number of categories. All non-zero elements in the parameter matrix is assigned the value specified in the weighted adjacency matrix. In case of Categorical-Continous interactions, parameters for categories m > |m|/2 have a nonzero parameter with the value is given by the weighted adjacency matrix. All categories m >=  |m|/2 have zero parameters. Please note that this mapping is arbitrary. Other parameters can be specified by using the \code{parmatrix} argument.
+For interactions involving categorical variables with more than m = 2 categories, an interaction is comprised by more than one parameter. Specifically, in the overcomplete representation used here, in case of an interaction between two categorical variables with each m categories, we have m^2 parameters, whereas in case of an interaction between a cateogircal and a continuous variable we have m parameters. 
 
-The specified adjacency matrix has to satisfy two contraints. First, (if applicable) the Gaussian part of the weighted adjacency matrix (specifying pairwise interactions between Gaussian variables) has to be positive definite when all partial variances are equal to 1. The sampling function rescales all weighted edges between Gaussian variables in order to enforce this. Second, the weighted adjacency matrix and the thresholds have defined such that exponential and poisson random variables cannot take values smaller or equal to zero. Specifically, this means that one has to specify strictly positive thresholds for those variables and no edges with a negative edge weight can be connected to those variables (for details see Haslbeck & Waldorp, 2015).
+We use the following (arbitrary) mapping from provided edge-weights to interaction parameters: for catogorical-categorical interactions, we use the parameterization of the Potts model (see e.g. Wainwright & Jordan, 2008) extended to the case of interactions between categorical variables with different number of categories. All non-zero elements in the parameter matrix are assigned the value specified in the weighted adjacency matrix. In case of Categorical-Continous interactions, parameters for categories m > |m|/2 have a nonzero parameter with the value is given by the weighted adjacency matrix. All categories m >=  |m|/2 have zero parameters. A customized parameterization of interactions including categorical variables can be specified using the \code{parmatrix} argument.
+
+The specification of the mixed graphical model has to satisfy a number of contraints. For details see Yang et al. (2014) or Haslbeck and Waldorp (2015).
 
 }
 \value{
@@ -56,11 +61,13 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 
 n <- 10 # number of samples
 type <- c("g", "c") # one Gaussian, one categorical
-lev <- c(1,3) # the categorical variable has 3 categories
-graph <- matrix(0,2,2) 
-graph[1,2] <- graph[2,1] <- .5 # we have an edge with weight .5 between the two nodes
-thresh <- list(c(0), c(0,0,0)) # all thresholds are zero 
-data <- mgmsampler(n, type, lev, graph, thresh, parmatrix=NA, nIter=1000)
+lev <- c(1, 3) # the categorical variable has 3 categories
+graph <- matrix(0, 2, 2) 
+graph[1, 2] <- graph[2, 1] <- .5 # we have an edge with weight .5 between the two nodes
+thresh <- list(c(0), c(0, 0, 0)) # all thresholds are zero 
+
+data <- mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 1000)
+
 head(data)
 
 

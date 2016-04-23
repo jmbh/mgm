@@ -1,9 +1,10 @@
 
 
-mgmfit <- function(
+var.mgm <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson, e=exponential
   lev, # number of categories of categorical variables, continuous variables have level=1
+  lags = 1, # currently limited to 1 
   lambda.sel = "EBIC", # method for penalization parameter (lambda) -selection 
   folds = 10, # folds in case CV is used for lambda selection
   gam = .25, # tuning parameter for EBIC, in case EBIC is used for lambda selection
@@ -31,7 +32,7 @@ mgmfit <- function(
                          missings = missings, 
                          weights = weights, 
                          ret.warn = ret.warn, 
-                         VAR = FALSE) # use standard mgm.fit; no AR model
+                         VAR = TRUE) # use standard mgm.fit; no AR model
   
   return(outlist)
 } 

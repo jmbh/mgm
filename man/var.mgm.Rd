@@ -1,20 +1,19 @@
-\name{mgmfit}
-\alias{mgmfit}
+\name{var.mgm}
+\alias{var.mgm}
 
 \title{
-Estimation of Mixed Graphical Models
+Estimation of mixed Autoregressive Models
 }
 \description{
-Estimation of Mixed Graphical Models using L1-constrained neighborhood regression.}
+Estimation of mixed Autoregressive Models using L1-constrained regression.}
 \usage{
-mgmfit(data, type, lev, lambda.sel = "EBIC", folds = 10, 
-       gam = .25, d=2, rule.reg = "AND", pbar = TRUE, 
-       method = "glm", missings = 'error', weights = NA, 
-       ret.warn = TRUE)
+var.mgm(data, type, lev, lags = 1, lambda.sel = "EBIC", 
+        folds = 10, gam = .25, d=2, rule.reg = "AND", 
+        pbar = TRUE, method = "glm", missings = 'error', 
+        weights = NA, ret.warn = TRUE)
 }
 
 % input
-
 \arguments{
   \item{data}{
 n x p data matrix
@@ -25,7 +24,8 @@ p-vector containing the types of variable ("g" Gaussian, "e" Exponential, "p" Po
   \item{lev}{
 p-vector containing the number of levels for each variable p (\code{lev=1} for all continuous variables)
 }
-
+  \item{lags}{Order of included lags. Currently limited to \code{lag = 1}.
+}
   \item{lambda.sel}{
 Procedure to select the lambda-parameter for L1-penalized regressions. The two options are cross validation "CV" and "EBIC" (default). While cross-validation (CV) is used in the paper (see below), the Extended Bayesian Information Criterion (EBIC, see Barber et al., 2015) is a useful alternative in cases where the CV requirement that all categories are present in each fold is not met or in cases where CV is computationally unfeasible.
 }
@@ -56,8 +56,8 @@ Rule for combining the two parameters obtained for each edge due to the neighbor
 \value{
 Returns a list containing:
 \item{call}{A list with all function inputs except the data}
-\item{adj}{Adjacency matrix}
-\item{wadj}{Weighted adjacency matrix; Please note that we collapsed the interaction parameters involving categorical variables into one value by taking the mean of the absolute values; for the actual interaction parameters inspect wpar.matrix}
+\item{adj}{Directed adjacency matrix}
+\item{wadj}{Weighted directed adjacency matrix; Please note that we collapsed the interaction parameters involving categorical variables into one value by taking the mean of the absolute values; for the actual interaction parameters inspect wpar.matrix}
 \item{mpar.matrix}{This matrix includes all estimated parameters in one matrix. If there are only continuous variables in the dataset this matrix has the same dimensions as \code{wadj}. If there are categorical variables in the dataset, the matrix has the dimensions of the overcomplete representations. NA values indicate parameters that are not estimated (because they are redundant). For details see Friedman, Hastie and Tibshirani (2010).}
 \item{node.models}{A list that includes for each node: a list of estimated parameters, the selected regularization parameter, the threshold parameter and the EBIC of the model (if applicable).}
 \item{par.labels}{A vector matching with the dimensions of \code{mpar.matrix} indicating which parameter belongs to the interaction between which variables.}
@@ -80,22 +80,48 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 }
 
 \seealso{
-\code{confusion}, \code{mgmsampler}
+\code{mgmfit}, \code{tv.mgmfit} \code{tv-var.mgm}
 }
 \examples{
 
-head(data_mixed2) #example data
+\dontrun{
 
-type <- c("g", "p", "e", "c", "c") #Gaussian, Poission, ...
-levs <- c(1,1,1,3,2) #Number of categories
+#set up graph
+p <- 5 # number of variables
+tsteps <- 200 # number of time steps
+set.seed(3)
+ParMat <- matrix(runif(p^2, .4, .8), p, p) * 
+            matrix(sample(c(0,1), p^2, replace=TRUE, prob=c(.6,.4)), p, p)
+ParMat
+InnoVar <- colSums(ParMat) + 1 # innovation variance
 
-fit <- mgmfit(data = data_mixed2, 
-              type = type, 
-              lev = levs, 
-              lambda.sel = "CV", 
-              folds = 10, 
-              gam = .25, 
-              d = 2, 
-              rule.reg = "AND")
+# generate data from VAR model
+set.seed(99)
+data <- matrix(NA, tsteps, p)
+data[1, ] <- rnorm(p, 0, InnoVar)
+for(i in 1:tsteps) {
+  for(v in 1:p) {
+    data[i, v] <-  sum(data[i-1,] * ParMat[,v]) + rnorm(1,0,Innov[v])
+  }
+}
+
+head(data) # first 6 time steps
+
+# estimate VAR model
+library(mgm)
+var.fit <- var.mgm(data, type=rep('g', p), lev=rep(1,p), lags=1, gam=.25, d=2)
+
+# compare true & estimated VAR model
+library(qgraph)
+par(mfrow=c(1,2))
+Q <- qgraph(ParMat, minimum=0, maximum=range(ParMat)[2]) 
+qgraph(var.fit$mpar.matrix, layout=Q$layout, minimum=0, maximum=range(ParMat)[2])
+
+# observation:
+# all parameters were recovered correctly; parameter weights are smaller due to regularization
 
 }
+
+
+}
+

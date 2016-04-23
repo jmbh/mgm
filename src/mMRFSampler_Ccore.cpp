@@ -189,7 +189,6 @@ NumericMatrix mMRFCsampler(NumericMatrix Data, int n, int nNodes, NumericVector 
                   if(Data(p,node2)==(k+1)) indicatorstate[k]=1;
                 }
                 
-                
                 // cut out correct part of graphe
                 IntegerVector ind_rows(inde.size());
                 for(int k=0;k<inde.size(); k++) {if(inde[k]==(node+1)) ind_rows[k]=1;}

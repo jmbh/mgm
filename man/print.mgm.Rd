@@ -18,25 +18,7 @@ The adjacency matrix and the weighted adjacency matrix is printed}
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>}
 
-\examples{
-head(data_mixed2) #example data
 
-type <- c("g", "p", "e", "c", "c") #Gaussian, Poission, ...
-levs <- c(1,1,1,3,2) #Number of categories
-
-fit <- mgmfit(data = data_mixed2, 
-              type = type, 
-              lev = levs, 
-              lambda.sel = "CV", 
-              folds = 10, 
-              gam = .25, 
-              d = 2, 
-              rule.reg = "AND", 
-              rule.cat = "OR")
-
-print(fit)
-
-}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ ~kwd1 }

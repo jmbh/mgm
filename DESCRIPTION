@@ -1,7 +1,7 @@
 Package: mgm
 Type: Package
 Title: Estimating Mixed Graphical Models
-Version: 1.1-4
+Version: 1.1-5
 Date: 2016-01-06
 Author: Jonas Haslbeck
 Maintainer: Jonas Haslbeck  <jonashaslbeck@gmail.com>

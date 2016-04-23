@@ -18,12 +18,14 @@ p x p adjacency matrix of the estimated graph}
 \value{
 A list containing accuracy, sensitivity, specificity and precision of the estimated graph in reference to the true graph.}
 \author{
-Jonas Haslbeck}
+Jonas Haslbeck <jonashaslbeck@gmail.com>}
 
 \examples{
 
 \dontrun{
+
 # create some data from a mixed graphical model
+
 n <- 100 # number of samples
 type <- c("g", "c", "c") # one gaussian, two categorical
 lev <- c(1, 3, 2) # the categorical variables have 3 and 2 categories, resp
@@ -37,7 +39,9 @@ fit <- mgmfit(data, type, lev=lev, d=2)
 grapht <- graph
 grapht[grapht!=0] <- 1 # binarize true graph
 
-confusion(grapht, fit$adj) # compute derivatives of confusion matrix
+# compute derivatives of confusion matrix
+confusion(grapht, fit$adj)
+
 }
 
 }
