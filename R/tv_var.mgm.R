@@ -62,7 +62,7 @@ tv_var.mgm <- function(data, # input tv mgm
   
   # outputlist
   l_call <- list('type'=type, 'lev'=lev, 'tsteps'=tsteps, 'bandwidth'=bandwidth, 'lambda.sel'="EBIC",
-                 'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, 'method'=method)
+                 'gam'=gam, 'd'=d, 'method'=method)
   outlist <- list('call'=l_call, 'wadj'=a_wadj, 'mpar.matrix'=a_mpar.matrix, 
                   'sign'=a_signs, 'edgecolor'=a_edgecol, 't.models'=tv_list, 'Nt'=l_wN)
   
