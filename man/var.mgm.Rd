@@ -8,8 +8,8 @@ Estimation of mixed Autoregressive Models
 Estimation of mixed Autoregressive Models using L1-constrained regression.}
 \usage{
 var.mgm(data, type, lev, lags = 1, lambda.sel = "EBIC", 
-        folds = 10, gam = .25, d=2, rule.reg = "AND", 
-        pbar = TRUE, method = "glm", missings = 'error', 
+        folds = 10, gam = .25, d=2, pbar = TRUE, 
+        method = "glm", missings = 'error', 
         weights = NA, ret.warn = TRUE)
 }
 
@@ -37,8 +37,6 @@ Gamma hyperparameter when \code{lambda.sel="EBIC"}. Defaults to \code{gam=.25} (
   \item{d}{
 Degrees of augmented interactions. The degree of augmented interactions reflects our belief about the maximal degree in the true graph. (see Loh & Wainwright, 2013)
 }
-  \item{rule.reg}{
-Rule for combining the two parameters obtained for each edge due to the neighborhood-regression approach. The "OR"-rule determines conditional dependence if at least one of the two parameters is non-zero, the "AND"-rule determines conditional dependence if both parameters are non-zero.}
 
 \item{pbar}{Shows a progress-bar if TRUE.}
 
@@ -111,7 +109,7 @@ data <- matrix(NA, tsteps, p)
 data[1, ] <- rnorm(p, 0, InnoVar)
 for(i in 1:tsteps) {
   for(v in 1:p) {
-    data[i, v] <-  sum(data[i-1,] * ParMat[,v]) + rnorm(1,0,Innov[v])
+    data[i, v] <-  sum(data[i-1,] * ParMat[,v]) + rnorm(1,0,InnoVar[v])
   }
 }
 

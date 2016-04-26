@@ -8,7 +8,6 @@ tv_var.mgm <- function(data, # input tv mgm
                       bandwidth,
                       gam = .25,                       
                       d = 2, 
-                      rule.reg = 'AND', 
                       pbar = TRUE,
                       method ='glm',
                       missings = 'error',
@@ -42,7 +41,7 @@ tv_var.mgm <- function(data, # input tv mgm
     
     # estimate using mgm
     tv_list[[t]] <- mgmfit_core(data, type, lev, lambda.sel="EBIC", folds = 10, gam = gam,  # force EBIC, CV makes no sense in nonstationary data
-                                d=d, rule.reg = rule.reg, pbar = FALSE, method = method, missings = missings, 
+                                d=d, rule.reg = 'AND', pbar = FALSE, method = method, missings = missings, 
                                 weights=weights, ret.warn=FALSE, VAR=TRUE)
     
     a_wadj[,,t] <- tv_list[[t]]$wadj

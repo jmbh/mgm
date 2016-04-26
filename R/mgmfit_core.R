@@ -403,8 +403,8 @@ mgmfit_core <- function(
   
   signs <- matrix(NA, nNode, nNode)
   signs[adjmat!=0] <- 0
-  ind <- which(dummy_par.var %in% which(type!='c'))
-  signs[type!='c', type!='c'] <- sign(mpm[ind,ind])
+  ind <- which(dummy_par.var %in% which(type_sh!='c'))
+  signs[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind])
 
   signs[adjmat.f==0] <- NA
   

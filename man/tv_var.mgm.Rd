@@ -8,9 +8,8 @@ Estimation of time-varying mixed Autoregressive Models
 Estimation of time-varying mixed Autoregressive Models using L1-constrained regression.}
 \usage{
 tv_var.mgm(data, type, lev, lags = 1, tsteps = "default", 
-          bandwidth, gam = .25, d = 2,  rule.reg = "AND", 
-          pbar = TRUE, method = "glm", missings = 'error', 
-          ret.warn = FALSE)
+          bandwidth, gam = .25, d = 2, pbar = TRUE, 
+          method = "glm", missings = 'error', ret.warn = FALSE)
 }
 \arguments{
   \item{data}{
@@ -32,8 +31,7 @@ Gamma hyperparameter when lambda.sel="EBIC". Defaults to gam=.25 (Barber et al.,
   \item{d}{
 Degrees of augmented interactions. The degree of augmented interactions reflects our belief about the maximal degree in the true graph. (see Loh & Wainwright, 2013)
 }
-  \item{rule.reg}{
-Rule for combining the two parameters obtained for each edge due to the neighborhood-regression approach. The "OR"-rule determines conditional dependence if at least one of the two parameters is non-zero, the "AND"-rule determines conditional dependence if both parameters are non-zero.}
+
   \item{pbar}{Shows a progress-bar if TRUE}
 \item{method}{For each neighborhood regression, \code{method = "glm"} uses the appropriate link function for each variable type. \code{method = "linear"} uses linear regression for each variable, no matter of which type it is (for categorical variables, we predict each indicator variable using linear regression).}
 \item{missings}{Handling of missing values. The default \code{missings = 'error'} returns an error message in case there are missing data. \code{missings = 'casewise.zw'} sets the weight of missing cases to zero. This has the advantage over casewise (timestepwise) deletion that it does not corrupt the time scale. Using the weighting technique, the time scale remains intact and we use less data at a time step that is close to time steps with missing data. As a consequence, the algorithm is less sensitive at these time steps.}

@@ -9,7 +9,6 @@ var.mgm <- function(
   folds = 10, # folds in case CV is used for lambda selection
   gam = .25, # tuning parameter for EBIC, in case EBIC is used for lambda selection
   d = 2, # maximal degree of the true graph
-  rule.reg = "AND", # parameter-aggregation of categorical variables
   pbar = TRUE, # shows a progress bar if TRUE
   method = 'glm',  # which method should be used for each nodewise regression?
   missings = 'error', # handling of missing data
@@ -26,7 +25,7 @@ var.mgm <- function(
                          folds = folds, 
                          gam = gam, 
                          d = d, 
-                         rule.reg = rule.reg, 
+                         rule.reg = "AND", 
                          pbar = pbar, 
                          method = method, 
                          missings = missings, 
