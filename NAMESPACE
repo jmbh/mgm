@@ -1,6 +1,7 @@
 useDynLib(mgm)
 importFrom(Rcpp, evalCpp)
 importFrom("stats", "cov2cor")
+importFrom("stats", "var")
 importFrom(matrixcalc, is.positive.definite)
 importFrom(matrixcalc, is.symmetric.matrix)
 importFrom("stats", "as.formula", "coef", "dnorm", "dpois", "model.matrix")

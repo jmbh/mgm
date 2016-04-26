@@ -56,11 +56,21 @@ Rule for combining the two parameters obtained for each edge due to the neighbor
 \value{
 Returns a list containing:
 \item{call}{A list with all function inputs except the data}
+
 \item{adj}{Adjacency matrix}
+
 \item{wadj}{Weighted adjacency matrix; Please note that we collapsed the interaction parameters involving categorical variables into one value by taking the mean of the absolute values; for the actual interaction parameters inspect wpar.matrix}
+
 \item{mpar.matrix}{This matrix includes all estimated parameters in one matrix. If there are only continuous variables in the dataset this matrix has the same dimensions as \code{wadj}. If there are categorical variables in the dataset, the matrix has the dimensions of the overcomplete representations. NA values indicate parameters that are not estimated (because they are redundant). For details see Friedman, Hastie and Tibshirani (2010).}
+
+\item{signs}{A p x p matrix that gives the sign of the edge parameters, if defined. The sign is defined for edges between two continuous variables, where the edge weight is equal to the single parameter. It is not defined for interactions involving categorical variables, where dependency depends on more than one parameter. In case a sign is defined it is indicated as -1 or 1, if a sign is undefined there is a 0 entry. If an edge is absent, there is NA entry.}
+
+\item{edgecolor}{A p x p matrix that is equivalent to the \code{signs} matrix, however, contains color names. This is useful for plotting the graphical model (for instance with the qgraph package) and indicating the sign (negative = red, positive = green, undefined = grey) for each edge in the graph.}
+
 \item{node.models}{A list that includes for each node: a list of estimated parameters, the selected regularization parameter, the threshold parameter and the EBIC of the model (if applicable).}
+
 \item{par.labels}{A vector matching with the dimensions of \code{mpar.matrix} indicating which parameter belongs to the interaction between which variables.}
+
 \item{warnings}{A list of all warnings produced during execution. Useful to have when warnings are surpressed in console output \code{(ret.warn = TRUE)}.}}
 
 

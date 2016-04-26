@@ -47,10 +47,19 @@ For time-varying graphs \code{lambda.sel} is fixed to EBIC, as it is not straigh
 
 \value{
 Returns a list containing:
+
 \item{call}{A list with all function inputs except the data}
+
 \item{wadj}{A p x p x n weighted adjacency matrix, where n are the number of estimated time steps; Please note that we collapsed the interaction parameters involving categorical variables into one value by taking the mean of the absolute values; for the actual interaction parameters inspect mpar.matrix in the node models for each estimated time step.}
+
 \item{mpar.matrix}{A par x par x n parameter matrix, where n are the number of estimated time steps and par are the number of parameters in each row in the overcomplete representation. For details see \code{mpar.matrix} in \code{mgmfit}.}
+
+\item{signs}{A p x p x n array that gives the sign of the edge parameters, if defined, for each estimated time point n. The sign is defined for edges between two continuous variables, where the edge weight is equal to the single parameter. It is not defined for interactions involving categorical variables, where dependency depends on more than one parameter. In case a sign is defined it is indicated as -1 or 1, if a sign is undefined there is a 0 entry. If an edge is absent, there is NA entry.}
+
+\item{edgecolor}{A p x p x n array that is equivalent to the \code{signs} array, however, it contains color names. This is useful for plotting the graphical model (for instance with the qgraph package) and indicating the sign (negative = red, positive = green, undefined = grey) for each edge in the graph.}
+
 \item{t.models}{A list with n entries containing the \code{mgmfit} output at each estimated time point. For details see the help file of \code{mgmfit}.}
+
 \item{Nt}{A n vector, indicating the sum of weights used at each time steps. As weights are normalized to the range [0,1], this can be interpreted as the effectively used sample size for estimation at time step n. This is interesting to check in the presence of missing data in the time-series.}
 }
 

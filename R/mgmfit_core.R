@@ -397,6 +397,21 @@ mgmfit_core <- function(
     }
   }
   
+  
+  
+  # +++++ extract sign matrix ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
+  
+  signs <- matrix(NA, nNode, nNode)
+  signs[adjmat!=0] <- 0
+  ind <- which(dummy_par.var %in% which(type!='c'))
+  signs[type!='c', type!='c'] <- sign(mpm[ind,ind])
+  
+  edgeColor <- matrix('black', nNode, nNode)
+  edgeColor[signs==0] <- 'grey'
+  edgeColor[signs==1] <- 'darkgreen'
+  edgeColor[signs==-1] <- 'red'
+  
+  
   # +++++ prepare output ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
   
   #dichotomize
@@ -413,7 +428,7 @@ mgmfit_core <- function(
                'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, "method"=method, 
                'weights'=weights, 'ret.warn'=ret.warn)
   
-  outlist <- list('call'=call, "adj"=adj, "wadj"=adjmat.f, 'mpar.matrix' = mpm, 
+  outlist <- list('call'=call, "adj"=adj, "wadj"=adjmat.f, 'mpar.matrix' = mpm, 'signs'=signs, 'edgecolor'=edgeColor,
                   "node.models" = node_models, "par.labels"=dummy_par.var, 'warnings'=warn_list ,
                   'variance.check' = ind_nzv)
   

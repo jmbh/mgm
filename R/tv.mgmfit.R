@@ -33,7 +33,7 @@ tv.mgmfit <- function(data, # input tv mgm
   }
 
   if(tsteps=='default') {tsteps <- round(2/bandwidth)} # reasonable coveres the data for any choice of bandwidth
-  a_wadj <- array(NA, dim=c(nNode,nNode,tsteps))
+  a_wadj <- a_signs <- a_edgecol <-  array(NA, dim=c(nNode,nNode,tsteps))
   l_mpar.matrix <- list()
   est_steps <- seq(0, 1, length = tsteps) # times at which estimation takes places
   
@@ -55,6 +55,8 @@ tv.mgmfit <- function(data, # input tv mgm
          weights=weights, ret.warn=FALSE)
     
     a_wadj[,,t] <- tv_list[[t]]$wadj
+    a_signs[,,t] <- tv_list[[t]]$signs
+    a_edgecol[,,t] <- tv_list[[t]]$edgecolor
     l_mpar.matrix[[t]] <- tv_list[[t]]$mpar.matrix
     
     if(pbar==TRUE) { setTxtProgressBar(pb, t) } # update progress bar
@@ -71,7 +73,8 @@ tv.mgmfit <- function(data, # input tv mgm
   # outputlist
   l_call <- list('type'=type, 'lev'=lev, 'tsteps'=tsteps, 'bandwidth'=bandwidth, 'lambda.sel'="EBIC",
                  'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, 'method'=method)
-  outlist <- list('call'=l_call, 'wadj'=a_wadj, 'mpar.matrix'=a_mpar.matrix, 't.models'=tv_list, 'Nt'=l_wN)
+  outlist <- list('call'=l_call, 'wadj'=a_wadj, 'mpar.matrix'=a_mpar.matrix, 
+                  'sign'=a_signs, 'edgecolor'=a_edgecol, 't.models'=tv_list, 'Nt'=l_wN)
   
   return(outlist) 
   
