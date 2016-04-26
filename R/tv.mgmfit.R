@@ -65,7 +65,6 @@ tv.mgmfit <- function(data, # input tv mgm
   
   # write model parameter matrix in array
   a_mpar.matrix <- array(NA, dim=c(dim(l_mpar.matrix[[t]])[1], dim(l_mpar.matrix[[t]])[2],tsteps))
-  for(t in 1:tsteps) a_mpar.matrix[,,t] <- l_mpar.matrix[[t]]
   
   # get weighted N for each time step; this will later also be used as a missing data signal
   l_wN <- unlist(lapply(tv_list, function(x) sum(x$call$weights)))
@@ -73,7 +72,7 @@ tv.mgmfit <- function(data, # input tv mgm
   # outputlist
   l_call <- list('type'=type, 'lev'=lev, 'tsteps'=tsteps, 'bandwidth'=bandwidth, 'lambda.sel'="EBIC",
                  'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, 'method'=method)
-  outlist <- list('call'=l_call, 'wadj'=a_wadj, 'mpar.matrix'=a_mpar.matrix, 
+  outlist <- list('call'=l_call, 'wadj'=a_wadj, 'mpar.matrix'=l_mpar.matrix, 
                   'sign'=a_signs, 'edgecolor'=a_edgecol, 't.models'=tv_list, 'Nt'=l_wN)
   
   return(outlist) 

@@ -53,7 +53,7 @@ Returns a list containing:
 
 \item{wadj}{A p x p x n weighted adjacency array, where n are the number of estimated time steps; Please note that we collapsed the interaction parameters involving categorical variables into one value by taking the mean of the absolute values; for the actual interaction parameters inspect mpar.matrix in the node models for each estimated time step.}
 
-\item{mpar.matrix}{A par x par x n parameter array, where n are the number of estimated time steps and par are the number of parameters in each row in the overcomplete representation. For details see \code{mpar.matrix} in \code{mgmfit}.}
+\item{mpar.matrix}{A n list with par x par matrices, where n are the number of estimated time steps and par are the number of parameters in each row in the overcomplete representation at the estimated time point n. For details see \code{mpar.matrix} in \code{mgmfit}.}
 
 \item{signs}{A p x p x n array that gives the sign of the edge parameters, if defined, for each estimated time point n. The sign is defined for edges between two continuous variables, where the edge weight is equal to the single parameter. It is not defined for interactions involving categorical variables, where dependency depends on more than one parameter. In case a sign is defined it is indicated as -1 or 1, if a sign is undefined there is a 0 entry. If an edge is absent, there is NA entry.}
 
