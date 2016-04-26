@@ -405,6 +405,8 @@ mgmfit_core <- function(
   signs[adjmat!=0] <- 0
   ind <- which(dummy_par.var %in% which(type!='c'))
   signs[type!='c', type!='c'] <- sign(mpm[ind,ind])
+
+  signs[adjmat.f==0] <- NA
   
   edgeColor <- matrix('black', nNode, nNode)
   edgeColor[signs==0] <- 'grey'
