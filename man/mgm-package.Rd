@@ -12,8 +12,8 @@ Estimation of time-varying mixed graphical models and mixed vector autoregressiv
 \tabular{ll}{
 Package: \tab mgm\cr
 Type: \tab Package\cr
-Version: \tab 1.1-5 \cr
-Date: \tab 2016-04-22\cr
+Version: \tab 1.1-6 \cr
+Date: \tab 2016-04-27\cr
 License: \tab GPL-2 \cr
 }
 }
