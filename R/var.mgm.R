@@ -32,6 +32,8 @@ var.mgm <- function(
                          weights = weights, 
                          ret.warn = ret.warn, 
                          VAR = TRUE) # use standard mgm.fit; no AR model
+
+  class(outlist) <- c('mgm', 'var')
   
   return(outlist)
 } 

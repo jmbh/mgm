@@ -1,5 +1,4 @@
 
-
 calc.EBIC <- function(fit, y, type, emp_lev, v, n, nadj, gam, X, method, weights) {
   
   # function to calculate deviance

@@ -1,7 +1,4 @@
 
-
-
-
 f_VARreshape <- function(data, 
                          lag=1) 
 {

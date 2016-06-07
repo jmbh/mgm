@@ -1,5 +1,7 @@
 
 
+
+
 mgmfit <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson, e=exponential
@@ -33,6 +35,9 @@ mgmfit <- function(
                          ret.warn = ret.warn, 
                          VAR = FALSE) # use standard mgm.fit; no AR model
   
+  class(outlist) <- c('mgm')
   return(outlist)
+  
+  
 } 
 

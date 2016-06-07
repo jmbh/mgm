@@ -1,7 +1,4 @@
 
-
-
-
 mgmfit_core <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson, e=exponential
@@ -425,6 +422,13 @@ mgmfit_core <- function(
     diag(adjmat.f) <- 0
   }
   
+  # get back to right length of type/lev vector for output
+  if(VAR) {
+    type <- type[1:(length(type)/2)] 
+    lev <- type[1:(length(lev)/2)] 
+    }
+  
+  
   ## call
   call <- list('type'=type, 'lev'=lev, 'lambda.sel'=lambda.sel, 'folds'=folds, 
                'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, "method"=method, 
@@ -433,8 +437,6 @@ mgmfit_core <- function(
   outlist <- list('call'=call, "adj"=adj, "wadj"=adjmat.f, 'mpar.matrix' = mpm, 'signs'=signs, 'edgecolor'=edgeColor,
                   "node.models" = node_models, "par.labels"=dummy_par.var, 'warnings'=warn_list ,
                   'variance.check' = ind_nzv)
-  
-  class(outlist) <- "mgm"
   
   return(outlist)
 } 

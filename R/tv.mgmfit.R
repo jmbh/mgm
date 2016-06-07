@@ -75,6 +75,8 @@ tv.mgmfit <- function(data, # input tv mgm
   outlist <- list('call'=l_call, 'wadj'=a_wadj, 'mpar.matrix'=l_mpar.matrix, 
                   'sign'=a_signs, 'edgecolor'=a_edgecol, 't.models'=tv_list, 'Nt'=l_wN)
   
+  class(outlist) <- c('mgm', 'tv.mgm')
+  
   return(outlist) 
   
 }

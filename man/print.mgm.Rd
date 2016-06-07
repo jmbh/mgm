@@ -13,13 +13,8 @@ Print a selection of the output-list of the function \code{mgmfit}}
   \item{\dots}{additional print arguments}
 }
 \value{
-The adjacency matrix and the weighted adjacency matrix is printed}
+Prints the weighted adjacency matrix.}
 
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>}
 
-
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
