@@ -1,6 +1,5 @@
 
-f_VARreshape <- function(data, 
-                         lag=1) 
+VARreshape <- function(data, lag = 1) 
 {
   n_col <- ncol(data)
   n_row <- nrow(data)

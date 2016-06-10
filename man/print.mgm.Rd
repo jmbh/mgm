@@ -1,19 +1,19 @@
 \name{print.mgm}
 \alias{print.mgm}
 \title{
-print a mgm object}
+Print method for mgm objects}
+
 \description{
-Print a selection of the output-list of the function \code{mgmfit}}
+Returns the model class, number of nodes and (for time-varying models) the number of estimated time steps from a given mgm object.}
+
 \usage{
 \method{print}{mgm}(x, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{fitted mgm object (output of function \code{mgmfit}.)}
+  \item{x}{mgm fit-object (output of functions \code{mgmfit}, \code{tv.mgmfit}, \code{var.mgm} or \code{tv_var.mgm}.)}
   \item{\dots}{additional print arguments}
 }
-\value{
-Prints the weighted adjacency matrix.}
 
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>}

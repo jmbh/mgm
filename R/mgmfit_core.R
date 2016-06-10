@@ -35,7 +35,7 @@ mgmfit_core <- function(
   
   # IF VAR: change data structure (+++)
   if(VAR) {
-    data <- f_VARreshape(as.matrix(data))
+    data <- VARreshape(as.matrix(data))
     n <- nrow(data) # one observation less in AR, because we have no predictor for first time point
     lev <- c(lev, lev)
     type <- c(type, type)

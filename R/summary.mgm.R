@@ -1,5 +1,6 @@
 
-summary.mgm <- function(object, ...) 
+
+summary.mgm <- function(object, data = NULL, ...) 
   
 {
   
@@ -12,6 +13,13 @@ summary.mgm <- function(object, ...)
     tsteps <- object$call$tsteps
   } else {
     tsteps <- 1
+  }
+  
+  
+  # compute nodewise errors
+  if(!is.null(data)) {
+  l_errors <- predict.mgm(object, data)  
+  l_errors <- lapply(l_errors, function(x) x$error)
   }
   
   for(ts in 1:tsteps) {
@@ -39,14 +47,33 @@ summary.mgm <- function(object, ...)
     
     # ---------- Make nice dataframe for save/print ----------
     
-    # collect all info
     df_out <- data.frame(matrix(NA, nNodes, 1))
     colnames(df_out) <- 'Variable'
+    
+    # variable lable
     df_out$Variable <- 1:nNodes
     df_out$Type <- type
+    
+    # degree
+    if(tsteps>1) {wadj <- object$wadj[,,ts] } else {wadj <- object$wadj}
+    adj <- wadj; adj[adj!=0] <- 1
+    
+    if('var' %in% class(object)) {
+    diag(adj) <- 0
+    df_out$degree.in <- colSums(adj)
+    df_out$degree.out <- rowSums(adj)
+    } else {
+    df_out$degree <- colSums(adj)
+    }
+    
+    # fit parameters
     df_out$Lambda <- round(unlist(l_lambda),3)
     df_out$Threshold <- round(unlist(l_tau),3)
     df_out$EBIC <- round(unlist(l_EBIC),3) 
+    
+    # add errors to data frame
+    df_out$Error <- l_errors[[ts]]$Error
+    df_out$ErrorType <- l_errors[[ts]]$ErrorType 
 
     out_list[[ts]] <- df_out
     
