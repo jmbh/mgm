@@ -72,9 +72,11 @@ summary.mgm <- function(object, data = NULL, ...)
     df_out$EBIC <- round(unlist(l_EBIC),3) 
     
     # add errors to data frame
+    if(!is.null(data)) {
     df_out$Error <- l_errors[[ts]]$Error
     df_out$ErrorType <- l_errors[[ts]]$ErrorType 
-
+    }
+    
     out_list[[ts]] <- df_out
     
   } # end for: timesteps
