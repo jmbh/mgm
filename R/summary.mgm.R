@@ -15,11 +15,15 @@ summary.mgm <- function(object, data = NULL, ...)
     tsteps <- 1
   }
   
-  
   # compute nodewise errors
   if(!is.null(data)) {
-  l_errors <- predict.mgm(object, data)  
-  l_errors <- lapply(l_errors, function(x) x$error)
+    l_elist <- predict.mgm(object, data)
+    if(tsteps==1) {
+      l_errors <- list()
+      l_errors[[1]] <- l_elist$error
+    } else {
+      l_errors <- lapply(l_elist, function(x) x$error)
+    }
   }
   
   for(ts in 1:tsteps) {
@@ -59,11 +63,11 @@ summary.mgm <- function(object, data = NULL, ...)
     adj <- wadj; adj[adj!=0] <- 1
     
     if('var' %in% class(object)) {
-    diag(adj) <- 0
-    df_out$degree.in <- colSums(adj)
-    df_out$degree.out <- rowSums(adj)
+      diag(adj) <- 0
+      df_out$degree.in <- colSums(adj)
+      df_out$degree.out <- rowSums(adj)
     } else {
-    df_out$degree <- colSums(adj)
+      df_out$degree <- colSums(adj)
     }
     
     # fit parameters
@@ -73,8 +77,8 @@ summary.mgm <- function(object, data = NULL, ...)
     
     # add errors to data frame
     if(!is.null(data)) {
-    df_out$Error <- l_errors[[ts]]$Error
-    df_out$ErrorType <- l_errors[[ts]]$ErrorType 
+      df_out$Error <- l_errors[[ts]]$Error
+      df_out$ErrorType <- l_errors[[ts]]$ErrorType 
     }
     
     out_list[[ts]] <- df_out

@@ -165,8 +165,6 @@ predict.mgm <- function(object, data, variables='all', ...) {
     
     out_list[[ts]] <- list('error'=error_out, 'pred'=predmat)
     
-    class(out_list[[ts]]) <- 'mgmpred'
-    
   } # end for: timesteps
   
   if(tsteps==1) {
