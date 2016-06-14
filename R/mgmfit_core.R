@@ -1,7 +1,7 @@
 
 mgmfit_core <- function(
   data, # data matrix, col=variables
-  type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson, e=exponential
+  type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson
   lev, # number of categories of categorical variables, continuous variables have level=1
   lambda.sel = "EBIC", # method for penalization parameter (lambda) -selection 
   folds = 10, # folds in case CV is used for lambda selection
@@ -24,6 +24,9 @@ mgmfit_core <- function(
   nNode <- ncol(data)
   n <- nrow(data) 
   c_ind <- which(type == "c") #indicator which variable categorical
+  
+  # Check on variable typee
+  if(sum(!(type %in% c('c', 'g', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables allowed.")
   
   # Initial Missing Value Check
   if(missings=='error') {

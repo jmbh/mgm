@@ -19,7 +19,7 @@ var.mgm(data, type, lev, lags = 1, lambda.sel = "EBIC",
 n x p data matrix
 }
   \item{type}{
-p-vector containing the types of variable ("g" Gaussian, "e" Exponential, "p" Poisson, "c" Categorical)
+p-vector containing the types of variable ("g" Gaussian, "p" Poisson, "c" Categorical)
 }
   \item{lev}{
 p-vector containing the number of levels for each variable p (\code{lev=1} for all continuous variables)

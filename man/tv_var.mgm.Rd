@@ -16,7 +16,7 @@ tv_var.mgm(data, type, lev, lags = 1, tsteps = "default",
 n (time step) x p (variable) data matrix
 }
   \item{type}{
-p-vector containing the types of variable ("g" Gaussian, "e" Exponential, "p" Poisson, "c" Categorical)
+p-vector containing the types of variable ("g" Gaussian, "p" Poisson, "c" Categorical)
 }
   \item{lev}{
 p-vector containing the number of levels for each variable p (lev=1 for all continuous variables)

@@ -1,0 +1,18 @@
+citHeader("To cite mgm in publications use:")
+
+citEntry(entry = "Article",
+  title        = "mgm: Structure Estimation for Time-Varying Mixed Graphical Models in high-dimensional Data",
+  author       = personList(as.person("Jonas M. B. Haslbeck"),
+                   as.person("Lourens J. Waldorp")),
+  journal      = "arXiv preprint:1510.06871v2",
+  year         = "2016",
+  url          = "http://arxiv.org/abs/1510.06871v2",
+
+
+  textVersion  =
+paste("Jonas M. B. Haslbeck, Lourens J. Waldorp (2016).",
+       "mgm: Structure Estimation for Time-Varying Mixed Graphical Models in high-dimensional Data",
+       "arXiv preprint:1510.06871v2",
+       "URL http://arxiv.org/abs/1510.06871v2.")
+)
+

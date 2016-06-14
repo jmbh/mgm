@@ -11,13 +11,19 @@ predict.mgm <- function(object, data, variables='all', ...) {
   names <- FALSE
   if(variables[1]=='all') {
     Nseq <- 1:ncol(data)
-  } else {
-    if(class(variables)=='character') Nseq <- which(colnames(data) %in% variables); names <- TRUE
-    if(class(variables)=='numeric') Nseq <- variables
+  } else if(class(variables)=='character') {
+    Nseq <- which(colnames(data) %in% variables); names <- TRUE
+  } else if (sum(!(round(variables)==variables))==0) # check for integers
+  { 
+    Nseq <- variables
+  } else { 
+    stop("Please provide the a vector of column indices or column names as input for the argument 'variables' " )
   }
   
+  
+  
   # Assign column names
-  if(!names) colnames(data)  <- Nseq
+  if(!names) colnames(data)  <- 1:ncol(data)
   
   
   # ---------- Loop over Time Points ----------
@@ -154,11 +160,11 @@ predict.mgm <- function(object, data, variables='all', ...) {
     eType[type[1:nNodes]=='c'] <- '%Correct'
     eType[type[1:nNodes]!='c'] <- 'RMSE'
     
-    error_out <- data.frame(matrix(NA, nNodes, 3))
+    error_out <- data.frame(matrix(NA, length(Nseq), 3))
     colnames(error_out) <- c("Variable", 'Error', "ErrorType")
-    error_out$Variable <- colnames(data)
+    error_out$Variable <- colnames(data)[Nseq]
     error_out$Error <- round(unlist(error_list),3)
-    error_out$ErrorType <- eType
+    error_out$ErrorType <- eType[Nseq]
     
     # collapse predictions into matrix
     predmat <- do.call(cbind, pred_list)
@@ -172,6 +178,6 @@ predict.mgm <- function(object, data, variables='all', ...) {
   } else {
     return(out_list)
   }
-
+  
   
 } # EoF

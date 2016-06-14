@@ -20,7 +20,7 @@ mgmfit(data, type, lev, lambda.sel = "EBIC", folds = 10,
 n x p data matrix
 }
   \item{type}{
-p-vector containing the types of variable ("g" Gaussian, "e" Exponential, "p" Poisson, "c" Categorical)
+p-vector containing the types of variable ("g" Gaussian, "p" Poisson, "c" Categorical)
 }
   \item{lev}{
 p-vector containing the number of levels for each variable p (\code{lev=1} for all continuous variables)
@@ -94,18 +94,27 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 }
 \examples{
 
-head(data_mixed2) #example data
+\dontrun{
 
-type <- c("g", "p", "e", "c", "c") #Gaussian, Poission, ...
-levs <- c(1,1,1,3,2) #Number of categories
+# Autism example dataset
+dim(autism_data$data)
 
-fit <- mgmfit(data = data_mixed2, 
-              type = type, 
-              lev = levs, 
-              lambda.sel = "CV", 
-              folds = 10, 
-              gam = .25, 
-              d = 2, 
-              rule.reg = "AND")
+# Fit mixed graphical model
+fitobj <- mgmfit(data = autism_data$data, 
+                 type = autism_data$type, 
+                 lev = autism_data$lev, 
+                 lambda.sel = 'EBIC') 
+
+round(fitobj$wadj,2) # Weighted adjacency matrix
+
+# Visualize the adjacency matrix using the qgraph package
+library(qgraph)
+colnames(fitobj$wadj) <- autism_data$colnames
+qgraph(fitobj$wadj, 
+       legend=TRUE, 
+       nodeNames=autism_data$colnames, 
+       layout='spring', 
+       edge.color=fitobj$edgecolor)
+}
 
 }
