@@ -171,22 +171,22 @@ mgmfit_core <- function(
   for(v in seq_len(nNode))
   {
     
+    ## AR: If AR, define new data matrix for each v
+    if(!VAR) {
+      data_restr <- data
+      type_restr <- type
+      emp_lev_restr <- emp_lev
+      vv <- v
+    } else {
+      vv <- 1
+      data_restr <- data[,( -(1:nNode)[-v])]
+      type_restr <- type[-((1:nNode)[-v])]
+      emp_lev_restr <- emp_lev[-((1:nNode)[-v])]
+    }
+    
     if(v %in% which(ind_nzv)) # do estimation for variables with nonzero variance
     {
-      
-      ## AR: If AR, define new data matrix for each v
-      if(!VAR) {
-        data_restr <- data
-        type_restr <- type
-        emp_lev_restr <- emp_lev
-        vv <- v
-      } else {
-        vv <- 1
-        data_restr <- data[,( -(1:nNode)[-v])]
-        type_restr <- type[-((1:nNode)[-v])]
-        emp_lev_restr <- emp_lev[-((1:nNode)[-v])]
-      }
-
+  
       # create design matrix
       if(d > (nNode - 1)) {
         stop("Order of interactions can be maximal the number of predictors!")

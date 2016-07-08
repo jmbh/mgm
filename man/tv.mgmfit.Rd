@@ -65,6 +65,9 @@ Returns a list containing:
 }
 
 \references{
+
+Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure estimation for time-varying mixed graphical models in high-dimensional data. arXiv preprint http://arxiv.org/abs/1510.06871v2.
+
 Barber, R. F., & Drton, M. (2015). High-dimensional Ising model selection with Bayesian information criteria. Electronic Journal of Statistics, 9, 567-607.
 
 Friedman, J., Hastie, T., & Tibshirani, R. (2010). Regularization paths for generalized linear models via coordinate descent. Journal of statistical software, 33(1), 1. Chicago.
@@ -76,6 +79,7 @@ Loh, P. L., & Wainwright, M. J. (2013). Structure estimation for discrete graphi
 Yang, E., Baker, Y., Ravikumar, P., Allen, G., & Liu, Z. (2014). Mixed graphical models via exponential families. In Proceedings of the Seventeenth International Conference on Artificial Intelligence and Statistics (pp. 1042-1050).
 
 Zhou, S., Lafferty, J., & Wasserman, L. (2010). Time varying undirected graphs. Machine Learning, 80(2-3), 295-319.
+
 }
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>
