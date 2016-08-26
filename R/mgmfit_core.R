@@ -1,4 +1,5 @@
 
+
 mgmfit_core <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson
@@ -50,7 +51,7 @@ mgmfit_core <- function(
   # missing data handling via setting weights to zero
   if(missings=='casewise.zw') {
     ind_NA <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
-    data[ind_NA,] <- 8123 # we pick an unlikely numeric category label; this is to collapse them later into availabel categories; this avoids problems with minimum P(L=l) requirement in binomial link in glmnet
+    data[ind_NA,] <- 4121 # we pick an unlikely numeric category label; this is to collapse them later into availabel categories; this avoids problems with minimum P(L=l) requirement in binomial link in glmnet
     weights[ind_NA] <- 0
   }
   
@@ -157,7 +158,9 @@ mgmfit_core <- function(
     colnames(data)[1:nNode] <- paste("V",1:nNode, sep="") 
     colnames(data)[(nNode+1):(nNode*2)] <- paste("V",1:nNode,'_tm1', sep="")
   }
-  data[,type=="g" & ind_nzv==TRUE] <- scale(data[,type=="g" & ind_nzv==TRUE]) #scale all gaussians to N(0,1)
+  
+  # only use non-missing data for scaling
+  data[!ind_NA ,type=="g" & ind_nzv==TRUE] <- scale(data[!ind_NA ,type=="g" & ind_nzv==TRUE]) #scale all gaussians to N(0,1)
   
   #progress bar
   if(pbar==TRUE) {
