@@ -8,11 +8,10 @@ predict.mgm <- function(object, data, variables='all', ...) {
   if(ncol(data)!=length(object$call$type)) stop('Please provide a dataset matching the one that was used for estimation.')
   
   # define relevant variables
-  names <- FALSE
   if(variables[1]=='all') {
     Nseq <- 1:ncol(data)
   } else if(class(variables)=='character') {
-    Nseq <- which(colnames(data) %in% variables); names <- TRUE
+    Nseq <- which(colnames(data) %in% variables);
   } else if (sum(!(round(variables)==variables))==0) # check for integers
   { 
     Nseq <- variables
@@ -20,11 +19,8 @@ predict.mgm <- function(object, data, variables='all', ...) {
     stop("Please provide the a vector of column indices or column names as input for the argument 'variables' " )
   }
   
-  
-  
   # Assign column names
-  if(!names) colnames(data)  <- 1:ncol(data)
-  
+  if(is.null(colnames(data))) colnames(data)  <- 1:ncol(data)
   
   # ---------- Loop over Time Points ----------
   

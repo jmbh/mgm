@@ -50,12 +50,9 @@ mgmfit_core <- function(
   # missing data handling via setting weights to zero
   if(missings=='casewise.zw') {
     ind_NA <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
-    data[ind_NA,] <- .111 # we pick an unlikely numeric category label; this is to collapse them later into availabel categories; this avoids problems with minimum P(L=l) requirement in binomial link in glmnet
+    data[ind_NA,] <- 8123 # we pick an unlikely numeric category label; this is to collapse them later into availabel categories; this avoids problems with minimum P(L=l) requirement in binomial link in glmnet
     weights[ind_NA] <- 0
   }
-  
-  # calculate adjusted N
-  nadj <- round(sum(weights))
   
   # further checks on input
   stopifnot(ncol(data)==length(type)) # type vector has to match data
@@ -66,6 +63,9 @@ mgmfit_core <- function(
   if(sum(apply(cbind(data[,type=="p"],rep(1,nrow(data))), 2, function(x) sum(x-round(x))))>0) {
     stop("Only integers permitted for Poisson random variables!")
   }
+  
+  # calculate adjusted N
+  nadj <- round(sum(weights))
   
   # create storage for warning messages
   warn_list <- list()
