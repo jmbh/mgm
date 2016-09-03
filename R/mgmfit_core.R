@@ -31,7 +31,7 @@ mgmfit_core <- function(
   
   # Initial Missing Value Check
   if(missings=='error') {
-    ind_NA2 <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
+    ind_NA <- ind_NA2 <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
     if(sum(ind_NA2)>0){
       stop(paste0('Missing values in cases ', paste(which(ind_NA2), collapse=' ')))
     }
