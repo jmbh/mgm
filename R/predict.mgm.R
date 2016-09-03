@@ -84,7 +84,8 @@ predict.mgm <- function(object, data, variables='all', ...) {
           # compute category-probabilities
           Potentials[,K+1] <- sum(Potentials[,1:K])
           Probabilities <- Potentials[,1:K] / rowSums(Potentials[,1:K])
-          pred_list[[v]] <- PredictedCat <- apply(Probabilities, 1, which.max) # classify
+          pred_class_id <-  apply(Probabilities, 1, which.max) # classify
+          pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id]
           error_list[[v]] <- sum(weights*(PredictedCat==data[,v])) # proportion correctly classified
           
         } else {
@@ -132,7 +133,8 @@ predict.mgm <- function(object, data, variables='all', ...) {
           # compute category-probabilities
           Potentials[,K+1] <- sum(Potentials[,1:K])
           Probabilities <- Potentials[,1:K] / rowSums(Potentials[,1:K])
-          pred_list[[v]] <- PredictedCat <- apply(Probabilities, 1, which.max) # classify
+          pred_class_id <-  apply(Probabilities, 1, which.max) # classify
+          pred_list[[v]] <- PredictedCat <- sort(unique(data[-1,v]))[pred_class_id]
           error_list[[v]] <- sum(weights*(PredictedCat==data[-1,v])) # proportion correctly classified
           
         } else {
