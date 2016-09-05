@@ -93,7 +93,7 @@ predict.mgm <- function(object, data, variables='all', ...) {
           # predicitions
           coefs <- as.numeric(node.models[[v]]$coefs) # get coefficients
           pred_list[[v]] <- preds <-  coefs[1] + X %*% matrix(coefs[-1][1:ncol(X)], nrow=length(coefs[-1][1:ncol(X)])) # predict
-          error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[,1]))^2) ) # compute RMSE
+          error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[,v]))^2) ) # compute RMSE
           
         }
         
