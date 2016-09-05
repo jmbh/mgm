@@ -95,7 +95,7 @@ predict.mgm <- function(object,
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[,v])
             norm_constant <- 1 - max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
-            error_list[[v]] <- error_list[[v]] / norm_constant
+            error_list[[v]] <- (1-error_list[[v]]) / (1-norm_constant)
           }
           
         } else {
@@ -152,7 +152,7 @@ predict.mgm <- function(object,
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[-1,v])
             norm_constant <- 1 - max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
-            error_list[[v]] <- error_list[[v]] / norm_constant
+            error_list[[v]] <- (1-error_list[[v]]) / (1-norm_constant)
           }
         } else {
           ## Prediction Continuous
@@ -175,8 +175,9 @@ predict.mgm <- function(object,
     
     # Define error type
     eType <- rep(NA, nNodes)
-    eType[type[1:nNodes]=='c'] <- '%Correct'
-    eType[type[1:nNodes]!='c'] <- 'RMSE'
+    
+    eType[type[1:nNodes]=='c'] <- error.categorical
+    eType[type[1:nNodes]!='c'] <- error.continuous
     
     error_out <- data.frame(matrix(NA, length(Nseq), 3))
     colnames(error_out) <- c("Variable", 'Error', "ErrorType")

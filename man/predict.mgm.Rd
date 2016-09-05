@@ -19,6 +19,14 @@ The output object of \code{mgmfit}, \code{tv.mgmfit}, \code{var.mgm} or \code{tv
 \item{data}{
 A data matrix with the same properties as the data on which the model was fit. Note that different data can be used here to estimate the out of sample prediction error.}
 \item{variables}{A character vector of variable names or a numeric vector of column numbers for which the the nodewise predictions and nodewise error should be computed. The default \code{variables='all'} computes predictions and error for all variables.}
+
+\item{error.continuous}{Error measure for continuous variables. Default is \code{error.continuous = 'RMSE'} Root Mean Squared Error (RMSE). The alternative is \code{error.continuous = 'VarExpl'} proportion of explained variance 1 - var(y - yhat)/var(y).}
+
+
+\item{error.categorical}{Error measure for categorica variables. Default is the proportion of correct classification \code{error.categorical = 'CorrectClass'}. The alternative is a normalized version of correct classification \code{error.categorical = 'CorrectClassNorm'}, which takes the marginal distribution into account. Specifically, CorrectClassNorm = (1-CorrectClass) / (1-max(RelativeFrequencies)).
+
+\code{error.categorical = 'VarExpl'} proportion of explained variance 1 - var(y - yhat)/var(y).}
+
 \item{...}{Other prediction arguments.}
 }
 
