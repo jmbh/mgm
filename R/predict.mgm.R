@@ -94,7 +94,7 @@ predict.mgm <- function(object,
           error_list[[v]] <- sum(weights*(PredictedCat==data[,v])) # proportion correctly classified
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[,v])
-            norm_constant <- 1 - max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
+            norm_constant <- max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
             error_list[[v]] <- (1-error_list[[v]]) / (1-norm_constant)
           }
           
@@ -151,7 +151,7 @@ predict.mgm <- function(object,
           error_list[[v]] <- sum(weights*(PredictedCat==data[-1,v])) # proportion correctly classified
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[-1,v])
-            norm_constant <- 1 - max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
+            norm_constant <- max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
             error_list[[v]] <- (1-error_list[[v]]) / (1-norm_constant)
           }
         } else {
