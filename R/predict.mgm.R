@@ -106,7 +106,7 @@ predict.mgm <- function(object,
           if(error.continuous=='RMSE') {
             error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[,v]))^2) ) # compute RMSE
           } else {
-            error_list[[v]] <- 1 - var(preds) / var(data[,v])
+            error_list[[v]] <- 1 - var(preds-data[,v]) / var(data[,v])
           }
         }
         
@@ -162,7 +162,7 @@ predict.mgm <- function(object,
           if(error.continuous=='RMSE') {
             error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[-1,v]))^2) ) # compute RMSE
           } else {
-            error_list[[v]] <- 1 - var(preds) / var(data[-1,v])
+            error_list[[v]] <- 1 - var(preds-data[-1,v]) / var(data[-1,v])
           }
         }
         
