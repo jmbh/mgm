@@ -1,6 +1,11 @@
 
 
-predict.mgm <- function(object, data, variables='all', ...) {
+predict.mgm <- function(object, 
+                        data, 
+                        variables='all', 
+                        error.continuous = 'RMSE', # or 'VarExpl'
+                        error.categorical = 'CorrectClass' # or 'CorrectClassNorm'
+                        ...) {
   
   # ---------- input checks ----------
   
@@ -87,14 +92,22 @@ predict.mgm <- function(object, data, variables='all', ...) {
           pred_class_id <-  apply(Probabilities, 1, which.max) # classify
           pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id]
           error_list[[v]] <- sum(weights*(PredictedCat==data[,v])) # proportion correctly classified
+          if(error.categorical == 'CorrectClassNorm') {
+            tb <- table(data[,v])
+            norm_constant <- 1 - max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
+            error_list[[v]] <- error_list[[v]] / norm_constant
+          }
           
         } else {
           ## Prediction Continuous
           # predicitions
           coefs <- as.numeric(node.models[[v]]$coefs) # get coefficients
           pred_list[[v]] <- preds <-  coefs[1] + X %*% matrix(coefs[-1][1:ncol(X)], nrow=length(coefs[-1][1:ncol(X)])) # predict
-          error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[,v]))^2) ) # compute RMSE
-          
+          if(error.continuous=='RMSE') {
+            error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[,v]))^2) ) # compute RMSE
+          } else {
+            error_list[[v]] <- 1 - var(preds) / var(data[,v])
+          }
         }
         
       } # end of variable loop 'mgm'
@@ -136,14 +149,21 @@ predict.mgm <- function(object, data, variables='all', ...) {
           pred_class_id <-  apply(Probabilities, 1, which.max) # classify
           pred_list[[v]] <- PredictedCat <- sort(unique(data[-1,v]))[pred_class_id]
           error_list[[v]] <- sum(weights*(PredictedCat==data[-1,v])) # proportion correctly classified
-          
+          if(error.categorical == 'CorrectClassNorm') {
+            tb <- table(data[-1,v])
+            norm_constant <- 1 - max(tb/sum(tb)) # normalize by maximum additional accuracy that can be predicted beyond the larger marginal frequency
+            error_list[[v]] <- error_list[[v]] / norm_constant
+          }
         } else {
           ## Prediction Continuous
           # predicitions
           coefs <- as.numeric(node.models[[v]]$coefs) # get coefficients
           pred_list[[v]] <- preds <-  coefs[1] + X %*% matrix(coefs[-1][1:ncol(X)], nrow=length(coefs[-1][1:ncol(X)])) # predict
-          error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[-1,v]))^2)) # compute RMSE
-          
+          if(error.continuous=='RMSE') {
+            error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[-1,v]))^2) ) # compute RMSE
+          } else {
+            error_list[[v]] <- 1 - var(preds) / var(data[-1,v])
+          }
         }
         
       } # end of variable loop 'var'
