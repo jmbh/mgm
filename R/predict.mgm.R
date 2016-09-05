@@ -4,7 +4,7 @@ predict.mgm <- function(object,
                         data, 
                         variables='all', 
                         error.continuous = 'RMSE', # or 'VarExpl'
-                        error.categorical = 'CorrectClass' # or 'CorrectClassNorm'
+                        error.categorical = 'CorrectClass', # or 'CorrectClassNorm'
                         ...) {
   
   # ---------- input checks ----------
