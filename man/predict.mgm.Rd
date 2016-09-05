@@ -23,7 +23,7 @@ A data matrix with the same properties as the data on which the model was fit. N
 \item{error.continuous}{Error measure for continuous variables. Default is \code{error.continuous = 'RMSE'} Root Mean Squared Error (RMSE). The alternative is \code{error.continuous = 'VarExpl'} proportion of explained variance 1 - var(y - yhat)/var(y).}
 
 
-\item{error.categorical}{Error measure for categorica variables. Default is the proportion of correct classification \code{error.categorical = 'CorrectClass'}. The alternative is a normalized version of correct classification \code{error.categorical = 'CorrectClassNorm'}, which takes the marginal distribution into account. Specifically, CorrectClassNorm = (1-CorrectClass) / (1-max(RelativeFrequencies)).
+\item{error.categorical}{Error measure for categorica variables. Default is the proportion of correct classification \code{error.categorical = 'CorrectClass'}. The alternative is a normalized version of correct classification \code{error.categorical = 'CorrectClassNorm'}, which takes the marginal distribution into account. Specifically, CorrectClassNorm = (CorrectClass - max(RelativeFrequencies)) / (1-max(RelativeFrequencies)).
 
 \code{error.categorical = 'VarExpl'} proportion of explained variance 1 - var(y - yhat)/var(y).}
 
