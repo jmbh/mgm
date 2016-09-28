@@ -1,6 +1,22 @@
+#
+#
+
+data <- matrix(rnorm(300), 100, 3)
+type=rep('g', 3)
+lev=rep(1, 3)
 
 
-
+gam = .25
+d = 1
+rule.reg = "OR"
+pbar = TRUE
+method = 'glm'
+missings = 'error'
+weights = NA
+ret.warn = TRUE
+lambda.sel = "EBIC"
+folds = 10
+VAR = TRUE
 
 
 
@@ -34,20 +50,20 @@ mgmfit_core <- function(
   # Check on variable typee
   if(sum(!(type %in% c('c', 'g', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables allowed.")
   
-  # Initial Missing Value Check
-  if(missings=='error') {
-    ind_NA <- ind_NA2 <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
-    if(sum(ind_NA2)>0){
-      stop(paste0('Missing values in cases ', paste(which(ind_NA2), collapse=' ')))
-    }
-  }
-  
   # IF VAR: change data structure (+++)
   if(VAR) {
     data <- VARreshape(as.matrix(data))
     n <- nrow(data) # one observation less in AR, because we have no predictor for first time point
     lev <- c(lev, lev)
     type <- c(type, type)
+  }
+  
+  # Initial Missing Value Check
+  if(missings=='error') {
+    ind_NA <- ind_NA2 <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
+    if(sum(ind_NA2)>0){
+      stop(paste0('Missing values in cases ', paste(which(ind_NA2), collapse=' ')))
+    }
   }
   
   ## weights and missing data handling
@@ -165,7 +181,8 @@ mgmfit_core <- function(
   }
   
   # only use non-missing data for scaling
-  data[!ind_NA ,type=="g" & ind_nzv==TRUE] <- scale(data[!ind_NA ,type=="g" & ind_nzv==TRUE]) #scale all gaussians to N(0,1)
+    data[!ind_NA , type=="g" & ind_nzv==TRUE] <- scale(data[!ind_NA, type=="g" & ind_nzv==TRUE]) #scale all gaussians to N(0,1)
+  
   
   #progress bar
   if(pbar==TRUE) {
