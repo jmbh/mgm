@@ -1,5 +1,38 @@
 
 
+p <- 10
+set.seed(1)
+x <- rnorm(100)
+data <- matrix(NA, 100, p)
+data[,1:10] <- x
+noise <- matrix(rnorm(100*p), 100, p)
+data <- data + noise # create highly correlated data
+
+type <- c("c", rep("g", p-1)) 
+lev <- c(2, rep(1, p-1))
+dum <- data[,1]
+dum[data[,1]>0] <- 0
+dum[data[,1]<0] <- 1
+data[,1] <- dum
+
+gam = .25
+d = 1
+rule.reg = "OR"
+pbar = TRUE
+method = 'glm'
+missings = 'error'
+weights = NA
+ret.warn = TRUE
+VAR = FALSE
+lambda.sel = "EBIC"
+folds = 10
+
+
+# fit <- mgmfit(data, type, cat, lambda.sel="CV", d=1, rule.reg = 'OR')
+# fit$signs
+
+
+
 mgmfit_core <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson
@@ -401,13 +434,21 @@ mgmfit_core <- function(
   }
   
   
-  
   # +++++ extract sign matrix ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
   
   signs <- matrix(NA, nNode, nNode)
-  signs[adjmat!=0] <- 0
-  ind <- which(dummy_par.var %in% which(type_sh!='c'))
-  signs[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind])
+  signs[adjmat.f!=0] <- 0
+  ind <- which(dummy_par.var %in% which(type_sh!='c')) # columns in model parameter matrix not belonging to categorical variables
+  
+  if(rule.reg=='AND') {
+    signs[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind]) 
+  } else {
+    sign_raw <- sign(mpm[ind,ind])
+    sign_raw <- sign_raw + t(sign_raw)
+    sign_raw[sign_raw==2] <- 1
+    sign_raw[sign_raw==-2] <- -1
+    signs[type_sh!='c', type_sh!='c'] <- sign_raw
+  }
 
   signs[adjmat.f==0] <- NA
   
