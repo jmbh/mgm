@@ -1,31 +1,31 @@
-
-
-p <- 10
-set.seed(1)
-x <- rnorm(100)
-data <- matrix(NA, 100, p)
-data[,1:10] <- x
-noise <- matrix(rnorm(100*p), 100, p)
-data <- data + noise # create highly correlated data
-
-type <- c("c", rep("g", p-1)) 
-lev <- c(2, rep(1, p-1))
-dum <- data[,1]
-dum[data[,1]>0] <- 0
-dum[data[,1]<0] <- 1
-data[,1] <- dum
-
-gam = .25
-d = 1
-rule.reg = "OR"
-pbar = TRUE
-method = 'glm'
-missings = 'error'
-weights = NA
-ret.warn = TRUE
-VAR = FALSE
-lambda.sel = "EBIC"
-folds = 10
+# 
+# 
+# p <- 10
+# set.seed(1)
+# x <- rnorm(100)
+# data <- matrix(NA, 100, p)
+# data[,1:10] <- x
+# noise <- matrix(rnorm(100*p), 100, p)
+# data <- data + noise # create highly correlated data
+# 
+# type <- c("c", rep("g", p-1)) 
+# lev <- c(2, rep(1, p-1))
+# dum <- data[,1]
+# dum[data[,1]>0] <- 0
+# dum[data[,1]<0] <- 1
+# data[,1] <- dum
+# 
+# gam = .25
+# d = 1
+# rule.reg = "OR"
+# pbar = TRUE
+# method = 'glm'
+# missings = 'error'
+# weights = NA
+# ret.warn = TRUE
+# VAR = FALSE
+# lambda.sel = "EBIC"
+# folds = 10
 
 
 # fit <- mgmfit(data, type, cat, lambda.sel="CV", d=1, rule.reg = 'OR')
