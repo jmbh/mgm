@@ -9,7 +9,9 @@ Nodewise predictions and errors
 Computes predictions and error for all nodes in the graph.
 }
 \usage{
-\method{predict}{mgm}(object, data, variables='all', ...)
+\method{predict}{mgm}(object, data, variables='all', 
+        error.continuous = 'RMSE', 
+        error.categorical = 'CorrectClass', ...)
 }
 
 \arguments{

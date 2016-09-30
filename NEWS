@@ -1,3 +1,5 @@
 Changes in Version 1.1-7
-  o Added computation of predictions and node-wise errors in predict()
+  o The predict() function now computes predicted values and a prediction error for each variable in the graph
   o The print() function now returns a small summary of the model type when printing a mgm object
+  o Added bootstrap scheme to evaluate edge-stability for non-time-varying models (MGM and mixed VAR)
+      o Added summary() & plot() for the bootstrap object to summarize edge-stability

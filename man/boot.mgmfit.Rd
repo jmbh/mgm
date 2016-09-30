@@ -1,0 +1,75 @@
+\name{boot.mgmfit}
+\alias{boot.mgmfit}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+Bootstraps Mixed Graphical Models
+}
+\description{
+Estimates Mixed Graphical Models on Bootstrap Samples. Can be used as input to \code{summary()} and \code{plot()} to investigate parameter-stability.
+}
+\usage{
+boot.mgmfit(..., B = 100, pbar = TRUE)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{\dots}{
+Arguments as in \code{mgmfit}.
+}
+  \item{B}{
+Number of bootstrap samples.
+}
+  \item{pbar}{
+Shows a progress bar if \code{TRUE}}
+}
+\details{
+Returns B mixed graphical models, each fitted on one bootstrap sample. Use the \code{summary()} and \code{plot()} function to get information about the stability of (a selection of) edges.
+}
+\value{
+Returns a list with
+  \item{models}{A list with B entries containing the mgmfit() output for each of the B bootstrap samples.}
+  \item{B_wadj}{A p x p x B array containing the estimated weighted adjacency matrix for each of the B bootstrap samples.}
+  \item{B_samples}{A list with B entries containing n x 1 indicator vectors, defining the used bootstrap samples.}
+  \item{call}{Returns the function call.}
+}
+
+\author{
+Jonas Haslbeck
+}
+
+\examples{
+
+\dontrun{
+
+
+# Fit Mixed Graphical Model to Bootstrap Samples of the autism dataset
+boot_obj <- boot.mgmfit(data = autism_data$data, 
+                   type = autism_data$type,
+                   lev = autism_data$lev,
+                   B = 10)
+
+# Summary of bootstrapped edge weights
+summary(boot_obj)
+
+# Plot bootstrapped edge weights using boxplots
+plot.mgm(boot_obj)
+
+# Pairwise scatter plots between bootstrapped edge weights to detect trade-offs
+# ... in the case of correlated predictors (negative correlation between weights)
+
+ind <- unlist(boot_obj$edgeNonZero) # only consider edges with nonzero estimates
+m_bweights <- do.call(cbind, boot_obj$edgeWeights)[, ind] # B x k matrix, with k edges
+colnames(m_bweights) <- unlist(boot_obj$edgeNames)[ind] # add edge names
+
+library(psych) # psych package for pairs
+pairs.panels(m_bweights)
+# (recommended to print a PDF, because this can be a huge plot:
+# pdf('filename.pdf', 20, 20))
+# ... plotting
+# dev.off()
+
+
+
+}
+
+
+}

@@ -1,24 +1,3 @@
-#
-#
-
-data <- matrix(rnorm(300), 100, 3)
-type=rep('g', 3)
-lev=rep(1, 3)
-
-
-gam = .25
-d = 1
-rule.reg = "OR"
-pbar = TRUE
-method = 'glm'
-missings = 'error'
-weights = NA
-ret.warn = TRUE
-lambda.sel = "EBIC"
-folds = 10
-VAR = TRUE
-
-
 
 
 mgmfit_core <- function(
@@ -425,21 +404,26 @@ mgmfit_core <- function(
   
   # +++++ extract sign matrix ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
   
-  signs <- matrix(NA, nNode, nNode)
+  signs <- signs_recov <- matrix(NA, nNode, nNode)
   signs[adjmat.f!=0] <- 0
+  signs_recov[adjmat.f!=0] <- 1
   ind <- which(dummy_par.var %in% which(type_sh!='c')) # columns in model parameter matrix not belonging to categorical variables
-  
+
   if(rule.reg=='AND') {
     signs[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind]) 
+    signs_recov[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind]) 
+    
   } else {
     sign_raw <- sign(mpm[ind,ind])
     sign_raw <- sign_raw + t(sign_raw)
     sign_raw[sign_raw==2] <- 1
     sign_raw[sign_raw==-2] <- -1
     signs[type_sh!='c', type_sh!='c'] <- sign_raw
+    signs_recov[type_sh!='c', type_sh!='c'] <- sign_raw
   }
 
   signs[adjmat.f==0] <- NA
+  signs_recov[adjmat.f==0] <- NA
   
   edgeColor <- matrix('black', nNode, nNode)
   edgeColor[signs==0] <- 'grey'
@@ -466,12 +450,27 @@ mgmfit_core <- function(
   
   
   ## call
-  call <- list('type'=type, 'lev'=lev, 'lambda.sel'=lambda.sel, 'folds'=folds, 
-               'gam'=gam, 'd'=d, 'rule.reg'=rule.reg, "method"=method, 
-               'weights'=weights, 'ret.warn'=ret.warn)
+  call <- list('type'=type, 
+               'lev'=lev, 
+               'lambda.sel'=lambda.sel, 
+               'folds'=folds, 
+               'gam'=gam, 
+               'd'=d, 
+               'rule.reg'=rule.reg, 
+               'method'=method, 
+               'weights'=weights, 
+               'ret.warn'=ret.warn)
   
-  outlist <- list('call'=call, "adj"=adj, "wadj"=adjmat.f, 'mpar.matrix' = mpm, 'signs'=signs, 'edgecolor'=edgeColor,
-                  "node.models" = node_models, "par.labels"=dummy_par.var, 'warnings'=warn_list ,
+  outlist <- list('call'=call, 
+                  "adj"=adj, 
+                  "wadj"=adjmat.f, 
+                  'mpar.matrix' = mpm, 
+                  'signs'=signs, 
+                  'signs_recov'=signs_recov, 
+                  'edgecolor'=edgeColor,
+                  "node.models" = node_models, 
+                  "par.labels"=dummy_par.var, 
+                  'warnings'=warn_list ,
                   'variance.check' = ind_nzv)
   
   return(outlist)

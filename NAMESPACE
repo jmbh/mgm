@@ -12,5 +12,6 @@ S3method(print, mgm)
 S3method(summary, mgm)
 S3method(predict, mgm)
 
+import(stats, graphics)
 
 
