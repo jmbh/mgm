@@ -8,10 +8,11 @@ importFrom("stats", "as.formula", "coef", "dnorm", "dpois", "model.matrix")
 importFrom("utils", "setTxtProgressBar", "txtProgressBar")
 import(glmnet)
 export(mgmfit, mgmsampler, confusion, print.mgm, summary.mgm, tv.mgmfit, 
-       tv.mgmsampler, var.mgm, tv_var.mgm, predict.mgm, boot.mgmfit, plot.mgm)
+       tv.mgmsampler, var.mgm, tv_var.mgm, predict.mgm, boot.mgmfit)
 S3method(print, mgm)
 S3method(summary, mgm)
 S3method(predict, mgm)
+S3method(plot, mgm)
 
 import(stats, graphics)
 

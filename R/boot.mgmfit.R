@@ -1,5 +1,6 @@
 
 
+
 boot.mgmfit <- function(..., B = 100, pbar=TRUE) {
   
   
@@ -59,7 +60,8 @@ boot.mgmfit <- function(..., B = 100, pbar=TRUE) {
                          ret.warn = arguments$ret.warn)
 
     a_wadj[ , , b] <- b_list[[b]]$wadj * b_list[[b]]$signs_recov # add edge signs
-
+    a_wadj[ , , b][is.na(a_wadj[ , , b])] <- 0
+    
     if(pbar==TRUE) { setTxtProgressBar(pb, b) }
   }
   

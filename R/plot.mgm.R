@@ -1,5 +1,5 @@
 
-  
+
 plot.mgm <- function(x, y = NULL, ...) {
   
   # x = bootstrap object
