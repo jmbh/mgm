@@ -1,8 +1,11 @@
 
+
+
+
 print.mgm <- function(x, ...) {
   
   # bootstrap object YES
-  if('boot' %in% class(x)) {
+  if('rs' %in% class(x)) {
     
     if('var' %in% class(x)) { 
       mc <- 'Bootstrapped Mixed Vector Autoregressive Models'
@@ -13,7 +16,9 @@ print.mgm <- function(x, ...) {
     cat('mgm fit-object', 
         '\n\nModel class: ', mc, 
         '\nNodes: ' , length(x$call$type),
-        '\nBootstrap Samples: ' , length(x$B_samples))
+        '\nIterations: ' , x$call_rs$B,
+        '\nReplace: ' , x$call_rs$replace,
+        '\nSample Size: ' , x$call_rs$N)
     
     # bootstrap object NO
   } else {

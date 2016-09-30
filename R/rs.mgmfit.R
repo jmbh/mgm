@@ -1,7 +1,6 @@
 
 
-
-boot.mgmfit <- function(..., B = 100, pbar=TRUE) {
+rs.mgmfit <- function(..., B = 100, N = NULL, replace = TRUE, pbar=TRUE) {
   
   
   # --------- Checking & Preparing Input ----------
@@ -31,6 +30,9 @@ boot.mgmfit <- function(..., B = 100, pbar=TRUE) {
   n <- nrow(arguments$data)
   p <- ncol(arguments$data)
   
+  # logical check subsampling
+  if(replace==FALSE & N > n) stop('For subsampling (without replacement) one cannot sample more than n observations.')
+  
   
   # --------- Do the Bootstrap ----------
   
@@ -43,7 +45,7 @@ boot.mgmfit <- function(..., B = 100, pbar=TRUE) {
   
   for(b in 1:B) {
     
-    ind_list[[b]] <- sample(1:n, size = n, replace=TRUE)
+    ind_list[[b]] <- sample(1:n, size = N, replace=replace)
 
     b_list[[b]] <- mgmfit(data = arguments$data[ind_list[[b]],],
                          type = arguments$type,
@@ -101,13 +103,14 @@ boot.mgmfit <- function(..., B = 100, pbar=TRUE) {
   outlist <- list('models' = b_list, 
                   'B_wadj' = a_wadj,
                   'B_samples' = ind_list,
-                  'call'= arguments, 
+                  'call'= arguments,
+                  'call_rs'= list('B'=B, 'N'=N, 'replace'=replace),
                   'edgeNames' = l_edgeNames,
                   'edgeIDs' = l_edgeIDs, 
                   'edgeWeights' = l_edgeWeights, 
                   'edgeNonZero'= l_nonzero)
   
-  class(outlist) <- c('boot', 'mgm')
+  class(outlist) <- c('rs', 'mgm')
   
   return(outlist)
   
