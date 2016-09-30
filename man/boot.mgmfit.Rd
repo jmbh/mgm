@@ -43,15 +43,15 @@ Jonas Haslbeck
 
 # Fit Mixed Graphical Model to Bootstrap Samples of the autism dataset
 boot_obj <- boot.mgmfit(data = autism_data$data, 
-                   type = autism_data$type,
-                   lev = autism_data$lev,
-                   B = 10)
+                        type = autism_data$type,
+                        lev = autism_data$lev,
+                        B = 10)
 
 # Summary of bootstrapped edge weights
 summary(boot_obj)
 
 # Plot bootstrapped edge weights using boxplots
-plot.mgm(boot_obj)
+plot(boot_obj)
 
 # Pairwise scatter plots between bootstrapped edge weights to detect trade-offs
 # ... in the case of correlated predictors (negative correlation between weights)
