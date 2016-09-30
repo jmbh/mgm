@@ -8,7 +8,7 @@ Visualization of bootstrapped edge weights
 Visualizes the bootstrapped edge weights from boot.mgmfit() using boxplots
 }
 \usage{
-plot.mgm(x, y = NULL, ...)
+\method{plot}{mgm}(x, y = NULL, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -29,7 +29,7 @@ plot.mgm <- function(x, y = NULL, ...) {
       colnames(t_m_values) <- v_names
       
       # check whether any edges are stimated nonzero at all
-      if( sum(unlist(object$edgeNonZero)) == 0) {
+      if( sum(unlist(x$edgeNonZero)) == 0) {
         
         warning('No Edges were estimated nonzero in any of the resampled datasets.')
         
