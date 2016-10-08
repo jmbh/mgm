@@ -1,11 +1,4 @@
 
-
-data = l_data[[20]]$data
-object =  l_models[[20]]
-variables='all'
-
-
-
 predict.mgm <- function(object, 
                         data, 
                         variables='all', 
