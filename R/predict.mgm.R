@@ -76,7 +76,7 @@ predict.mgm <- function(object,
           ## Prediction Categorical
           coefs <- node.models[[v]]$coefs
           K <- length(coefs)
-          Potentials <- matrix(NA, nCases, K+1)
+          Potentials <- matrix(NA, nCases, K)
           
           # loop over categories & compute potentials
           
@@ -86,10 +86,9 @@ predict.mgm <- function(object,
           }
           
           # compute category-probabilities
-          Potentials[,K+1] <- sum(Potentials[,1:K])
           Probabilities <- Potentials[,1:K] / rowSums(Potentials[,1:K])
           pred_class_id <-  apply(Probabilities, 1, which.max) # classify
-          pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id+1]
+          pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id]
           error_list[[v]] <- sum(weights*(PredictedCat==data[,v])) # proportion correctly classified
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[,v])

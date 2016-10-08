@@ -416,104 +416,105 @@ mgmfit_core <- function(
   
   #### Set coefficients in coefficient list (glmnet structure) to zero to enforce the AND-rule in predict.mgm()
   
-  if(rule.reg == 'AND') {
-    
-    # We go two steps backwards: 1) first we write the AND-rule-implied zeros into the model parameter matrix mpm
-    #                            2) then we write from the mpm in the coefficient lists,
-    #                            that way I only have to invert the above code
-    
-    
-    # Step 1:
-    mpm_zeros <- mpm
-    for(i in 1:nNode) {
-      for(j in 1:nNode) {
-        mpm_zeros[dummy_par.var==i, dummy_par.var==j] <- rep(abs(adjmat.f[i,j])>0, length(mpm[dummy_par.var==i, dummy_par.var==j]))
-      }
-    }
-    
-    # Step 2:
-    
-    # for normal mgmfit
-    if(!VAR) {
-      
-      # loop over nodes & fill mpm
-      
-      for(v in 1:nNode) {
-        mod <- node_models[[v]] # get model object
-        
-        for(cat in 1:emp_lev[v]) {
-          # get parameters from list
-          if(emp_lev[v]==1) { 
-            coefs.v <- mod$coefs 
-          } else { 
-            coefs.v <- mod$coefs[[cat]] 
-          }
-          coefs.v.cut <- coefs.v[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] # cut out relevant part (no intercept & d>2 interactions)
-          
-          # apply thresholding
-          coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
-          
-          # fill in
-          dummy_est.par.v <- dummy_est.par
-          dummy_est.par.v[dummy_par.var==v] <- FALSE
-          
-          if(sum(emp_lev[v])==1) { 
-            coefs.v.cut <- mpm[v==dummy_par.var,][dummy_est.par.v] * mpm_zeros[v==dummy_par.var,][dummy_est.par.v]
-          } else {
-            coefs.v.cut <- mpm[v==dummy_par.var,][cat,][dummy_est.par.v]  * mpm_zeros[v==dummy_par.var,][cat,][dummy_est.par.v]
-          }
-          
-          if(emp_lev[v]==1) { 
-            mod$coefs[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] <- coefs.v.cut
-          } else { 
-            mod$coefs[[cat]][2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] <- coefs.v.cut
-          }
-        }
-        node_models[[v]]$coefs <- mod$coefs # put back in
-      }
-      
-    } else {
-      
-      ## for VAR  
-      # loop over nodes & fill mpm
-      for(v in 1:nNode) {
-        mod <- node_models[[v]] # get model object
-        
-        for(cat in 1:emp_lev_sh[v]) {
-          # get parameters from list
-          if(emp_lev_sh[v]==1) { 
-            coefs.v <- mod$coefs 
-          } else { 
-            coefs.v <- mod$coefs[[cat]] 
-          }
-          coefs.v.cut <- coefs.v[2:(sum(dummy_est.par)+1),1] # cut out relevant part (no intercept & d>2 interactions)
-          
-          # apply thresholding
-          coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
-          
-          # fill in
-          dummy_est.par.v <- dummy_est.par
-
-          if(sum(emp_lev[v])==1) { 
-            coefs.v.cut <- mpm[v==dummy_par.var,][dummy_est.par.v] * mpm_zeros[v==dummy_par.var,][dummy_est.par.v]
-          } else {
-            coefs.v.cut <- mpm[v==dummy_par.var,][cat,][dummy_est.par.v]  * mpm_zeros[v==dummy_par.var,][cat,][dummy_est.par.v]
-          }
-          
-          if(emp_lev[v]==1) { 
-            mod$coefs[2:(sum(dummy_est.par)+1),1] <- coefs.v.cut
-          } else { 
-            mod$coefs[[cat]][2:(sum(dummy_est.par)+1),1] <- coefs.v.cut
-          }
-          
-        } # end For cat
-        node_models[[v]]$coefs <- mod$coefs # put back in
-      }
-      
-    } # end if VAR
-    
-  }
+  # not used currently, because causes problems with intercept scaling of glmnet models
   
+  # if(rule.reg == 'AND') {
+  #   # We go two steps backwards: 1) first we write the AND-rule-implied zeros into the model parameter matrix mpm
+  #   #                            2) then we write from the mpm in the coefficient lists,
+  #   #                            that way I only have to invert the above code
+  #   
+  #   
+  #   # Step 1:
+  #   mpm_zeros <- mpm
+  #   for(i in 1:nNode) {
+  #     for(j in 1:nNode) {
+  #       mpm_zeros[dummy_par.var==i, dummy_par.var==j] <- rep(abs(adjmat.f[i,j])>0, length(mpm[dummy_par.var==i, dummy_par.var==j]))
+  #     }
+  #   }
+  #   
+  #   # Step 2:
+  #   
+  #   # for normal mgmfit
+  #   if(!VAR) {
+  #     
+  #     # loop over nodes & fill mpm
+  #     
+  #     for(v in 1:nNode) {
+  #       mod <- node_models[[v]] # get model object
+  #       
+  #       for(cat in 1:emp_lev[v]) {
+  #         # get parameters from list
+  #         if(emp_lev[v]==1) { 
+  #           coefs.v <- mod$coefs 
+  #         } else { 
+  #           coefs.v <- mod$coefs[[cat]] 
+  #         }
+  #         coefs.v.cut <- coefs.v[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] # cut out relevant part (no intercept & d>2 interactions)
+  #         
+  #         # apply thresholding
+  #         coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
+  #         
+  #         # fill in
+  #         dummy_est.par.v <- dummy_est.par
+  #         dummy_est.par.v[dummy_par.var==v] <- FALSE
+  #         
+  #         if(sum(emp_lev[v])==1) { 
+  #           coefs.v.cut <- mpm[v==dummy_par.var,][dummy_est.par.v] * mpm_zeros[v==dummy_par.var,][dummy_est.par.v]
+  #         } else {
+  #           coefs.v.cut <- mpm[v==dummy_par.var,][cat,][dummy_est.par.v]  * mpm_zeros[v==dummy_par.var,][cat,][dummy_est.par.v]
+  #         }
+  #         
+  #         if(emp_lev[v]==1) { 
+  #           mod$coefs[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] <- coefs.v.cut
+  #         } else { 
+  #           mod$coefs[[cat]][2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] <- coefs.v.cut
+  #         }
+  #       }
+  #       node_models[[v]]$coefs <- mod$coefs # put back in
+  #     }
+  #     
+  #   } else {
+  #     
+  #     ## for VAR  
+  #     # loop over nodes & fill mpm
+  #     for(v in 1:nNode) {
+  #       mod <- node_models[[v]] # get model object
+  #       
+  #       for(cat in 1:emp_lev_sh[v]) {
+  #         # get parameters from list
+  #         if(emp_lev_sh[v]==1) { 
+  #           coefs.v <- mod$coefs 
+  #         } else { 
+  #           coefs.v <- mod$coefs[[cat]] 
+  #         }
+  #         coefs.v.cut <- coefs.v[2:(sum(dummy_est.par)+1),1] # cut out relevant part (no intercept & d>2 interactions)
+  #         
+  #         # apply thresholding
+  #         coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
+  #         
+  #         # fill in
+  #         dummy_est.par.v <- dummy_est.par
+  # 
+  #         if(sum(emp_lev[v])==1) { 
+  #           coefs.v.cut <- mpm[v==dummy_par.var,][dummy_est.par.v] * mpm_zeros[v==dummy_par.var,][dummy_est.par.v]
+  #         } else {
+  #           coefs.v.cut <- mpm[v==dummy_par.var,][cat,][dummy_est.par.v]  * mpm_zeros[v==dummy_par.var,][cat,][dummy_est.par.v]
+  #         }
+  #         
+  #         if(emp_lev[v]==1) { 
+  #           mod$coefs[2:(sum(dummy_est.par)+1),1] <- coefs.v.cut
+  #         } else { 
+  #           mod$coefs[[cat]][2:(sum(dummy_est.par)+1),1] <- coefs.v.cut
+  #         }
+  #         
+  #       } # end For cat
+  #       node_models[[v]]$coefs <- mod$coefs # put back in
+  #     }
+  #     
+  #   } # end if VAR
+  #   
+  # }
+  # 
   
   # +++++ extract sign matrix ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
   
