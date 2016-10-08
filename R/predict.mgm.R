@@ -1,5 +1,10 @@
 
 
+data = l_data[[20]]$data
+object =  l_models[[20]]
+variables='all'
+
+
 
 predict.mgm <- function(object, 
                         data, 
@@ -91,7 +96,7 @@ predict.mgm <- function(object,
           Potentials[,K+1] <- sum(Potentials[,1:K])
           Probabilities <- Potentials[,1:K] / rowSums(Potentials[,1:K])
           pred_class_id <-  apply(Probabilities, 1, which.max) # classify
-          pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id]
+          pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id+1]
           error_list[[v]] <- sum(weights*(PredictedCat==data[,v])) # proportion correctly classified
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[,v])
