@@ -15,7 +15,8 @@ mgmfit <- function(
   method = 'glm',  # which method should be used for each nodewise regression?
   missings = 'error', # handling of missing data
   weights = NA, # weights for observations 
-  ret.warn = TRUE # TRUE returns warnings, makes sense to switch off for time varying wrapper
+  ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
+  binary.sign = FALSE # see help file
 )
 
 {
@@ -32,7 +33,8 @@ mgmfit <- function(
                          method = method, 
                          missings = missings, 
                          weights = weights, 
-                         ret.warn = ret.warn, 
+                         ret.warn = ret.warn,
+                         binary.sign = binary.sign,
                          VAR = FALSE) # use standard mgm.fit; no AR model
   
   class(outlist) <- c('mgm')

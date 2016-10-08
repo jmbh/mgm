@@ -1,5 +1,6 @@
 
 
+
 predict.mgm <- function(object, 
                         data, 
                         variables='all', 

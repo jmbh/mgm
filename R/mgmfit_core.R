@@ -14,6 +14,7 @@ mgmfit_core <- function(
   missings = 'error', # handling of missing data
   weights = NA, # weights for observations 
   ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
+  binary.sign = FALSE, # should we assign
   VAR = FALSE # autoregressive model yes/no
 )
 
@@ -35,6 +36,17 @@ mgmfit_core <- function(
     n <- nrow(data) # one observation less in AR, because we have no predictor for first time point
     lev <- c(lev, lev)
     type <- c(type, type)
+  }
+  
+  # For: binary.sign = TRUE: Are all binary variables coded (0,1)?
+  if(binary.sign) {
+    ind_binary <- apply(data, 2, function(x) length(unique(x))) == 2
+    n_binary <- sum(ind_binary)
+    ind_ZeroOneCheck <- rep(NA, n_binary)
+    for(i in 1:n_binary) { # loop over binary variables
+      ind_ZeroOneCheck[i] <-  sum(unique(data[,which(ind_binary==TRUE)[i]]) %in% c(0,1)) != 2
+    }
+    if(sum(ind_ZeroOneCheck)>0) stop('If binary.sign=TRUE, binary variables have to be coded as (0,1).')
   }
   
   # Initial Missing Value Check
@@ -75,38 +87,38 @@ mgmfit_core <- function(
   # Check minimum class probability (glmnet requirement)
   if (method == "glm") {
     if ("c" %in% type) {
-        for (i in 1:length(c_ind)) {
-          ii <- c_ind[i]
-          cats <- unique(data[, ii])
-          n_cat <- length(cats)
-          rel_w_freq <- abs_freq <- rep(NA, n_cat)
-          for (ca in 1:n_cat) {
-            caa <- cats[ca]
-            rel_w_freq[ca] <- sum(weights[data[, ii] == caa])
-            abs_freq[ca] <- length(weights[data[, ii] == caa])
-          }
-          tb_norm <- rel_w_freq/sum(rel_w_freq)
-          ind_toosmall <- (tb_norm < 10^-5) | (abs_freq<2)
-          if (sum(ind_toosmall) > 0) {
-            for (k in cats[ind_toosmall]) {
-              prob <- rep(1, length(cats))
-              prob[ind_toosmall == TRUE] <- 0
-              data[data[, ii] == k, ii] <- sample(cats, 
-                                                  length(data[data[, ii] == k, ii]), replace = TRUE, 
-                                                  prob = prob)
-              warn <- paste0("Category ", k, " in Variable ", 
-                             ii, " has probability 10^-5 and was randomly collapsed into the remaining categories")
-              if (ret.warn == TRUE & k!=.111) {
-                warning(warn)
-              }
-              warn_list[[warn_count]] <- warn
-              warn_count <- warn_count + 1
+      for (i in 1:length(c_ind)) {
+        ii <- c_ind[i]
+        cats <- unique(data[, ii])
+        n_cat <- length(cats)
+        rel_w_freq <- abs_freq <- rep(NA, n_cat)
+        for (ca in 1:n_cat) {
+          caa <- cats[ca]
+          rel_w_freq[ca] <- sum(weights[data[, ii] == caa])
+          abs_freq[ca] <- length(weights[data[, ii] == caa])
+        }
+        tb_norm <- rel_w_freq/sum(rel_w_freq)
+        ind_toosmall <- (tb_norm < 10^-5) | (abs_freq<2)
+        if (sum(ind_toosmall) > 0) {
+          for (k in cats[ind_toosmall]) {
+            prob <- rep(1, length(cats))
+            prob[ind_toosmall == TRUE] <- 0
+            data[data[, ii] == k, ii] <- sample(cats, 
+                                                length(data[data[, ii] == k, ii]), replace = TRUE, 
+                                                prob = prob)
+            warn <- paste0("Category ", k, " in Variable ", 
+                           ii, " has probability 10^-5 and was randomly collapsed into the remaining categories")
+            if (ret.warn == TRUE & k!=.111) {
+              warning(warn)
             }
+            warn_list[[warn_count]] <- warn
+            warn_count <- warn_count + 1
           }
         }
-      } 
-    }
-
+      }
+    } 
+  }
+  
   
   # compare entered and empirical levels & give warnings if discrepancy
   if('c' %in% type) {
@@ -160,7 +172,7 @@ mgmfit_core <- function(
   }
   
   # only use non-missing data for scaling
-    data[!ind_NA , type=="g" & ind_nzv==TRUE] <- scale(data[!ind_NA, type=="g" & ind_nzv==TRUE]) #scale all gaussians to N(0,1)
+  data[!ind_NA , type=="g" & ind_nzv==TRUE] <- scale(data[!ind_NA, type=="g" & ind_nzv==TRUE]) #scale all gaussians to N(0,1)
   
   
   #progress bar
@@ -190,7 +202,7 @@ mgmfit_core <- function(
     
     if(v %in% which(ind_nzv)) # do estimation for variables with nonzero variance
     {
-  
+      
       # create design matrix
       if(d > (nNode - 1)) {
         stop("Order of interactions can be maximal the number of predictors!")
@@ -284,13 +296,13 @@ mgmfit_core <- function(
   # +++++ bring parameters in matrix form ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
   
   if(VAR) {
-  type_sh <- type[1:(length(type)/2)]
-  emp_lev_sh <-  emp_lev[1:(length(emp_lev)/2)]
+    type_sh <- type[1:(length(type)/2)]
+    emp_lev_sh <-  emp_lev[1:(length(emp_lev)/2)]
   } else {
     type_sh <- type
     emp_lev_sh <- emp_lev
   }
-
+  
   mpm <- matrix(NA, sum(emp_lev_sh), sum(emp_lev_sh)) # model parameter matrix
   
   # create dummy variables
@@ -308,39 +320,39 @@ mgmfit_core <- function(
   }
   dummy_est.par <- unlist(dummy_est.par)
   dummy_par.var <- unlist(dummy_par.var)
-    
+  
   # for normal mgmfit
   if(!VAR) {
-  
-  # loop over nodes & fill mpm
-  
-  for(v in 1:nNode) {
-    mod <- node_models[[v]] # get model object
     
-    for(cat in 1:emp_lev[v]) {
-      # get parameters from list
-      if(emp_lev[v]==1) { 
-        coefs.v <- mod$coefs 
-      } else { 
-        coefs.v <- mod$coefs[[cat]] 
-      }
-      coefs.v.cut <- coefs.v[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] # cut out relevant part (no intercept & d>2 interactions)
+    # loop over nodes & fill mpm
+    
+    for(v in 1:nNode) {
+      mod <- node_models[[v]] # get model object
       
-      # apply thresholding
-      coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
-      
-      # fill in
-      dummy_est.par.v <- dummy_est.par
-      dummy_est.par.v[dummy_par.var==v] <- FALSE
-      
-      if(sum(emp_lev[v])==1) { 
-        mpm[v==dummy_par.var,][dummy_est.par.v] <- coefs.v.cut
-      } else {
-        mpm[v==dummy_par.var,][cat,][dummy_est.par.v] <- coefs.v.cut
+      for(cat in 1:emp_lev[v]) {
+        # get parameters from list
+        if(emp_lev[v]==1) { 
+          coefs.v <- mod$coefs 
+        } else { 
+          coefs.v <- mod$coefs[[cat]] 
+        }
+        coefs.v.cut <- coefs.v[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] # cut out relevant part (no intercept & d>2 interactions)
+        
+        # apply thresholding
+        coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
+        
+        # fill in
+        dummy_est.par.v <- dummy_est.par
+        dummy_est.par.v[dummy_par.var==v] <- FALSE
+        
+        if(sum(emp_lev[v])==1) { 
+          mpm[v==dummy_par.var,][dummy_est.par.v] <- coefs.v.cut
+        } else {
+          mpm[v==dummy_par.var,][cat,][dummy_est.par.v] <- coefs.v.cut
+        }
       }
     }
-  }
-  
+    
   } else {
     
     ## for VAR  
@@ -402,17 +414,121 @@ mgmfit_core <- function(
   }
   
   
-  # +++++ extract sign matrix ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
+  #### Set coefficients in coefficient list (glmnet structure) to zero to enforce the AND-rule in predict.mgm()
+  
+  if(rule.reg == 'AND') {
+    
+    # We go two steps backwards: 1) first we write the AND-rule-implied zeros into the model parameter matrix mpm
+    #                            2) then we write from the mpm in the coefficient lists,
+    #                            that way I only have to invert the above code
+    
+    
+    # Step 1:
+    mpm_zeros <- mpm
+    for(i in 1:nNode) {
+      for(j in 1:nNode) {
+        mpm_zeros[dummy_par.var==i, dummy_par.var==j] <- rep(abs(adjmat.f[i,j])>0, length(mpm[dummy_par.var==i, dummy_par.var==j]))
+      }
+    }
+    
+    # Step 2:
+    
+    # for normal mgmfit
+    if(!VAR) {
+      
+      # loop over nodes & fill mpm
+      
+      for(v in 1:nNode) {
+        mod <- node_models[[v]] # get model object
+        
+        for(cat in 1:emp_lev[v]) {
+          # get parameters from list
+          if(emp_lev[v]==1) { 
+            coefs.v <- mod$coefs 
+          } else { 
+            coefs.v <- mod$coefs[[cat]] 
+          }
+          coefs.v.cut <- coefs.v[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] # cut out relevant part (no intercept & d>2 interactions)
+          
+          # apply thresholding
+          coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
+          
+          # fill in
+          dummy_est.par.v <- dummy_est.par
+          dummy_est.par.v[dummy_par.var==v] <- FALSE
+          
+          if(sum(emp_lev[v])==1) { 
+            coefs.v.cut <- mpm[v==dummy_par.var,][dummy_est.par.v] * mpm_zeros[v==dummy_par.var,][dummy_est.par.v]
+          } else {
+            coefs.v.cut <- mpm[v==dummy_par.var,][cat,][dummy_est.par.v]  * mpm_zeros[v==dummy_par.var,][cat,][dummy_est.par.v]
+          }
+          
+          if(emp_lev[v]==1) { 
+            mod$coefs[2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] <- coefs.v.cut
+          } else { 
+            mod$coefs[[cat]][2:(sum(dummy_est.par[dummy_par.var!=v])+1),1] <- coefs.v.cut
+          }
+        }
+        node_models[[v]]$coefs <- mod$coefs # put back in
+      }
+      
+    } else {
+      
+      ## for VAR  
+      # loop over nodes & fill mpm
+      for(v in 1:nNode) {
+        mod <- node_models[[v]] # get model object
+        
+        for(cat in 1:emp_lev_sh[v]) {
+          # get parameters from list
+          if(emp_lev_sh[v]==1) { 
+            coefs.v <- mod$coefs 
+          } else { 
+            coefs.v <- mod$coefs[[cat]] 
+          }
+          coefs.v.cut <- coefs.v[2:(sum(dummy_est.par)+1),1] # cut out relevant part (no intercept & d>2 interactions)
+          
+          # apply thresholding
+          coefs.v.cut[abs(coefs.v.cut)<mod$threshold] <- 0
+          
+          # fill in
+          dummy_est.par.v <- dummy_est.par
+
+          if(sum(emp_lev[v])==1) { 
+            coefs.v.cut <- mpm[v==dummy_par.var,][dummy_est.par.v] * mpm_zeros[v==dummy_par.var,][dummy_est.par.v]
+          } else {
+            coefs.v.cut <- mpm[v==dummy_par.var,][cat,][dummy_est.par.v]  * mpm_zeros[v==dummy_par.var,][cat,][dummy_est.par.v]
+          }
+          
+          if(emp_lev[v]==1) { 
+            mod$coefs[2:(sum(dummy_est.par)+1),1] <- coefs.v.cut
+          } else { 
+            mod$coefs[[cat]][2:(sum(dummy_est.par)+1),1] <- coefs.v.cut
+          }
+          
+        } # end For cat
+        node_models[[v]]$coefs <- mod$coefs # put back in
+      }
+      
+    } # end if VAR
+    
+  }
+  
+  
+  # +++++ extract sign matrix ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+  
+  # A) Recover signs of continuous interactions
   
   signs <- signs_recov <- matrix(NA, nNode, nNode)
   signs[adjmat.f!=0] <- 0
   signs_recov[adjmat.f!=0] <- 1
   ind <- which(dummy_par.var %in% which(type_sh!='c')) # columns in model parameter matrix not belonging to categorical variables
-
+  
   if(rule.reg=='AND') {
     signs[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind]) 
     signs_recov[type_sh!='c', type_sh!='c'] <- sign(mpm[ind,ind]) 
     
+    # for OR-rule: we have to consider both directions and collapse
   } else {
     sign_raw <- sign(mpm[ind,ind])
     sign_raw <- sign_raw + t(sign_raw)
@@ -421,9 +537,55 @@ mgmfit_core <- function(
     signs[type_sh!='c', type_sh!='c'] <- sign_raw
     signs_recov[type_sh!='c', type_sh!='c'] <- sign_raw
   }
-
+  
+  
+  # B) Recover signs of interactions involving binary variables
+  #  (Note that here we implicitly take care of the case rule.reg=OR, because we have to loop through the model parameter matrix mpm anways)
+  
+  if(binary.sign) {
+    
+    signs_binary <- matrix(NA, nNode, nNode)
+    
+    # B.1) loop over all interactions: binary <- binary/continuous
+    for(i in which(ind_binary[1:nNode])) { # only loop over binary edges;
+      for(j in 1:nNode) {
+        
+        if(type[j] == 'c') {
+          if(emp_lev[j]==2) binary_pars <- mpm[dummy_par.var==i, dummy_par.var==j][,-1] # only for binary interactions
+        } else {
+          binary_pars <- mpm[dummy_par.var==i, dummy_par.var==j]
+        }
+        
+        signs_binary[i, j] <- sign(binary_pars)[2] # if positive relationship, the second parameter (predicting category 1 of i) has a positive
+      }
+    }
+    
+    # B.2) loop over all interactions: continous <- binary ( we need B.1 and B.2 because of the or Rule and VAR models)
+    for(i in which(type[1:nNode]=='g')) { # only loop over binary edges;
+      for(j in which(ind_binary[1:nNode])) {
+        
+        binary_pars <- mpm[dummy_par.var==i, dummy_par.var==j][-1] 
+        
+        signs_binary[i, j] <- sign(binary_pars) # if positive relationship, the second parameter (predicting category 1 of i) has a positive
+      }
+    }
+    
+    
+    # make symmetric
+    signs_binary[is.na(signs_binary)] <-  t(signs_binary)[is.na(signs_binary)]
+    
+    # write into sign matrix
+    signs[!is.na(signs_binary)] <- signs_binary[!is.na(signs_binary)]
+    signs_recov[!is.na(signs_binary)] <- signs_binary[!is.na(signs_binary)]
+    
+  }
+  
+  # Make sure that everything that is zero stays zero
   signs[adjmat.f==0] <- NA
   signs_recov[adjmat.f==0] <- NA
+  
+  
+  # C) Create edgeColor Matrix
   
   edgeColor <- matrix('black', nNode, nNode)
   edgeColor[signs==0] <- 'grey'
@@ -446,12 +608,12 @@ mgmfit_core <- function(
   if(VAR) {
     type <- type[1:(length(type)/2)] 
     lev <- type[1:(length(lev)/2)] 
-    }
+  }
   
   
   ## call
   call <- list('type'=type, 
-               'lev'=lev, 
+               'lev'=emp_lev[1:nNode], 
                'lambda.sel'=lambda.sel, 
                'folds'=folds, 
                'gam'=gam, 

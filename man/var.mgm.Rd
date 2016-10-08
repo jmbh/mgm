@@ -10,7 +10,7 @@ Estimation of mixed Autoregressive Models using L1-constrained regression.}
 var.mgm(data, type, lev, lags = 1, lambda.sel = "EBIC", 
         folds = 10, gam = .25, d=2, pbar = TRUE, 
         method = "glm", missings = 'error', 
-        weights = NA, ret.warn = TRUE)
+        weights = NA, ret.warn = TRUE, binary.sign = FALSE)
 }
 
 % input
@@ -45,7 +45,10 @@ Degrees of augmented interactions. The degree of augmented interactions reflects
 \item{missings}{Handling of missing values. The default \code{missings = 'error'} returns an error message in case there are missing data. \code{missings = 'casewise.zw'} sets the weight of missing cases to zero. For stationary graphs, this is the equivalent to casewise deletion. In time varying graphs, this avoids corruption of the time scale, which would be the consequence of casewise deletion. For details, please see Haslbeck and Waldorp (2015).}
 
 \item{weights}{Weights for observations. Defaults to 1 for each observation.}
+
 \item{ret.warn}{If \code{FALSE} warnings are surpressed.}
+
+\item{binary.sign}{The default in mgm is to assign no sign to interactions involving categorical variables. This is because for the case where the number of categories m > 2, every interaction has to involve > 1 parameter and hence no sign of the interaction can be defined. However, for the case = 2 we have one parameter describing the interaction between the binary variable at hand and any other binary or continuous variable. If \code{binary.sign = TRUE} and if the binary variable is in (0,1) then the sign of this interaction will be recovered and returned in the sign matrix (see below).}
 
 }
 
@@ -70,6 +73,7 @@ Returns a list containing:
 \item{par.labels}{A vector matching with the dimensions of \code{mpar.matrix} indicating which parameter belongs to the interaction between which variables.}
 
 \item{warnings}{A list of all warnings produced during execution. Useful to have when warnings are surpressed in console output \code{(ret.warn = TRUE)}.}}
+
 
 
 \references{
