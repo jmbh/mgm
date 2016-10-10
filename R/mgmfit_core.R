@@ -571,6 +571,7 @@ mgmfit_core <- function(
       }
     }
     
+    signs_binary[signs_binary==0] <- NA # kill zeros, which are not killed by below (signs[adjmat.f==0] <- NA) in case of OR-rule
     
     # make symmetric
     signs_binary[is.na(signs_binary)] <-  t(signs_binary)[is.na(signs_binary)]
