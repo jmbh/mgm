@@ -43,8 +43,10 @@ mgmfit_core <- function(
     ind_binary <- apply(data, 2, function(x) length(unique(x))) == 2
     n_binary <- sum(ind_binary)
     ind_ZeroOneCheck <- rep(NA, n_binary)
-    for(i in 1:n_binary) { # loop over binary variables
-      ind_ZeroOneCheck[i] <-  sum(unique(data[,which(ind_binary==TRUE)[i]]) %in% c(0,1)) != 2
+    if(n_binary>0) {
+      for(i in 1:n_binary) { # loop over binary variables
+        ind_ZeroOneCheck[i] <-  sum(unique(data[,which(ind_binary==TRUE)[i]]) %in% c(0,1)) != 2
+      }
     }
     if(sum(ind_ZeroOneCheck)>0) stop('If binary.sign=TRUE, binary variables have to be coded as (0,1).')
   }
