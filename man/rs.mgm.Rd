@@ -2,7 +2,7 @@
 \alias{rs.mgm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Stability analysis of Mixed Graphical Models / mixed VAR Models using resampling schemes
+Stability analysis via Resampling Schemes
 }
 \description{
 Estimates MGMs/mixed VAR models on a number of resampled datasets. Can be used as input to \code{summary()} and \code{plot()} to investigate parameter-stability.
@@ -47,12 +47,13 @@ Jonas Haslbeck
 \dontrun{
 
 # Fit Mixed Graphical Model to Bootstrap Samples of the autism dataset
-rs_obj <- rs.mgmfit(data = autism_data$data, 
-                      type = autism_data$type,
-                      lev = autism_data$lev,
-                      B = 10,
-                      N = nrow(autism_data$data), # for classical bootstrap
-                      replace=TRUE)
+rs_obj <- rs.mgm(data = autism_data$data, 
+                 type = autism_data$type,
+                 lev = autism_data$lev,
+                 VAR = FALSE, # fit mgm model
+                 B = 10,
+                 N = nrow(autism_data$data), # for classical bootstrap
+                 replace=TRUE)
 
 # Summary of bootstrapped edge weights
 summary(rs_obj)

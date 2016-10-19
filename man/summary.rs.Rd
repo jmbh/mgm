@@ -26,12 +26,13 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>}
 \dontrun{
 
 # Fit Mixed Graphical Model to Bootstrap Samples of the autism dataset
-rs_obj <- rs.mgmfit(data = autism_data$data, 
-                      type = autism_data$type,
-                      lev = autism_data$lev,
-                      B = 10,
-                      N = nrow(autism_data$data), # for classical bootstrap
-                      replace=TRUE)
+rs_obj <- rs.mgm(data = autism_data$data, 
+                 type = autism_data$type,
+                 lev = autism_data$lev,
+                 VAR = FALSE, # fit mgm model
+                 B = 10,
+                 N = nrow(autism_data$data), # for classical bootstrap
+                 replace=TRUE)
 
 # Summary of bootstrapped edge weights
 summary(rs_obj)

@@ -1,19 +1,19 @@
-\name{plot.mgm}
-\alias{plot.mgm}
+\name{plot.rs}
+\alias{plot.rs}
 
 \title{
 Visualization of bootstrapped edge weights
 }
 \description{
-Visualizes the bootstrapped edge weights from boot.mgmfit() using boxplots
+Visualizes the bootstrapped edge weights from rs.mgm() using boxplots
 }
 \usage{
-\method{plot}{mgm}(x, y = NULL, \dots)
+\method{plot}{rs}(x, y = NULL, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-Output object from the \code{boot.mgmfit()} function.
+Output object from the \code{rs.mgm()} function.
 }
   \item{y}{
 Not used
@@ -36,12 +36,13 @@ Jonas Haslbeck
 
 
 # Fit Mixed Graphical Model to Bootstrap Samples of the autism dataset
-rs_obj <- rs.mgmfit(data = autism_data$data, 
-                      type = autism_data$type,
-                      lev = autism_data$lev,
-                      B = 10,
-                      N = nrow(autism_data$data), # for classical bootstrap
-                      replace=TRUE)
+rs_obj <- rs.mgm(data = autism_data$data, 
+                 type = autism_data$type,
+                 lev = autism_data$lev,
+                 VAR = FALSE, # to estimate mgm model
+                 B = 10,
+                 N = nrow(autism_data$data), # for classical bootstrap
+                 replace=TRUE)
 
 # Plot bootstrapped edge weights using boxplots
 plot(rs_obj)
