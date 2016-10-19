@@ -77,6 +77,9 @@ tv.mgmfit <- function(data, # input tv mgm
   
   class(outlist) <- c('mgm', 'tv.mgm')
   
+  # Return estimation messages:
+  estimation_msg('tv.mgmfit') # note about where signs are stored
+  
   return(outlist) 
   
 }

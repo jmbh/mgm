@@ -67,6 +67,10 @@ tv_var.mgm <- function(data, # input tv mgm
   
   class(outlist) <- c('mgm', 'var', 'tv.var')
   
+  
+  # Return estimation messages:
+  estimation_msg('tv_var.mgm') # note about where signs are stored
+  
   return(outlist) 
   
 }

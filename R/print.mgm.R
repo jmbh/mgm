@@ -8,9 +8,9 @@ print.mgm <- function(x, ...) {
   if('rs' %in% class(x)) {
     
     if('var' %in% class(x)) { 
-      mc <- 'Bootstrapped Mixed Vector Autoregressive Models'
+      mc <- 'Resampled Mixed Vector Autoregressive Models'
     } else {
-      mc <- 'Bootstrapped Mixed Graphical Models'
+      mc <- 'Resampled Mixed Graphical Models'
     }
     
     cat('mgm fit-object', 

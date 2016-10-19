@@ -34,8 +34,9 @@ var.mgm <- function(
                          ret.warn = ret.warn, 
                          binary.sign = binary.sign,
                          VAR = TRUE) # use standard mgm.fit; no AR model
-
-  class(outlist) <- c('mgm', 'var')
+  
+  # Return estimation messages:
+  estimation_msg('var.mgm') # note about where signs are stored
   
   return(outlist)
 } 

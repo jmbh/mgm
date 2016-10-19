@@ -1,5 +1,6 @@
 
 
+
 plot.mgm <- function(x, y = NULL, ...) {
   
   # x = bootstrap object
@@ -8,22 +9,20 @@ plot.mgm <- function(x, y = NULL, ...) {
     
     
     # ---------------- For MGM ----------------
-    if('mgm' %in% class(x)) {
       
       arguments <- list(...)
       
-      # A) For MGM
-      
       # Select those edges which are nonzero in at least one of the bootstrap samples
       ind <- unlist(x$edgeNonZero)
-      m_values <- do.call(rbind, x$edgeWeights)[ind,]
+    
+      m_values <- matrix(do.call(rbind, x$edgeWeights)[ind,], nrow=sum(ind))
       v_order <- abs(rowMeans(m_values))
       
       # Get Edge Names
-      v_names <- unlist(x$edgeNames)
+      v_names <- unlist(x$edgeNames)[ind]
       
       # Order decreasingly by mean edge weight
-      m_values <- m_values[order(v_order, decreasing=FALSE), ]
+      m_values <- matrix(m_values[order(v_order, decreasing=FALSE), ], nrow=sum(ind))
       v_names <- v_names[order(v_order, decreasing=FALSE)]
       t_m_values <- t(m_values)
       colnames(t_m_values) <- v_names
@@ -43,13 +42,7 @@ plot.mgm <- function(x, y = NULL, ...) {
         
       }
       
-    } 
-    
-    # ---------------- For VAR ----------------
-    
-    if('var' %in% class(x)) {
-      
-    }
+
     
     
     

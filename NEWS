@@ -1,8 +1,9 @@
 Changes in Version 1.1-7
+  o Added a message for all estimation functions indicating where edge weights (if defined) can be found: fitobject$signs
+  o Added a startup message with a link to report bugs
   o The predict() function now computes predicted values and a prediction error for each variable in the graph
   o The print() function now returns a small summary of the model type when printing a mgm object
-  o Added bootstrap scheme to evaluate edge-stability for non-time-varying models (MGM and mixed VAR)
+  o Added subsampling scheme to evaluate edge-stability for non-time-varying models (MGM and mixed VAR)
       o Added summary() & plot() for the bootstrap object to summarize edge-stability
   o Added argument 'binary.sign': If binary.sign=TRUE, the sign of the interactions of all binary variables coded (0,1) with other binary variables and continuous variables will be returned in the sign matrix fit$signs
-  
   

@@ -1,19 +1,19 @@
-\name{rs.mgmfit}
-\alias{rs.mgmfit}
+\name{rs.mgm}
+\alias{rs.mgm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Stability analysis of Mixed Graphical Models using resampling schemes
+Stability analysis of Mixed Graphical Models / mixed VAR Models using resampling schemes
 }
 \description{
-Estimates Mixed Graphical Models on a number of resampled datasets. Can be used as input to \code{summary()} and \code{plot()} to investigate parameter-stability.
+Estimates MGMs/mixed VAR models on a number of resampled datasets. Can be used as input to \code{summary()} and \code{plot()} to investigate parameter-stability.
 }
 \usage{
-rs.mgmfit(..., B = 100, N = NULL, replace = TRUE, pbar = TRUE)
+rs.mgm(..., B = 100, N = NULL, replace = TRUE, pbar = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{\dots}{
-Arguments as in \code{mgmfit}.
+Arguments as in \code{mgmfit} or \code{var.mgm}.
 }
   \item{B}{
 Number of resampling iterations.
@@ -32,7 +32,7 @@ Returns B mixed graphical models, each fitted on one bootstrap sample. Use the \
 }
 \value{
 Returns a list with
-  \item{models}{A list with B entries containing the mgmfit() output for each of the B bootstrap samples.}
+  \item{models}{A list with B entries containing the \code{mgmfit()} or \code{var.mgm()} output for each of the B bootstrap samples.}
   \item{B_wadj}{A p x p x B array containing the estimated weighted adjacency matrix for each of the B bootstrap samples.}
   \item{B_samples}{A list with B entries containing n x 1 indicator vectors, defining the used bootstrap samples.}
   \item{call}{Returns the function call.}

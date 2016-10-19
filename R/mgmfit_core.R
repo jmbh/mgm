@@ -15,28 +15,39 @@ mgmfit_core <- function(
   weights = NA, # weights for observations 
   ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
   binary.sign = FALSE, # should we assign
-  VAR = FALSE # autoregressive model yes/no
+  VAR = FALSE, # autoregressive model yes/no
+  rs_indicator = NULL # indicator to subset data for resampling (necessary because of VAR pipeline)
 )
 
 {
   
   # +++++ checks on function input ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
   
-  # get basic info
-  nNode <- ncol(data)
-  n <- nrow(data) 
-  c_ind <- which(type == "c") #indicator which variable categorical
-  
   # Check on variable typee
   if(sum(!(type %in% c('c', 'g', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables allowed.")
+  
+  # Get basic info #1
+  nNode <- ncol(data)
   
   # IF VAR: change data structure (+++)
   if(VAR) {
     data <- VARreshape(as.matrix(data))
-    n <- nrow(data) # one observation less in AR, because we have no predictor for first time point
     lev <- c(lev, lev)
     type <- c(type, type)
   }
+  
+  # Apply rs_indicator:
+  if(!is.null(rs_indicator)) {
+    #checks:
+    if(sum(!(rs_indicator %in% 1:nrow(data)))>0) stop('Subsampling indices specified that are not in the data.')
+    #apply:
+    data <- data[rs_indicator,]    
+  }
+  
+  # get basic info #2
+  n <- nrow(data) 
+  c_ind <- which(type == "c") #indicator which variable categorical
+  
   
   # For: binary.sign = TRUE: Are all binary variables coded (0,1)?
   if(binary.sign) {
@@ -638,6 +649,10 @@ mgmfit_core <- function(
                   "par.labels"=dummy_par.var, 
                   'warnings'=warn_list ,
                   'variance.check' = ind_nzv)
+  
+  # Assign Model Class
+  if(VAR) {  class(outlist) <- c('var', 'mgm') } else {   class(outlist) <- c('mgm')}
+  
   
   return(outlist)
 } 
