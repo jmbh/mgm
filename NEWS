@@ -1,4 +1,5 @@
 Changes in Version 1.1-7
+  o The predict() function now returns the predicted probabilities in addition to the predicted category for categorical variables
   o Added a message for all estimation functions indicating where edge weights (if defined) can be found: fitobject$signs
   o Added a startup message with a link to report bugs
   o The predict() function now computes predicted values and a prediction error for each variable in the graph

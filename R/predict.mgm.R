@@ -1,4 +1,6 @@
 
+
+
 predict.mgm <- function(object, 
                         data, 
                         variables='all', 
@@ -54,6 +56,7 @@ predict.mgm <- function(object,
     
     error_list <- list()
     pred_list <- list()
+    pred_list_prob <- list()
     
     if(('var' %in% class(object))==FALSE) {
       
@@ -89,6 +92,7 @@ predict.mgm <- function(object,
           Probabilities <- Potentials[,1:K] / rowSums(Potentials[,1:K])
           pred_class_id <-  apply(Probabilities, 1, which.max) # classify
           pred_list[[v]] <- PredictedCat <- sort(unique(data[,v]))[pred_class_id]
+          pred_list_prob[[v]] <- Probabilities
           error_list[[v]] <- sum(weights*(PredictedCat==data[,v])) # proportion correctly classified
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[,v])
@@ -101,6 +105,7 @@ predict.mgm <- function(object,
           # predicitions
           coefs <- as.numeric(node.models[[v]]$coefs) # get coefficients
           pred_list[[v]] <- preds <-  coefs[1] + X %*% matrix(coefs[-1][1:ncol(X)], nrow=length(coefs[-1][1:ncol(X)])) # predict
+          pred_list_prob[[v]] <- preds
           if(error.continuous=='RMSE') {
             error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[,v]))^2) ) # compute RMSE
           } else {
@@ -146,6 +151,7 @@ predict.mgm <- function(object,
           Probabilities <- Potentials[,1:K] / rowSums(Potentials[,1:K])
           pred_class_id <-  apply(Probabilities, 1, which.max) # classify
           pred_list[[v]] <- PredictedCat <- sort(unique(data[-1,v]))[pred_class_id]
+          pred_list_prob[[v]] <- Probabilities
           error_list[[v]] <- sum(weights*(PredictedCat==data[-1,v])) # proportion correctly classified
           if(error.categorical == 'CorrectClassNorm') {
             tb <- table(data[-1,v])
@@ -157,6 +163,7 @@ predict.mgm <- function(object,
           # predicitions
           coefs <- as.numeric(node.models[[v]]$coefs) # get coefficients
           pred_list[[v]] <- preds <-  coefs[1] + X %*% matrix(coefs[-1][1:ncol(X)], nrow=length(coefs[-1][1:ncol(X)])) # predict
+          pred_list_prob[[v]] <- preds
           if(error.continuous=='RMSE') {
             error_list[[v]] <- sqrt(sum(weights*(preds-as.numeric(data[-1,v]))^2) ) # compute RMSE
           } else {
@@ -186,7 +193,7 @@ predict.mgm <- function(object,
     # collapse predictions into matrix
     predmat <- do.call(cbind, pred_list)
     
-    out_list[[ts]] <- list('error'=error_out, 'pred'=predmat)
+    out_list[[ts]] <- list('error'=error_out, 'pred'=predmat, 'pred_prob'=pred_list_prob)
     
   } # end for: timesteps
   

@@ -29,7 +29,7 @@ A data matrix with the same properties as the data on which the model was fit. N
 
 \code{error.categorical = 'VarExpl'} proportion of explained variance 1 - var(y - yhat)/var(y).}
 
-\item{...}{Other prediction arguments.}
+\item{...}{Not used.}
 }
 
 \value{
@@ -39,6 +39,7 @@ In the case of stationarty graphs the function returns a list, in the case of ti
 
 \item{error}{A data frame with the columns: Variable, Error and ErrorType. As error we report the root mean squared error (RMSE) for continuous variables and the proportion of correct classification for categorical variables. For time-varying graphs, both types of errors are weighted by the same weights used during estimation.}
 
+\item{pred_prob}{A list of length p, containing the predicitions for continuous variables as in the matrix \code{pred} and the predicted probabilities for each category for categorical variables.}
 
 }
 
