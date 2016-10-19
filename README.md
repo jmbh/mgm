@@ -1,6 +1,6 @@
 # mgm
 
-Functions for the estimation of both stationary and time-varying mixed graphical models or mixed vector autoregressive (VAR) models.
+Functions to estimate both stationary and time-varying mixed graphical models or mixed vector autoregressive (VAR) models. For details please check the paper https://arxiv.org/abs/1510.06871.
 
 
 The stable version can be installed via CRAN:
