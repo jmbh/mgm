@@ -50,7 +50,7 @@ mgmfit_core <- function(
   
   
   # For: binary.sign = TRUE: Are all binary variables coded (0,1)?
-  if(binary.sign) {
+  if(binary.sign & 'c' %in% type) {
     ind_binary <- apply(data, 2, function(x) length(unique(x))) == 2
     n_binary <- sum(ind_binary)
     ind_ZeroOneCheck <- rep(NA, n_binary)

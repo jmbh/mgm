@@ -2,10 +2,10 @@ Package: mgm
 Type: Package
 Title: Estimating Time-Varying Mixed Graphical Models
 Version: 1.1-7
-Date: 2016-06-15
+Date: 2016-10-19
 Author: Jonas Haslbeck
 Maintainer: Jonas Haslbeck  <jonashaslbeck@gmail.com>
-Description: Estimation of time-varying Mixed Graphical model using L1-regularized neighborhood regression.
+Description: Estimation of time-varying Mixed Graphical models and mixed VAR models using L1-regularized neighborhood regression.
 URL: http://arxiv.org/abs/1510.06871v2
 BugReports: https://github.com/jmbh/mgm/issues
 License: GPL (>= 2)
