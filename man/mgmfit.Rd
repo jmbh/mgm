@@ -10,7 +10,7 @@ Estimation of Mixed Graphical Models using L1-constrained neighborhood regressio
 mgmfit(data, type, lev, lambda.sel = "EBIC", folds = 10, 
        gam = .25, d=2, rule.reg = "AND", pbar = TRUE, 
        method = "glm", missings = 'error', weights = NA, 
-       ret.warn = TRUE, binary.sign = FALSE)
+       ret.warn = TRUE, binary.sign = FALSE, ...)
 }
 
 % input
@@ -50,6 +50,7 @@ Rule for combining the two parameters obtained for each edge due to the neighbor
 \item{ret.warn}{If \code{FALSE} warnings are surpressed.}
 
 \item{binary.sign}{The default in mgm is to assign no sign to interactions involving categorical variables. This is because for the case where the number of categories m > 2, every interaction has to involve > 1 parameter and hence no sign of the interaction can be defined. However, for the case = 2 we have one parameter describing the interaction between the binary variable at hand and any other binary or continuous variable. If \code{binary.sign = TRUE} and if the binary variable is in (0,1) then the sign of this interaction will be recovered and returned in the sign matrix (see below).}
+\item{...}{Additional arguments.}
 
 }
 

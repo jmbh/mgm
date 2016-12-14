@@ -16,7 +16,8 @@ mgmfit <- function(
   missings = 'error', # handling of missing data
   weights = NA, # weights for observations 
   ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
-  binary.sign = FALSE # see help file
+  binary.sign = FALSE, # see help file
+  ...
 )
 
 {
@@ -35,7 +36,8 @@ mgmfit <- function(
                          weights = weights, 
                          ret.warn = ret.warn,
                          binary.sign = binary.sign,
-                         VAR = FALSE) # use standard mgm.fit; no AR model
+                         VAR = FALSE, # use standard mgm.fit; no AR model 
+                         ... = ...) 
   
   # Return estimation messages:
   estimation_msg('mgmfit') # note about where signs are stored

@@ -16,7 +16,8 @@ mgmfit_core <- function(
   ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
   binary.sign = FALSE, # should we assign
   VAR = FALSE, # autoregressive model yes/no
-  rs_indicator = NULL # indicator to subset data for resampling (necessary because of VAR pipeline)
+  rs_indicator = NULL, # indicator to subset data for resampling (necessary because of VAR pipeline)
+  ...
 )
 
 {
@@ -174,6 +175,14 @@ mgmfit_core <- function(
     data[,cc] <- as.factor(data[,cc]) 
   }
   
+  
+  # CHheck input of (...)
+  
+  input <- list(...)
+  if(is.null(input$threshtype)) threshtype <- 'LW' else threshtype = 'GLM'
+  
+  
+  
   # +++++ prepare data for glmnet input ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
   
   #necessary for formula input
@@ -277,7 +286,13 @@ mgmfit_core <- function(
       
       # calculate threshold
       coefsm <- matrix(do.call(rbind,lapply(coefs, as.numeric)),nrow=emp_lev_restr[vv])[,-1] # all paramters (no intercepts) in one vector
-      threshold <- sqrt(d) * sqrt(sum(coefsm^2)) * sqrt(log(nNode)/nadj)
+      
+      # Select type of tau-threshold (beta min condition), depending on which theory we use (loh + wainwright vs. our own glm-based proof)
+      if(threshtype == 'LW') {
+        threshold <- sqrt(d) * sqrt(sum(coefsm^2)) * sqrt(log(nNode)/nadj) 
+      } else {
+        threshold <- d * sqrt(log(nNode)/nadj)
+      }
       
     } else {
       
