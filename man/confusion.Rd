@@ -5,18 +5,24 @@ Confusion matrix}
 \description{
 Computes accuracy, sensitivity, specificity and precision from a true and an estimated adjacency matrix.}
 \usage{
-confusion(tg, eg)
+confusion(tg, eg, undirected = TRUE, diagonal = FALSE)
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{tg}{
-p x p adjacency matrix of the true graph
+
+  \item{tg}{p x p adjacency matrix of the true graph}
+
+  \item{eg}{p x p adjacency matrix of the estimated graph}
+
+  \item{undirected}{Logical indicating whether the true and estimated graphs are undirected or directed.}
+
+  \item{diagonal}{Logical indicating whether the diagonal should be taken into account. \code{diagonal} defaults to \code{FALSE} if \code{undirected = TRUE}.}
+
 }
-  \item{eg}{
-p x p adjacency matrix of the estimated graph}
-}
-\value{
-A list containing accuracy, sensitivity, specificity and precision of the estimated graph in reference to the true graph.}
+
+\value{A list containing accuracy, sensitivity, specificity and precision of the estimated graph with respect to the true graph.}
+
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>}
 
@@ -45,7 +51,3 @@ confusion(grapht, fit$adj)
 }
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

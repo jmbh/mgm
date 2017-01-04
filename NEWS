@@ -1,5 +1,6 @@
 Changes in Version 1.1-8
-  o 
+  o Extended confusion function to directed graphs
+  o Added second thresholding option 'threshtype' from new consistency analysis in GLM framework
 Changes in Version 1.1-7
   o The predict() function now returns the predicted probabilities in addition to the predicted category for categorical variables
   o Added a message for all estimation functions indicating where edge weights (if defined) can be found: fitobject$signs
