@@ -6,9 +6,11 @@ tv.mgmsampler <- function(type, # p time vector
                           threshs, # n list with each p threshold entries (same structure as in mgmsampler)
                           parmatrices = NA,
                           nIter = 250, 
-                          varadj = .2) {
+                          varadj = .2,
+                          exportGraph = FALSE # if TRUE exports list with data, graph with (transformed) gaussian sub graph and the parameter matrix, if FALSE just exports the data 
+                          ) {
   
-  # edge weight or parameter matrix?
+  # ----- Input Type: Edge weight or parameter matrix? -----
   if(!is.na(parmatrices)) {
     graphs <- NA
     # basic input info
@@ -24,25 +26,65 @@ tv.mgmsampler <- function(type, # p time vector
 
   }
   
-  # sampling 
+  # ----- Sampling -----
   data <- matrix(NA, n, p)
+  l_dlist <- vector('list', n)
+  
   for(timestep in 1:n) {
     
-    if(!is.na(parmatrices)) {
-      data[timestep,] <- mgmsampler(n=1, type=type, lev=lev, graph=NA, 
-                                    thresh = threshs[[timestep]], parmatrix = parmatrices[[timestep]], 
-                                    nIter = nIter, varadj = varadj)
+    if(exportGraph) {
+      
+      
+      if(!is.na(parmatrices)) {
+        l_dlist[[timestep]] <- mgmsampler(n=1, type=type, lev=lev, graph=NA, 
+                                      thresh = threshs[[timestep]], parmatrix = parmatrices[[timestep]], 
+                                      nIter = nIter, varadj = varadj, exportGraph = exportGraph)
+      } else {
+        l_dlist[[timestep]] <- mgmsampler(n=1, type=type, lev=lev, graph=graphs[,,timestep], 
+                                      thresh = threshs[[timestep]], parmatrix = NA, 
+                                      nIter = nIter, varadj = varadj, exportGraph = exportGraph)
+      }
+      
+      
+      
     } else {
-      data[timestep,] <- mgmsampler(n=1, type=type, lev=lev, graph=graphs[,,timestep], 
-                                    thresh = threshs[[timestep]], parmatrix = NA, 
-                                    nIter = nIter, varadj = varadj)
+      
+      
+      if(!is.na(parmatrices)) {
+        data[timestep,] <- mgmsampler(n=1, type=type, lev=lev, graph=NA, 
+                                      thresh = threshs[[timestep]], parmatrix = parmatrices[[timestep]], 
+                                      nIter = nIter, varadj = varadj, exportGraph = exportGraph)
+      } else {
+        data[timestep,] <- mgmsampler(n=1, type=type, lev=lev, graph=graphs[,,timestep], 
+                                      thresh = threshs[[timestep]], parmatrix = NA, 
+                                      nIter = nIter, varadj = varadj, exportGraph = exportGraph)
+      }
+      
     }
     
-
-  }
+  } # end time for-loop
   
-  # output
-  return(data)
+  
+  # ----- Data Export -----
+  
+  if(exportGraph) { 
+    
+    for(timestep in 1:n) data[timestep,] <- l_dlist[[timestep]]$Data
+    l_graphs <- l_parmats <- vector('list', n)
+    for(timestep in 1:n) l_graphs[[timestep]] <- l_dlist[[timestep]]$Graph
+    for(timestep in 1:n) l_parmats[[timestep]] <- l_dlist[[timestep]]$ParMatrix
+    
+    outlist <- list('Data' = data,
+                    'Graphs' = l_graphs,
+                    'ParMatrices' = l_parmats)
+    
+    return(outlist)
+    
+  } else {
+    
+    return(data)
+    
+  }
   
   
 }

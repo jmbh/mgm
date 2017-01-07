@@ -6,7 +6,8 @@ Samples from a mixed Graphical Model}
 \description{
 Samples from a pairwise Mixed Graphical Model}
 \usage{
-mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, nIter = 250, varadj = .2)
+mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, 
+           nIter = 250, varadj = .2)
 }
 
 \arguments{
@@ -34,6 +35,9 @@ The number of iterations in the Gibbs sampler
   \item{varadj}{
 Additive constant to conditional Gaussian variances before normalization. This avoids partial correlations close to 1.
 }
+  \item{exportGraph}{
+If \code{FALSE} exports only the data. If \code{TRUE} exports a list containing the data, the graph with a potentially transformed Gaussian submatrix and the explicit parameter matrix used in the Gibbs sampler.
+}
 }
 \details{
 For interactions involving categorical variables with more than m = 2 categories, an interaction is comprised by more than one parameter. Specifically, in the overcomplete representation used here, in case of an interaction between two categorical variables with each m categories, we have m^2 parameters, whereas in case of an interaction between a cateogircal and a continuous variable we have m parameters. 
@@ -44,7 +48,7 @@ The specification of the mixed graphical model has to satisfy a number of contra
 
 }
 \value{
-n x p data matrix
+If \code{exportGraph = FALSE} a n x p data matrix. If \code{exportGraph = TRUE} in addition the graph with a potentially transformed Gaussian submatrix and the explicit parameter matrix used in the Gibbs sampler.
 }
 \references{
 Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.

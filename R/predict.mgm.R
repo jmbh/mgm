@@ -1,6 +1,5 @@
 
 
-
 predict.mgm <- function(object, 
                         data, 
                         variables='all', 
@@ -27,6 +26,7 @@ predict.mgm <- function(object,
   
   # Assign column names
   if(is.null(colnames(data))) colnames(data)  <- 1:ncol(data)
+  
   
   # ---------- Loop over Time Points ----------
   

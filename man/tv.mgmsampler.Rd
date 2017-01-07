@@ -6,7 +6,8 @@ Sampling from a time-varying mixed Graphical Model}
 \description{
 Samples from a time-varying pairwise Mixed Graphical Model}
 \usage{
-tv.mgmsampler(type, lev, graphs, threshs, parmatrices = NA, nIter = 250, varadj = .2)
+tv.mgmsampler(type, lev, graphs, threshs, parmatrices = NA, 
+              nIter = 250, varadj = .2, exportGraph = FALSE)
 }
 
 \arguments{
@@ -31,13 +32,18 @@ Number of iterations in the Gibbs sampler
   \item{varadj}{
 Additive constant to conditional Gaussian variances before normalization. This avoids partial correlations close to 1.
 }
+  \item{exportGraph}{
+If \code{FALSE} exports only the data. If \code{TRUE} exports a list containing the data, the graph with a potentially transformed Gaussian submatrix and the explicit parameter matrix used in the Gibbs sampler.
+}
+
 }
 %\details{
 %
 %}
 \value{
-n x p data matrix.
+If \code{exportGraph = FALSE} a n x p data matrix. If \code{exportGraph = TRUE} in addition the graph with a potentially transformed Gaussian submatrix and the explicit parameter matrix used in the Gibbs sampler.
 }
+
 \references{
 Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.
 
