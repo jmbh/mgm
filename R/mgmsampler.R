@@ -50,7 +50,7 @@ mgmsampler <- function(n, #number of samples
     graph.g.re.e <- graph.g.re; diag(graph.g.re.e) <- 0 #zero diagonal to put it back in the graph
     graph[type=="g", type=="g"] <- graph.g.re.e #put back in the graph
     
-  }
+  } 
   
   # --------- Create Parameter Matrix Used in Gibbs Sampler -------
   
@@ -90,7 +90,7 @@ mgmsampler <- function(n, #number of samples
   if(exportGraph) {
     
     outlist <- list('Data' = c_out,
-                    'Graph' = graph.g.re.e,
+                    'Graph' = graph,
                     'ParMatrix' = graphe)
     
     return(outlist)
