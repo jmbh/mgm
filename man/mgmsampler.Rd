@@ -7,7 +7,7 @@ Samples from a mixed Graphical Model}
 Samples from a pairwise Mixed Graphical Model}
 \usage{
 mgmsampler(n, type, lev, graph, thresh, parmatrix = NA, 
-           nIter = 250, varadj = .2)
+           nIter = 250, varadj = .2, exportGraph = FALSE)
 }
 
 \arguments{
