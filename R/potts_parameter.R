@@ -1,4 +1,6 @@
 
+
+
 potts_parameter <- function(
   graph, #(weighted) adjacency matrix ;matrix
   type,  # vector indicating the type of the variables ;vector
@@ -15,11 +17,11 @@ potts_parameter <- function(
   
   for(v in 1:nVar) { #loop variables
     
-    # type[v] == CATEGORICAL
+    # ---------- type[v] == CATEGORICAL ----------
+    
     if(type[v]=="c") {
       
       subm.mpm <- matrix(0,lev[v], sum(lev[-v])) #fill a dummy matrix; then include slip in thresholds and merge with full matrix
-      
       
       for(k in 1:lev[v]) { #loop categories
         
@@ -39,7 +41,7 @@ potts_parameter <- function(
               #fill last category up
               if(k>lev[v2]) { 
                 subm.mpm[k,c:(c+lev[v2]-1)] <- ((max(1:lev[v2]))==(1:lev[v2])) * graph[v,v2] 
-                }
+              }
               
               
             } else { #same for all continuous, no further specification
@@ -70,18 +72,22 @@ potts_parameter <- function(
       #merge with
       model.par.matrix[r:(r+lev[v]-1),] <- subm.mpm.t #include weights from (weighted) adj matrix
       
-      # type[v] == CONTINUOUS
+      
+      
+      # ---------- type[v] == CONTINUOUS (Gaussian, Exponential, Poisson) ----------
+      
     } else {
       
       # here, we only need to get the continuous interactions; the rest we get by symmetry
       
       subv.mpm <- numeric(sum(lev))
+      
       c <- 1 #current column index
       
       for(v4 in (1:nVar)){ #loop other variables
         # only continous
-        if(type[v4]!="c") { subv.mpm[c] <- graph[v,v4] }
-        c <- c + 1
+        if(type[v4]!="c") { subv.mpm[c] <- graph[v, v4] }
+        c <- c + lev[v4]
       }#end: other variables
       
       #merge
@@ -89,10 +95,10 @@ potts_parameter <- function(
       
     }
     
-    r <- r + lev[v] #move down the target matrix
+    r <- r + lev[v] # Move down the target matrix
     
   } #end for variables
-
+  
   ## "mirror" matrix
   pars <- ncol(model.par.matrix)
   for(rows in 1:pars)
@@ -103,16 +109,18 @@ potts_parameter <- function(
       }
     }
   }
-
+  
   # insert thresholds in diagonal
   diag(model.par.matrix) <- unlist(thresh)
-
+  
   # add labels indicating which row/col corresponds to which variable; this helps to feed the parameters in the sampler
   dummy_matrix <- cbind(lev, 1:length(lev))
   ind.e <- unlist(apply(dummy_matrix,1,function(x) { rep(x[2],x[1])}))
   colnames(model.par.matrix) <- rownames(model.par.matrix) <- ind.e
-
+  
   return(model.par.matrix)
   
-  ### end of FUNCTION
-}
+  
+} # eoF
+
+

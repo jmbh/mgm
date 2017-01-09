@@ -16,12 +16,19 @@ mgmsampler <- function(n, #number of samples
   # --------- Input Checks -------
     
   lev <- as.numeric(lev)
-
+  nNodes <- ncol(graph)  # number of nodes
+  
+  # Check Symmetry
   stopifnot(length(type)==length(lev))
   if(is.na(parmatrix)==TRUE){
     stopifnot(isSymmetric(graph))
     stopifnot(length(type)==nrow(graph))
     stopifnot(sum(diag(graph)!=0)==0)
+  }
+  
+  # Check Thresholds
+  if(sum(unlist(lapply(thresh, length)) == lev) != nNodes) {
+    stop('Specified levels do not match specified thresholds')
   }
   
   
@@ -61,7 +68,6 @@ mgmsampler <- function(n, #number of samples
     graphe <- parmatrix
   }
   
-  nNodes <- ncol(graph)  # number of nodes
   Data <- matrix(0, n, nNodes)  # create empty data matrix
   inde <- as.numeric(colnames(graphe))
   colnames(graphe) <- rownames(graphe) <- NULL
@@ -84,21 +90,20 @@ mgmsampler <- function(n, #number of samples
   c_out <- mMRFCsampler(Data, n, nNodes, type_c, lev, nIter=nIter, thresh_m, graphe, inde)
   
   
-  
   # --------- Different Output Options -------
   
   if(exportGraph) {
-    
+
     outlist <- list('Data' = c_out,
                     'Graph' = graph,
                     'ParMatrix' = graphe)
-    
+
     return(outlist)
-    
+
   } else {
-    
+
     return(c_out)
-    
+
   }
   
   
