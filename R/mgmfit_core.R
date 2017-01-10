@@ -176,10 +176,10 @@ mgmfit_core <- function(
   }
   
   
-  # CHheck input of (...)
+  # Check input of (...)
   
   input <- list(...)
-  if(is.null(input$threshtype)) threshtype <- 'LW' else threshtype = 'GLM'
+  if(is.null(input$threshtype)) threshtype <- 'LW' # else threshtype = 'GLM'
   
   
   
