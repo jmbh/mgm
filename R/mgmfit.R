@@ -1,7 +1,6 @@
 
 
 
-
 mgmfit <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson, e=exponential
@@ -17,6 +16,7 @@ mgmfit <- function(
   weights = NA, # weights for observations 
   ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
   binary.sign = FALSE, # see help file
+  threshtype = 'LW',
   ...
 )
 
@@ -36,7 +36,8 @@ mgmfit <- function(
                          weights = weights, 
                          ret.warn = ret.warn,
                          binary.sign = binary.sign,
-                         VAR = FALSE, # use standard mgm.fit; no AR model 
+                         VAR = FALSE, # use standard mgm.fit; no AR model
+                         threshtype = threshtype,
                          ... = ...) 
   
   # Return estimation messages:
@@ -46,4 +47,13 @@ mgmfit <- function(
   return(outlist)
   
 } 
+
+
+
+
+
+
+
+
+
 

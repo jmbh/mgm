@@ -17,6 +17,7 @@ mgmfit_core <- function(
   binary.sign = FALSE, # should we assign
   VAR = FALSE, # autoregressive model yes/no
   rs_indicator = NULL, # indicator to subset data for resampling (necessary because of VAR pipeline)
+  threshtype = 'LW',
   ...
 )
 
@@ -178,9 +179,9 @@ mgmfit_core <- function(
   
   # Check input of (...)
   
-  input <- list(...)
-  if(is.null(input$threshtype)) threshtype <- 'LW' # else threshtype = 'GLM'
-  
+  # input <- list(...)
+  # if(is.null(input$threshtype)) threshtype <- 'LW' # else threshtype = 'GLM'
+  # 
   
   
   # +++++ prepare data for glmnet input ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
