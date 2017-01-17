@@ -7,7 +7,7 @@ Estimation of time-varying Mixed Graphical Models
 \description{
 Estimation of time-varying Mixed Graphical Models using L1-constrained neighborhood regression.}
 \usage{
-tv.mgmfit(data, type, lev, timepoints = NA, tsteps = "default", 
+tv.mgmfit(data, type, lev, timepoints = NA, estpoints = "default", 
           bandwidth, gam = .25, d = 2,  rule.reg = "AND", 
           pbar = TRUE, method = "glm", missings = 'error', 
           ret.warn = FALSE)
@@ -25,10 +25,11 @@ p-vector containing the number of levels for each variable p (lev=1 for all cont
   \item{timepoints}{
 n-vector containing the time points of the measurements. Has to be a non-negative, strictly increasing sequence. Default \code{timepoints = NA} assumes equally spaced time intervals.
 }
-  \item{tsteps}{Number of equidistant time points at which the model is estimated. If \code{tsteps = 'default'} then the number of estimated time steps is 2/bandwidth. This provides a reasonable coverage of the time series for many choices of bandwidt.}
+  \item{estpoints}{There are several input options: if \code{estpoints = 'default'}, the model is estimated at 2/bandwidth equally spaced time points. If a positive integer is provided, then the model is estimated at that many equally spaced time points. If a vector time points is provided, then the model is estimated at exactly these time points.}
+  
   \item{bandwidth}{Standard deviation of the Gaussian kernel function.}
   \item{gam}{
-Gamma hyperparameter when lambda.sel="EBIC". Defaults to gam=.25 (Barber et al., 2015)
+Gamma hyperparameter when \code{lambda.sel="EBIC"}. Defaults to gam=.25 (Barber et al., 2015)
 }
   \item{d}{
 Degrees of augmented interactions. The degree of augmented interactions reflects our belief about the maximal degree in the true graph. (see Loh & Wainwright, 2013)
@@ -128,7 +129,7 @@ data <- tv.mgmsampler(type, lev, graphs, threshs)
 tv.obj <- tv.mgmfit(data = data, 
                     type = type,
                     lev = lev, 
-                    tsteps = 50,
+                    estpoints = 50, # estimate at 50 equally spaced time points
                     bandwidth = .8/n^(1/3),
                     gam = 0, 
                     d = 2)
@@ -141,9 +142,9 @@ plot(tv.obj$wadj[2,1,], xlab = 'Estimated time points', ylab = 'Edge weight',
 lines(tv.obj$wadj[3,4,], col='blue', lwd=2)
 axis(side = 2, at = round(seq(0,1,length=5), 2), las=2)
 # true parameters
-tsteps <- 50
-lines( 1/ (1+ exp(-k*(seq(0,1,length=tsteps)-.5))) , col='red', lty=2)
-lines( 1/ (1+ exp(k*(seq(0,1,length=tsteps)-.5))), col='blue', lty=2)
+estpoints <- 50
+lines( 1/ (1+ exp(-k*(seq(0,1,length=estpoints)-.5))) , col='red', lty=2)
+lines( 1/ (1+ exp(k*(seq(0,1,length=estpoints)-.5))), col='blue', lty=2)
 
 legend(38,.55, c('(2,1) true', '(2,1) estimated', '(3,4) true', '(3,4) estimated'), lty=c(2,1,2,1), 
        col = c('red', 'red', 'blue', 'blue'), lwd=c(2,2, 2, 2))
