@@ -84,6 +84,7 @@ bwSelect <- function(data, # Data
       l_bwPreds[[bw]] <- tvPredict(data = data,
                                    type = type,
                                    test = test, 
+                                   VAR = VAR,
                                    model = l_bwModels[[bw]])
       
     

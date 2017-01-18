@@ -3,6 +3,7 @@
 tvPredict <- function(data, # time series data 
                       type, # necessary for prediction: continuous or categorical
                       test, # indicator vector: training time points
+                      VAR, 
                       model # time-varying model
 ) 
   
