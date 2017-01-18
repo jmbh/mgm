@@ -34,7 +34,7 @@ print.mgm <- function(x, ...) {
       cat('mgm fit-object',
           '\n\nModel class: ', mc, 
           '\nNodes: ' , length(x$call$type),  
-          '\nTimesteps: ' , x$call$tsteps)
+          '\nTimesteps: ' , x$call$Nest)
       
     } else {
       

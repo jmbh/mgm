@@ -13,7 +13,8 @@ tv.mgmfit <- function(data, # input tv mgm
                       pbar = TRUE,
                       method ='glm',
                       missings = 'error',
-                      ret.warn = FALSE) 
+                      ret.warn = FALSE,
+                      ... ) 
 
 {
   
@@ -22,6 +23,9 @@ tv.mgmfit <- function(data, # input tv mgm
   
   n <- nrow(data)
   nNode <- ncol(data)
+  
+  arg_pass <- list(...)
+  if(is.null(arg_pass$signWarn)) arg_pass$signWarn <- TRUE
   
   
   # ---------- Assign each data point a value on [0,1] normed time interval ----------
@@ -52,14 +56,14 @@ tv.mgmfit <- function(data, # input tv mgm
   # We select a reasonable number of equally time-spaced estimation locations
   if(estpoints[1]=='default') {
     
-    est_points_norm <- seq(0, 1, length = round(2/bandwidth)) # where do we estimate?
+    estpoints_sc <- seq(0, 1, length = round(2/bandwidth)) # where do we estimate?
   
   # We use a user-specified number of equally time-spaced estimation locations  
   } else if(round(estpoints[1])==estpoints[1] & length(estpoints)==1) {
     
     # Input Check
     if(estpoints < 3) stop('Please choose a number of estimated time points > 2')
-    est_points_norm <- seq(0, 1, length = estpoints)
+    estpoints_sc <- seq(0, 1, length = estpoints)
   
   # We use a user-specified locations (which are not necessarily equally time-spaced)  
   } else if(length(estpoints) > 1) {
@@ -67,15 +71,22 @@ tv.mgmfit <- function(data, # input tv mgm
     # Input Check
     if(sum(estpoints>0) < length(estpoints)) stop('Time points at which the model should be estimated have to be positive')
     
-    estpoints_sc <- estpoints - min(estpoints)
-    estpoints_sc <- estpoints_sc / max(estpoints_sc)
-   
-    est_points_norm <- estpoints_sc
-     
+    # Scale estimation locations wrt global time scale
+    if(!is.na(timepoints[1])) {
+      # if a time vector for all time points has been provided, then scale location points same as all time points (see above)
+      estpoints_sc <- estpoints - min(timepoints)
+      estpoints_sc <- estpoints_sc / max(timepoints_sc)
+      
+    } else {
+      # if we assume equally-spaced time intervals
+      estpoints_sc <- estpoints / n
+      
+    }
+
   }
 
   
-  Nest <- length(est_points_norm) # number of estimated Locations
+  Nest <- length(estpoints_sc) # number of estimated Locations
   
   # ---------- Fit weighted Model at each time point ----------
   
@@ -88,7 +99,7 @@ tv.mgmfit <- function(data, # input tv mgm
   
   for(t in 1:Nest) {
     
-    kernel_mean <- est_points_norm[t]
+    kernel_mean <- estpoints_sc[t]
     
     # Define weights with folded gaussian kernel    
     weights <- dnorm(tpoints, 
@@ -133,7 +144,8 @@ tv.mgmfit <- function(data, # input tv mgm
   l_call <- list('type' = type, 
                  'lev' = lev, 
                  'estpoints' = estpoints,
-                 'est_points_norm' = est_points_norm,
+                 'estpoints_sc' = estpoints_sc,
+                 'Nest' = Nest,
                  'bandwidth' = bandwidth, 
                  'lambda.sel' = "EBIC",
                  'gam' = gam, 
@@ -152,7 +164,8 @@ tv.mgmfit <- function(data, # input tv mgm
   class(outlist) <- c('mgm', 'tv.mgm')
   
   # Return estimation messages:
-  estimation_msg('tv.mgmfit') # note about where signs are stored
+  
+  if(arg_pass$signWarn) estimation_msg('tv.mgmfit') # note about where signs are stored
   
   return(outlist) 
   

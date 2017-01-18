@@ -75,6 +75,7 @@ mgmfit_core <- function(
   ## weights and missing data handling
   # create weight vector
   if(is.na(weights[1])) weights <- rep(1,n) # if no weights are specified all weights are equal to 1 
+  
   # missing data handling via setting weights to zero
   if(missings=='casewise.zw') {
     ind_NA <- apply(data, 1, function(x) sum(is.na(x))>0) #check for missing values  
@@ -306,6 +307,16 @@ mgmfit_core <- function(
       n_pred <- sum(c(emp_lev_mv[type_mv!='c'], emp_lev_mv[type_mv=="c"]-1)) # number of dummy predictors
       
       # see above; we treat categorical variables with 1 category as gaussians; therefore coefs is a matrix and not a list containing matrices
+
+      # if(type[v]=='c')
+      # {
+      #   
+      # } else {
+      #   
+      # }
+      
+      
+      
       coefs <- matrix(0, nrow=n_pred+1, ncol=1) # n_pred+1 adds the intercept
       lambda_select <- NULL
       threshold <- 0 # does nothing, but need numeric value to avoid error

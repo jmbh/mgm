@@ -25,7 +25,7 @@ p-vector containing the number of levels for each variable p (lev=1 for all cont
   \item{timepoints}{
 n-vector containing the time points of the measurements. Has to be a non-negative, strictly increasing sequence. Default \code{timepoints = NA} assumes equally spaced time intervals.
 }
-  \item{estpoints}{There are several input options: if \code{estpoints = 'default'}, the model is estimated at 2/bandwidth equally spaced time points. If a positive integer is provided, then the model is estimated at that many equally spaced time points. If a vector time points is provided, then the model is estimated at exactly these time points.}
+  \item{estpoints}{There are several input options: if \code{estpoints = 'default'}, the model is estimated at 2/bandwidth equally spaced time points. If a positive integer is provided, then the model is estimated at that many equally spaced time points. If a vector of time points is provided, then the model is estimated at exactly these time points. The specified time points have to be on the same scale as the provided data: if a time-vector is provided via \code{timepoints}, \code{estpoints} have to be provided on the same time scale. If \code{timepoints = NA}, \code{estpoints} can be directly provided as the row-numbers.}
   
   \item{bandwidth}{Standard deviation of the Gaussian kernel function.}
   \item{gam}{
