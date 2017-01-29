@@ -1,7 +1,7 @@
 
 
 bwSelect <- function(data, # Data
-                     test, # indicator vector: training cases
+                     test, # vector of row numbers of training cases
                      bwSeq, # sequence of bandwidth values to be tested
                      VAR = FALSE, # indicator value: VAR-1 model or 'contemporaneous' model 
                      ... # arguments passed to tv.mgmfit / tv_var.mgm and other stuff
@@ -11,6 +11,16 @@ bwSelect <- function(data, # Data
   
   
   # ----- Input Checks -----
+  
+  n <- nrow(data)
+  
+  # Check on test set indicator vector
+  if(!VAR) { 
+    if(min(test) < 1 | max(test) > n) stop('Please indicate the test set with row numbers from 1:n')
+  } else {
+    if(min(test) < 1 | max(test) > (n-1)) stop('Please indicate the test set with row numbers from 1:(n-1)')      
+    }
+  
   
   arg_pass <- list(...)
 
@@ -44,6 +54,8 @@ bwSelect <- function(data, # Data
   } else {
     estpoints <- arg_pass$timepoints[test]
   }
+  
+  if(VAR) estpoints <- test # only one option for VAR models, because they assume equal distance between time points
 
 
   # ----- Search bw-path -----  
@@ -61,8 +73,6 @@ bwSelect <- function(data, # Data
   for(bw in 1:n_bw) {
     
     # add pbar 
-    
-    
     
     # Contemporanous Models
     if(!VAR) {
@@ -84,7 +94,7 @@ bwSelect <- function(data, # Data
       l_bwPreds[[bw]] <- tvPredict(data = data,
                                    type = type,
                                    test = test, 
-                                   VAR = VAR,
+                                   VAR = FALSE,
                                    model = l_bwModels[[bw]])
       
     
@@ -93,6 +103,17 @@ bwSelect <- function(data, # Data
     } else {
       
       
+      l_bwModels[[bw]] <- tv_var.mgm() # ... 
+      
+      
+      
+        
+      l_bwPreds[[bw]] <- tvPredict(data = data,
+                                     type = type,
+                                     test = test, 
+                                     VAR = VAR,
+                                     model = l_bwModels[[bw]])  
+        
       
     }
     

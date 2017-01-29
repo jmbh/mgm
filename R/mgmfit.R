@@ -1,6 +1,5 @@
 
 
-
 mgmfit <- function(
   data, # data matrix, col=variables
   type, # data type for col 1:ncol; c=categorical, g=gaussian, p=poisson, e=exponential

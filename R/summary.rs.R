@@ -1,12 +1,13 @@
 
 
-summary.rs <- function(object, ZeroEdges = FALSE, ...) 
+summary.rs <- function(object, ZeroEdges = FALSE, probs = c(.05, .25, .75, .95), ...) 
   
 {
   
   # ++++++++++ Output for input: Bootstrap Object ++++++++++
   
   if(!('rs' %in% class(object))) stop('Please provide the output of rs.mgm() as an input to this function.')
+  
   
   # --- For MGM ---
   
@@ -16,13 +17,17 @@ summary.rs <- function(object, ZeroEdges = FALSE, ...)
     l_measures <- lapply(object$edgeWeights, function(ew) {
       round(c(mean(ew), 
               median(ew), 
-              quantile(ew, probs = c(.05, .25, .75, .95))),2)
+              quantile(ew, probs = probs)),2)
     })
     
     # Put edge IDs and summary measures together
     out <- cbind(do.call(rbind, object$edgeIDs), 
                  do.call(rbind, l_measures))
-    colnames(out) <- c('Edge A', 'Edge B', 'Mean', 'Median', '5% Q', '25% Q', '75% Q', '95% Q')
+    
+    clnm <- c('Edge A', 'Edge B', 'Mean', 'Median')
+    clnm2 <- paste0(probs*100, '% Q')
+    
+    colnames(out) <-  c(clnm, clnm2)
     v_order <- out[,'Mean']
     
     # Order from large to small mean Edge weights

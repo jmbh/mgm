@@ -23,13 +23,27 @@ mgmfit_core <- function(
 
 {
   
-  # +++++ checks on function input ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #####
+  # -------------------- Input checks ------------------
+  
+  
+  # Later: take all arguments from (...)
+  
+  
+  # ----- Calculate Aux Variables -----
+  
+  nNode <- ncol(data)
+  
+  # ----- Depreciated Messages -----
+  
+  if(!is.null(missings)) warning('missings is deprechiated. mgm does not support missing values anymore.')
+  
+  if(sum(is.na(data))>0) stop('No missing values permitted in the data matrix.')
+  
+  
+  # ----- Basic Checks -----
   
   # Check on variable typee
   if(sum(!(type %in% c('c', 'g', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables allowed.")
-  
-  # Get basic info #1
-  nNode <- ncol(data)
   
   # IF VAR: change data structure (+++)
   if(VAR) {
@@ -307,7 +321,7 @@ mgmfit_core <- function(
       n_pred <- sum(c(emp_lev_mv[type_mv!='c'], emp_lev_mv[type_mv=="c"]-1)) # number of dummy predictors
       
       # see above; we treat categorical variables with 1 category as gaussians; therefore coefs is a matrix and not a list containing matrices
-
+      
       # if(type[v]=='c')
       # {
       #   
@@ -319,7 +333,7 @@ mgmfit_core <- function(
       
       coefs <- matrix(0, nrow=n_pred+1, ncol=1) # n_pred+1 adds the intercept
       lambda_select <- NULL
-      threshold <- 0 # does nothing, but need numeric value to avoid error
+      threshold <- NULL # does nothing, but need numeric value to avoid error
       EBIC <- NULL
       
     }

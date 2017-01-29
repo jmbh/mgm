@@ -14,10 +14,18 @@ var.mgm <- function(
   missings = 'error', # handling of missing data
   weights = NA, # weights for observations 
   ret.warn = TRUE, # TRUE returns warnings, makes sense to switch off for time varying wrapper
-  binary.sign = FALSE # see help file
+  binary.sign = FALSE, # see help file
+  ...
 )
 
 {
+  
+  # ---------- VAR-specific input checks ----------
+  
+  if(nrow(data) - lags != weights) stop('Provide nrow(data) - lags weights. If there are k lags, the first k rows are removed.')
+  
+  
+  # ---------- Call mgmfit core ----------  
   
   outlist <- mgmfit_core(data = data, 
                          type = type, 
@@ -34,6 +42,9 @@ var.mgm <- function(
                          ret.warn = ret.warn, 
                          binary.sign = binary.sign,
                          VAR = TRUE) # use standard mgm.fit; no AR model
+  
+  
+  # ---------- Export ----------
   
   # Return estimation messages:
   estimation_msg('var.mgm') # note about where signs are stored

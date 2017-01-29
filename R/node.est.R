@@ -2,7 +2,19 @@
 # fits a regularized glm using CV/EBIC for lambda selection
 # as an extra function, because used twice, depending on method='linear' or 'glm'
 
-node.est <- function(lambda.sel, y, fam, folds, emp_lev, v, n, nadj, gam, X, method, weights, type) {
+node.est <- function(lambda.sel, 
+                     y, 
+                     fam, 
+                     folds, 
+                     emp_lev, 
+                     v, 
+                     n, 
+                     nadj, 
+                     gam, 
+                     X, 
+                     method, 
+                     weights, 
+                     type) {
   
   # lambda selection with EBIC
   
