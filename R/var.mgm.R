@@ -22,7 +22,7 @@ var.mgm <- function(
   
   # ---------- VAR-specific input checks ----------
   
-  if((nrow(data) - max(lags)) != length(weights)) stop('Provide nrow(data) - lags weights. If there are k lags, the first k rows are removed.')
+  if(!is.na(weights[1])) if((nrow(data) - max(lags)) != length(weights)) stop('Provide nrow(data) - lags weights. If there are k lags, the first k rows are removed.')
   
   
   # ---------- Call mgmfit core ----------  
