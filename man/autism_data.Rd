@@ -3,7 +3,7 @@
 \alias{autism_data}
 \title{Autism Dataset}
 \description{
-Subset of a dataset of on the live of 3521 Dutch individuals diagnosed with Autism Disorder Spectrum (ASD). The full dataset can be found here https://github.com/jmbh/AutismData
+Subset of a dataset of on the live of 3521 Dutch individuals diagnosed with Autism Disorder Spectrum (ASD). The full dataset used in Deserno et al. (2016) can be found here https://github.com/jmbh/AutismData.
 }
 
 \usage{data(autism_data)}
@@ -12,5 +12,9 @@ Subset of a dataset of on the live of 3521 Dutch individuals diagnosed with Auti
   \item{autism_data}{List containing the data, the type of variables, the number of categories of the variables and the column names.}
   }
 
-\keyword{datasets}  
+\references{
+Deserno, M. K., Borsboom, D., Begeer, S., & Geurts, H. M. (2016). Multicausal systems ask for multicausal approaches: A network perspective on subjective well-being in individuals with autism spectrum disorder. Autism.
+}
+
+\keyword{datasets}
 

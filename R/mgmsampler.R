@@ -1,110 +1,326 @@
 
 
+mgmsampler <- function(factors,
+                       interactions,
+                       thresholds,
+                       sds,
+                       type,
+                       level,
+                       N,
+                       nIter = 250,
+                       pbar = TRUE,
+                       divWarning = 10^3)
 
 
-mgmsampler <- function(n, #number of samples
-                       type, #type of data/from which distribution comes the data
-                       lev, # Number of levels
-                       graph, #graph structure
-                       thresh, #thresholds, for every node (& category)
-                       parmatrix = NA, #possibility to provide costum function to create model parameter matrix
-                       nIter = 250, #number of samples for each node
-                       varadj = .2, # additive constant to conditional variances before normalization; avoids partial correlations close to 1,
-                       exportGraph = FALSE # if TRUE exports list with data, graph with (transformed) gaussian sub graph and the parameter matrix, if FALSE just exports the data 
-){
+{
 
-  # --------- Input Checks -------
-    
-  lev <- as.numeric(lev)
-  nNodes <- ncol(graph)  # number of nodes
-  
-  # Check Symmetry
-  stopifnot(length(type)==length(lev))
-  if(is.na(parmatrix)==TRUE){
-    stopifnot(isSymmetric(graph))
-    stopifnot(length(type)==nrow(graph))
-    stopifnot(sum(diag(graph)!=0)==0)
+
+  # ---------- Input Checks ----------
+
+  # ----- Compute aux vars -----
+
+  p <- length(type)
+  n_order <- length(lapply(interactions, function(x) 1))
+
+  # ----- Input Checks -----
+
+  # 1) Do matrices in factors match the corresponding order?
+  for(i in 1:n_order) if(!is.null(factors[[i]])) if(ncol(factors[[i]]) != i+1) stop(paste0('Matrix specifying ',i+1,'-way interctions has incorrect dimensions.' ))
+
+  # 2) Are parameter of right dimension provided for all interactions
+  for(i in 1:n_order) {
+
+    n_ints <- nrow(factors[[i]])
+    if(!is.null(n_ints)) {
+
+      for(row in 1:n_ints) {
+
+        check <- all.equal(level[factors[[i]][row,]],
+                           dim(interactions[[i]][[row]]))
+
+        if(any(check == FALSE)) stop(paste0('Incorrect dimensions of parameter array for interaction: ', paste(level[factors[[i]][row,]], collapse = ' ')))
+      }
+    }
   }
-  
-  # Check Thresholds
-  if(sum(unlist(lapply(thresh, length)) == lev) != nNodes) {
-    stop('Specified levels do not match specified thresholds')
+
+  # 3) Are interactions defined twice?
+  for(i in 1:n_order) {
+
+    if(!is.null(factors[[i]])) {
+
+      symflag <- FlagSymmetric(factors[[i]])
+      dup <- duplicated(symflag)
+      if(any(dup)) stop(paste0('Interaction ', paste(factors[[i]][min(which(dup)),], collapse = ' '), ' is specified twice.' ))
+
+    }
   }
-  
-  
-  # --------- Ensure that the Gaussian Submatrix is Positive Definite -------
-  
-  # in case we have more than 1 gaussian variable in the graph, 
-  # we have to rescale the conditional variances to 1
-  if(sum("g"==type)>1) {
-    
-    # get the gaussian subgraph
-    graph.g <- graph[type=="g", type=="g"]
-    
-    # all parameters have to be negative
-    graph.g <- -abs(graph.g)
-    
-    # define diagonal in inverse covariance matrix
-    diag(graph.g) <- - (colSums(graph.g) - rep(varadj, sum(type=="g"))) 
-    
-    #rescale to unit conditional variance
-    graph.g.re <- round(cov2cor(graph.g),10) 
-    
-    # check whether Gaussian submatrix is now positive definite
-    Eig <- eigen(graph.g.re)
-    if(sum(Eig$values>0)!=ncol(graph.g)) stop('Gaussian Submatrix not positive definite.')
-    
-    graph.g.re.e <- graph.g.re; diag(graph.g.re.e) <- 0 #zero diagonal to put it back in the graph
-    graph[type=="g", type=="g"] <- graph.g.re.e #put back in the graph
-    
-  } 
-  
-  # --------- Create Parameter Matrix Used in Gibbs Sampler -------
-  
-  if(is.na(parmatrix)==TRUE) {
-    graphe <- potts_parameter(graph, type, lev, thresh) #create model.parameter.matrix
+
+
+  # 4) Are variances for conditional Gaussians specified properly?
+  if(!('g' %in% type)) {
+    if(missing(sds)) sds <- NULL
   } else {
-    stopifnot(isSymmetric(parmatrix))
-    graphe <- parmatrix
+  if(any(is.na(sds[type=='g']))) stop('Missing values in standard deviations')
+  if(any(sds[type=='g'] < 0)) stop('Specified standard deviations need to be positive')
+  if(any(!is.finite(sds[type=='g']))) stop('Specified standard deviations need to be finite')
   }
-  
-  Data <- matrix(0, n, nNodes)  # create empty data matrix
-  inde <- as.numeric(colnames(graphe))
-  colnames(graphe) <- rownames(graphe) <- NULL
-  
-  #transform thresh into a matrix (C doesnt take lists)
-  thresh_m <- matrix(0, nrow=length(thresh), ncol=max(lev))
-  for(t in 1:nNodes) {
-    thresh_m[t,1:length(thresh[[t]])] <- thresh[[t]]
+
+  # 5) Other basics
+  if(length(type) != length(level)) stop('Length of type does not match length of level.')
+  if(length(thresholds) != length(type)) stop('Length of threshold list does notmatch length of type vector')
+  if(!all.equal(unlist(lapply(thresholds, length)), level)) stop('Specified thresholds do not match the number of categoreis in level')
+
+
+  # Transforms all entries in factors and interactions into matrices to avoid trouble with nrow()
+  for(i in 1:n_order) {
+
+    if(!is.null(factors[[i]])) {
+      factors[[i]] <- as.matrix(factors[[i]], ncol = ncol(factors[[i]]), nrow = nrow(factors[[i]]))
+
+    }
   }
-  
-  #transform types into integers
-  type_c <- numeric(nNodes)
-  type_c[type=="c"] <- 1
-  type_c[type=="g"] <- 2
-  type_c[type=="p"] <- 3
-  type_c[type=="e"] <- 4
-  
-  # --------- C-implementation of Gibbs Sampler -------
 
-  c_out <- mMRFCsampler(Data, n, nNodes, type_c, lev, nIter=nIter, thresh_m, graphe, inde)
-  
-  
-  # --------- Different Output Options -------
-  
-  if(exportGraph) {
 
-    outlist <- list('Data' = c_out,
-                    'Graph' = graph,
-                    'ParMatrix' = graphe)
+  # Create Output Object
+  mgmsamp_obj <- list('call' = NULL,
+                      'data' = NULL)
 
-    return(outlist)
+  # Copy the call
+  mgmsamp_obj$call <- list('factors' = factors,
+                           'interactions' = interactions,
+                           'thresholds' = thresholds,
+                           'sds' = sds,
+                           'type' = type,
+                           'N' = N,
+                           'level' = level,
+                           'nIter' = nIter,
+                           'pbar' = pbar,
+                           'divWarning' = divWarning)
 
-  } else {
 
-    return(c_out)
 
-  }
-  
-  
-} # end of function
+
+
+
+  # ---------- Optional: Enforce positive definite Gaussian subgraph ----------
+
+  # browser()
+
+  # ---------- Call C++ Gibbs Sampler (for now: R version) ----------
+
+  if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=N, initial=0, char="-", style = 3)
+
+  data <- matrix(NA, nrow = N, ncol = p)
+
+  for(case in 1:N) {
+
+    sampling_seq <- matrix(NA, nrow = nIter, ncol = p)
+
+
+    # Random Start
+    for(v in 1:p) {
+      if(type[v] == 'g') sampling_seq[1, v] <- rnorm(1)
+      if(type[v] == 'p') sampling_seq[1, v] <- rpois(1, lambda = .5)
+      if(type[v] == 'c') sampling_seq[1, v] <- sample(1:level[v], size = 1)
+    }
+
+    # Loop over iterations of the Gibbs sampler
+    for(iter in 2:nIter) {
+
+      # Looping over variables
+      for(v in 1:p) {
+
+        # A) ----- Continuous conditional -----
+        if(type[v] != 'c') {
+
+          l_natPar <- list() # list collecting the interaction terms separate for each order
+          l_natPar[[1]] <- thresholds[[v]] # first entry = order 'zero', the intercept
+
+          # Loop over order of interactions
+          for(ord in 1:n_order) {
+
+            # Loop over factors for fixed ord
+            n_rows <- nrow(factors[[ord]])
+            l_row_terms <- list() # collects terms for interactions of given order
+            row_counter <- 1
+
+            if(!is.null(n_rows)) { # only loop over factors if there are factors for given ord
+              for(row in 1:n_rows) {
+
+                f_ind <- factors[[ord]][row, ]
+
+                # is the current variable in that row?
+                if(v %in% f_ind) {
+
+                  # find out: which is current var, where is it, fill in 1 for continuous
+                  # (hack; this will be slightly more complicated for categorical response)
+                  fill_in <- rep(NA, ord + 1)
+                  get_cont <- rep(NA, ord + 1) # get values of continuous variables
+                  k_counter <- 1
+
+                  for(k in f_ind) { # loop over variables in factor
+
+                    # Gibbs algorithm: take always the freshest data
+                    if(k >= v) gibbs_shift <- iter - 1 else gibbs_shift <- iter # equal case doesn't matter as excluded below
+
+                    if(level[k]==1) fill_in[k_counter] <- 1 else fill_in[k_counter] <- sampling_seq[gibbs_shift, k]
+                    if(level[k]==1) get_cont[k_counter] <- sampling_seq[gibbs_shift, k] else get_cont[k_counter] <- 1
+                    k_counter <- k_counter + 1
+
+                  }
+
+                  # Convergence Check
+                  if(any(abs(sampling_seq[!is.na(sampling_seq)]) > divWarning)) warning('Gibbs Sampler diverged; adapt parameterization of continuous varibales.')
+
+
+                  # prepare fill in matrix:
+                  m_fill_in <- matrix(fill_in, ncol=length(fill_in))
+
+                  # get the parameter for ord-interaction out the the ord-order parameter array
+                  row_int <- interactions[[ord]][[row]][m_fill_in]
+
+                  # multiply it by continuous variables if in interaction and save in list
+                  l_row_terms[[row_counter]] <- prod(get_cont[-which(f_ind == v)]) * row_int
+
+                  # update row counter (those rows (factors) in which v is contained)
+                  row_counter <- row_counter + 1
+
+                } # end if: variable in given row?
+
+              } # end for: rows in factors of given ord
+
+            } # end if: isnul n_rows
+
+            # fill in all terms of given order ord
+            l_natPar[[ord + 1]] <- unlist(l_row_terms)
+
+          } # end loop: ord
+
+          # Compute Natural Parameter (collapse and sum all interaction terms)
+          natPar <- sum(unlist(l_natPar))
+
+          # Take a draw
+          if(type[v] == 'g') sampling_seq[iter, v] <- rnorm(1, mean = natPar, sd = sds[v])
+          if(natPar < 0) warning(paste0('Lambda parameter of Poisson variable ', v, ' is negative. Sampler returns NA.'))
+          if(type[v] == 'p') sampling_seq[iter, v] <- rpois(1, lambda = natPar)
+
+
+        } #end if: v == continuous?
+
+
+        # browser()
+
+        # A) ------ Categorical conditional ------
+        if(type[v] == 'c') {
+
+          v_Potential <- rep(NA, level[v]) # Storage to collect potentials
+
+          for(cat in 1:level[v]) {
+
+            l_natPar <- list() # list collecting the interaction terms separate for each order
+            l_natPar[[1]] <- thresholds[[v]][cat] # first entry = order 'zero', the intercept for category cat
+
+            # Loop over order of interactions
+            for(ord in 1:n_order) {
+
+              # Loop over factors for fixed ord
+              n_rows <- nrow(factors[[ord]])
+              l_row_terms <- list() # collects terms for interactions of given order
+              row_counter <- 1
+
+
+
+              if(!is.null(n_rows)) { # only loop over factors if there are factors for given ord
+                for(row in 1:n_rows) {
+
+                  f_ind <- factors[[ord]][row, ]
+
+                  # is the current variable in that row?
+                  if(v %in% f_ind) {
+
+                    # find out: which is current var, where is it, fill in 1 for continuous
+                    # (hack; this will be slightly more complicated for categorical response)
+                    fill_in <- rep(NA, ord + 1)
+                    get_cont <- rep(NA, ord + 1) # get values of continuous variables
+                    k_counter <- 1
+
+                    for(k in f_ind) { # loop over variables in factor
+
+                      # Gibbs algorithm: take always the freshest data
+                      if(k >= v) gibbs_shift <- iter - 1 else gibbs_shift <- iter # equal case doesn't matter as excluded below
+
+                      if(level[k]==1) fill_in[k_counter] <- 1 else fill_in[k_counter] <- sampling_seq[gibbs_shift, k]
+                      if(level[k]==1) get_cont[k_counter] <- sampling_seq[gibbs_shift, k] else get_cont[k_counter] <- 1 # numeric value for cat is always one for the present category (indicator function)
+                      k_counter <- k_counter + 1
+
+                    }
+
+                    # Convergence Check
+                    if(any(abs(sampling_seq[!is.na(sampling_seq)]) > divWarning)) warning('Gibbs Sampler diverged; adapt parameterization of continuous varibales.')
+
+                    # fill in current category
+                    fill_in[which(v == f_ind)] <- cat
+
+                    # prepare fill in matrix:
+                    m_fill_in <- matrix(fill_in, ncol=length(fill_in))
+
+                    # get the parameter for ord-interaction out the the ord-order parameter array
+                    row_int <- interactions[[ord]][[row]][m_fill_in]
+
+
+                    # multiply it by continuous variables if in interaction and save in list
+                    l_row_terms[[row_counter]] <- prod(get_cont[-which(f_ind == v)]) * row_int
+
+                    # update row counter (those rows (factors) in which v is contained)
+                    row_counter <- row_counter + 1
+
+                  } # end if: variable in given row?
+
+                } # end for: rows in factors of given ord
+
+              } # end if: isnul n_rows
+
+              l_natPar[[ord + 1]] <- unlist(l_row_terms)
+
+            } # end loop: ord
+
+            v_Potential[cat] <- sum(unlist(l_natPar))
+
+          } # end: for cat
+
+          # if(v == 2) browser()
+
+          v_probabilities <- exp(v_Potential) / sum(exp(v_Potential)) # calc probability for each category
+          sampling_seq[iter, v] <- sample(1:level[v], size = 1, prob = v_probabilities) # sample from multinomial distribution
+
+        }
+
+        # print(v)
+
+      } # end for: v
+
+      # print(iter)
+
+    } # end for: iter
+
+
+
+    data[case, ] <- sampling_seq[nIter, ] # Fill in last sampling iteration
+
+    # browser()
+
+
+    if(pbar==TRUE) setTxtProgressBar(pb, case)
+
+  } # end for: case
+
+
+
+  # ---------- Export ----------
+
+  mgmsamp_obj$data <- data
+
+  return(mgmsamp_obj)
+
+
+} # eoF

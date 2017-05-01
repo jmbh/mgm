@@ -1,8 +1,24 @@
-Changes in Version 1.1-8
-  o Extended confusion function to directed graphs
-  o Added second thresholding option 'threshtype' from new consistency analysis in GLM framework
-  o Additional output for mgmsampler() and tv.mgmsampler()
+
+Changes in Version 1.2-0
+  o The whole package has been rewritten from scratch to reduce susceptibility to bugs and to allow new features
+  o Every function now has many input checks and associated informative error messages
+  o Major syntax changes: mgmfit() -> mgm(), var.mgm() -> mvar(), tv.mgmfit() -> tvmgm() and tv_var.mgm() -> tvmvar()
+  o The names of function arguments are now consistent across the package and therefore had to be changed considerably
+  o There is no more missing argument in the estimation functions
+  o All estimation functions allow to search a sequence of the (alpha) elastic net paramter, using the EBIC or cross-validation; so far alpha was fixed to 1
+  o mgm() and tvmgm() now presents all paramters involved in higher (than pairwise) order interactions in the output; this includes a factor-graph representation that is easy to visualize
+  o The d parameter for the largest order of interaction in the neighborhood of a given node has been replaced with the k parameter, the largest order of interaction in the whole graph. Note that d = k - 1
+  o All estimation functions allow the standard parameterization for categorical variables, but also an overparameterization. This is necessary to correctly identify higher order interactions between categorical variables.
+  o The sampling functions mgmsampler() and tvmgmsampler() were extended to k-order MGMs (before only pairwise / k = 2)
+  o mvar() and tvmvar() now allow the specification of any number of lags
+  o The new functions mvarsampler() and tvmvarsampler() now allow to sample from mVAR models any number of lags
+  o There is no more function provided for resampling. Instead, we provide an interface with the bootnet package.
+  o The function bwSelect() allows the selection of an optimal bandwidth parameter for timer-varying MGM or mVAR models using cross-validation
+  o predict.mgm() now allows two different ways to predict from time-varying models, see ?predict.mgm
   o Fixed bug in mgmsampler() that was present in binary-Gaussian graphs
+  o Fixed bug in predict.mgm() which caused the prediction of incorrect category labels in some situations
+  o Fixed bug in mgm() which did not use the weight-argument in case of lambdaSel = 'CV'
+
 Changes in Version 1.1-7
   o The predict() function now returns the predicted probabilities in addition to the predicted category for categorical variables
   o Added a message for all estimation functions indicating where edge weights (if defined) can be found: fitobject$signs
@@ -12,4 +28,4 @@ Changes in Version 1.1-7
   o Added subsampling scheme to evaluate edge-stability for non-time-varying models (MGM and mixed VAR)
       o Added summary() & plot() for the bootstrap object to summarize edge-stability
   o Added argument 'binary.sign': If binary.sign=TRUE, the sign of the interactions of all binary variables coded (0,1) with other binary variables and continuous variables will be returned in the sign matrix fit$signs
-  
+

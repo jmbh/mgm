@@ -1,21 +1,29 @@
-useDynLib(mgm)
-importFrom(Rcpp, evalCpp)
-importFrom("stats", "cov2cor")
-importFrom("stats", "var")
-importFrom(matrixcalc, is.positive.definite)
-importFrom(matrixcalc, is.symmetric.matrix)
-importFrom("stats", "as.formula", "coef", "dnorm", "dpois", "model.matrix")
-importFrom("utils", "setTxtProgressBar", "txtProgressBar")
+# exportPattern("^[[:alpha:]]+")
+
+
+# Packages mgm depends on
+import(stringr)
 import(glmnet)
-export(mgmfit, mgmsampler, confusion, print.mgm, summary.mgm, tv.mgmfit, 
-       tv.mgmsampler, var.mgm, tv_var.mgm, predict.mgm, rs.mgm, summary.rs, plot.rs, print.rs)
-S3method(print, mgm)
-S3method(summary, mgm)
+import(matrixcalc)
+import(Hmisc)
+
+importFrom("stats", "as.formula", "coef", "dnorm", "dpois",
+             "model.matrix", "var")
+importFrom("utils", "combn", "setTxtProgressBar", "txtProgressBar")
+importFrom("stats", "rnorm", "rpois")
+
+# Exported functions
+export(mgm)
+export(mvar)
+
+export(tvmgm)
+export(tvmvar)
+export(bwSelect)
+
+export(mgmsampler)
+export(tvmgmsampler)
+
+# Exported S3 Methods
 S3method(predict, mgm)
-S3method(plot, rs)
-S3method(summary, rs)
-S3method(print, rs)
-
-import(stats, graphics)
-
+S3method(print, mgm)
 
