@@ -17,7 +17,7 @@ print.mgm <- function(x,
 
   if(!('predicted' %in% class(x)) & !('bwSelect' %in% class(x))) {
 
-    if(class(x) == 'mgm') {
+    if('core' %in% class(x)) {
       cat('mgm fit-object',
           '\n\nModel class: ', model_classes[1],
           '\nOrder: ' , x$call$k,
@@ -25,7 +25,7 @@ print.mgm <- function(x,
     }
 
 
-    if(class(x) == 'mvar') {
+    if('mvar' %in% class(x)) {
       cat('mgm fit-object',
           '\n\nModel class: ', model_classes[2],
           '\nLags: ' , x$call$lags,
@@ -34,7 +34,7 @@ print.mgm <- function(x,
 
 
 
-    if(class(x) == 'tvmgm') {
+    if('tvmgm' %in% class(x)) {
       cat('mgm fit-object',
           '\n\nModel class: ', model_classes[3],
           '\nOrder: ' , x$call$k,
@@ -43,7 +43,7 @@ print.mgm <- function(x,
     }
 
 
-    if(class(x) == 'tvmvar') {
+    if('tvmvar' %in% class(x)) {
       cat('mgm fit-object',
           '\n\nModel class: ', model_classes[4],
           '\nLags: ' , x$call$lags,

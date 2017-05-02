@@ -60,7 +60,6 @@ mvar <- function(data,         # n x p data matrix
   if(missing(threshold)) threshold <- 'LW'
   if(missing(method)) method <- 'glm'
   if(missing(binarySign)) binarySign <- FALSE
-  if(missing(scale)) scale <- FALSE
   if(missing(verbatim)) verbatim <- FALSE
   if(missing(pbar)) pbar <- TRUE
   if(missing(warnings)) warnings <- TRUE
@@ -68,7 +67,8 @@ mvar <- function(data,         # n x p data matrix
   if(missing(saveData)) saveData <- FALSE
   if(missing(overparameterize)) overparameterize <- FALSE
   if(missing(signInfo)) signInfo <- TRUE
-
+  
+  if(missing(scale)) scale <- TRUE
 
   if(verbatim) pbar <- FALSE
   if(verbatim) warnings <- FALSE
@@ -195,6 +195,7 @@ mvar <- function(data,         # n x p data matrix
   mvarobj <- list('call' = NULL, # fill in later
                   'wadj' = NULL,
                   'signs' = NULL,
+                  'edgecolor' = NULL,
                   'rawlags' = list(),
                   'intercepts' = NULL,
                   'nodemodels' = NULL)
@@ -220,6 +221,7 @@ mvar <- function(data,         # n x p data matrix
                       'threshold' = threshold,
                       'method' = method,
                       'binarySign' = binarySign,
+                      'scale' = scale,
                       'verbatim' = verbatim,
                       'pbar' = pbar,
                       'warnings' = warnings,
@@ -609,6 +611,7 @@ mvar <- function(data,         # n x p data matrix
   list_wadj <- list_signs <- list()
 
   a_wadj <- a_signs <- array(dim=c(p, p, n_lags))
+  a_edgecolor <- array('black',dim=c(p, p, n_lags))
   mvarobj$rawlags <- vector('list', length = n_lags)
 
   for(lag in 1:n_lags) {
@@ -628,17 +631,26 @@ mvar <- function(data,         # n x p data matrix
         a_wadj[i, k, lag] <- l_Par_red[[i]][[j]]
         l_lag[[i]][[j]] <- l_Par[[i]][[j]]
         a_signs[i, k, lag] <- l_signs[[i]][[j]]
+        
+        # edge color array
+        if(!is.na(a_signs[i, k, lag])) {
+          if(a_signs[i, k, lag] == -1) a_edgecolor[i, k, lag] <- 'red'
+          if(a_signs[i, k, lag] == 1) a_edgecolor[i, k, lag] <- 'darkgreen'
+        }
+        
         k <- k+1
+
       }
     }
 
     # save in list
     mvarobj$wadj <- a_wadj
     mvarobj$signs <- a_signs
+    mvarobj$edgecolor <- a_edgecolor
     mvarobj$rawlags[[lag]] <- l_lag
 
   } # end for: lag
-
+  
 
 
 
@@ -656,7 +668,7 @@ mvar <- function(data,         # n x p data matrix
   if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mvar')
 
 
-  class(mvarobj) <- c('mvar')
+  class(mvarobj) <- c('mgm', 'mvar')
 
 
   return(mvarobj)

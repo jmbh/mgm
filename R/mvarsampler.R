@@ -17,7 +17,7 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
   if(length(dim(coefarray))!=5) stop('coefarray has to have 5 dimensions: p x p x max(level) x max(level) x n_lags.')
   if(dim(coefarray)[5] != length(lags)) stop('Dimensions for lags in coefarray have to match the number of lags specified in lags.')
   if(dim(coefarray)[1] != length(thresholds)) stop('Dimensions for variables in coefarray have to match the number of specified thresholds.')
-  if(dim(coefarray)[1] != length(sds)) stop('Dimensions for variables in coefarray have to match the number of specified standard deviations.')
+  if(any(type=='g')) if(dim(coefarray)[1] != length(sds)) stop('Dimensions for variables in coefarray have to match the number of specified standard deviations.')
   if(dim(coefarray)[1] != length(type)) stop('Dimensions for variables in coefarray have to match the number of specified types.')
   if(dim(coefarray)[1] != length(level)) stop('Dimensions for variables in coefarray have to match the number of specified levels.')
   if(dim(coefarray)[1] != dim(coefarray)[2]) stop('The first two dimensions specifying the cross-lagged effects in coefarray have to have the same dimensionality.')

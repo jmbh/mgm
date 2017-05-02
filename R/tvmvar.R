@@ -31,7 +31,7 @@ tvmvar <- function(data,         # n x p data matrix
   if(is.null(args$threshold)) args$threshold <- 'HW'
   if(is.null(args$method)) args$method <- 'glm'
   if(is.null(args$binarySign)) args$binarySign <- FALSE
-  if(is.null(args$scale)) args$scale <- FALSE
+  if(is.null(args$scale)) args$scale <- TRUE
 
   if(is.null(args$consec)) args$consec <- NULL
 
@@ -223,7 +223,7 @@ tvmvar <- function(data,         # n x p data matrix
 
   # -------------------- Output -------------------
 
-  class(tvmvar_object) <- c('tvmvar')
+  class(tvmvar_object) <- c('mgm', 'tvmvar')
 
   if(args$signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?tvmvar / ?mvar')
 

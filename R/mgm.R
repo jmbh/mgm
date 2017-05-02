@@ -815,7 +815,7 @@ mgm <- function(data,         # n x p data matrix
   if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mgm')
 
   # Assign class
-  class(mgmobj) <- c('mgm')
+  class(mgmobj) <- c('mgm', 'core')
 
   return(mgmobj)
 

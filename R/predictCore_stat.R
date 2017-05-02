@@ -10,7 +10,7 @@ predictCore_stat <- function(object,
   # ----- Compute Aux Variables -----
 
 
-  cobj <- class(object)
+  cobj <- class(object)[2]
   nNodes <- ncol(data)
   nCases <- nrow(data)
   call <- object$call
@@ -18,7 +18,7 @@ predictCore_stat <- function(object,
   level <- call$level
   k <- call$k
   n_lags <- length(call$lags)
-
+  
 
   # Create outlist and storage
   predCoreObj <- list('pred' = vector('list', length = nNodes),
@@ -38,7 +38,7 @@ predictCore_stat <- function(object,
 
   # ----- A.1) mgm -----
 
-  if(cobj == 'mgm') {
+  if(cobj == 'core') {
 
     for(v in 1:nNodes) {
 
@@ -109,7 +109,7 @@ predictCore_stat <- function(object,
   if(cobj == 'mvar') {
 
     # Prepare Data
-    data_lagged <- lagData(data, object$call$lags)
+    data_lagged <- lagData(data, object$call$lags, consec = object$call$consec)
     data_response <- data_lagged$data_response
     l_data_lags <- data_lagged$l_data_lags
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors

@@ -309,7 +309,7 @@ tvmgm <- function(data,         # n x p data matrix
   if(args$signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?tvmgm / ?mgm')
 
   # Assign class
-  class(tvmgmobj) <- c('tvmgm')
+  class(tvmgmobj) <- c('mgm', 'tvmgm')
 
   return(tvmgmobj)
 
