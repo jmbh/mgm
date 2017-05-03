@@ -1,5 +1,6 @@
 \name{mvar}
 \alias{mvar}
+\alias{var.mgm}
 
 \title{
 Estimating mixed Vector Autoregressive Model (mVAR)

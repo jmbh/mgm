@@ -23,6 +23,13 @@ export(bwSelect)
 export(mgmsampler)
 export(tvmgmsampler)
 
+# Export old functions with defunct msg
+export(mgmfit)
+export(var.mgm)
+export(tv.mgmfit)
+export(tv_var.mgm)
+
+
 # Exported S3 Methods
 S3method(predict, mgm)
 S3method(print, mgm)

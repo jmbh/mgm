@@ -1,5 +1,6 @@
 \name{tvmgm}
 \alias{tvmgm}
+\alias{tv.mgmfit}
 
 \title{
 Estimating time-varying Mixed Graphical Models

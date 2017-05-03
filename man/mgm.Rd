@@ -1,5 +1,6 @@
 \name{mgm}
 \alias{mgm}
+\alias{mgmfit}
 
 \title{
 Estimating Mixed Graphical Models

@@ -1,5 +1,6 @@
 \name{tvmvar}
 \alias{tvmvar}
+\alias{tv_var.mgm}
 
 \title{
 Estimating time-varying Mixed Vector Autoregressive Model (mVAR)
