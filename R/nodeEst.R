@@ -14,7 +14,8 @@ nodeEst <- function(y,
                     v,
                     type,
                     level,
-                    emp_lev)
+                    emp_lev,
+                    overparameterize)
 
 
 {
@@ -26,6 +27,13 @@ nodeEst <- function(y,
   if(type[v] == 'c') fam = 'multinomial'
   if(type[v] == 'g') fam = 'gaussian'
   if(type[v] == 'p') fam = 'poisson'
+  
+  
+  if(type[v] == 'c' & overparameterize) {
+    intercept <- FALSE 
+  } else {
+    intercept <- TRUE 
+  }
 
 
   # ---------- Lambda selection via EBIC ----------
@@ -34,13 +42,14 @@ nodeEst <- function(y,
 
 
     # ----- Fit Model -----
-
+  
     fit <- glmnet(x = X,
                   y = y,
                   family = fam,
                   alpha = alpha,
                   weights = weights,
-                  lambda = lambdaSeq)
+                  lambda = lambdaSeq,
+                  intercept = intercept)
 
     n_lambdas <- length(fit$lambda) # length of fitted lambda sequence
 
@@ -152,7 +161,8 @@ nodeEst <- function(y,
                      weights = weights,
                      nfolds = lambdaFolds,
                      type.measure = "deviance",
-                     lambda = lambdaSeq)
+                     lambda = lambdaSeq,
+                     intercept = intercept)
 
     lambda_min <-  fit$lambda.min
     lambad_min_model <- coef(fit, s = lambda_min)
