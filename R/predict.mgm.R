@@ -176,12 +176,13 @@ predict.mgm <- function(object, # One of the four mgm objects
   }
   
   
+  
   # Categorical
   l_errorCat <- list()
   if(class(errorCat)=='character') {
     
-    if('CC' %in% errorCon & !('nCC' %in% errorCon)) l_errorCat <- list('CC' = f_error_CC)
-    if('nCC' %in% errorCon & !('CC' %in% errorCon)) l_errorCat <- list('nCC' = f_error_nCC)
+    if('CC' %in% errorCat & !('nCC' %in% errorCat)) l_errorCat <- list('CC' = f_error_CC)
+    if('nCC' %in% errorCat & !('CC' %in% errorCat)) l_errorCat <- list('nCC' = f_error_nCC)
     if(all(c('CC', 'nCC') %in% errorCat)) l_errorCat <- list('CC' = f_error_CC, 'nCC' = f_error_nCC)
     
   } else if(class(errorCat)=='list') {
@@ -234,14 +235,6 @@ predict.mgm <- function(object, # One of the four mgm objects
     
     m_pred <- do.call(cbind, corePred$pred) # Collapse predictions in matrix
 
-    # browser()
-    # head(m_pred)
-    # head(corePred$true)
-    # 
-    # j <- 9 # worrying
-    # plot(m_pred[, j], corePred$true[, j])
-    # cor(m_pred[, j], corePred$true[, j])
-
 
     # Errors Continuous
     l_errors_con <- list()
@@ -266,6 +259,7 @@ predict.mgm <- function(object, # One of the four mgm objects
       names(l_errors_cat) <- names(l_errorCat)
     }
     
+  
     
     # So we have consistent variable names
     l_preds <- m_pred

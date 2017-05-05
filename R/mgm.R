@@ -190,6 +190,7 @@ mgm <- function(data,         # n x p data matrix
 
   # ----- Save the Call -----
 
+
   mgmobj$call <- list('data' = NULL,
                       'type' = type,
                       'level' = level,
@@ -207,6 +208,7 @@ mgm <- function(data,         # n x p data matrix
                       'threshold' = threshold,
                       'method' = method,
                       'binarySign' = binarySign,
+                      'scale' = scale,
                       'verbatim' = verbatim,
                       'pbar' = pbar,
                       'warnings' = warnings,
