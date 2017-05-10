@@ -20,8 +20,11 @@ export(tvmgm)
 export(tvmvar)
 export(bwSelect)
 
+
 export(mgmsampler)
+export(mvarsampler)
 export(tvmgmsampler)
+export(tvmvarsampler)
 
 # Export old functions with defunct msg
 export(mgmfit)
