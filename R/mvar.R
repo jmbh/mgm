@@ -484,8 +484,8 @@ mvar <- function(data,         # n x p data matrix
           # threshold
           par_part[abs(par_part) < tau] <- 0
           mvarobj$nodemodels[[v]]$tau <- tau # Save tau threshold
-
-          ind_v2 <- grepl(pred_names[v2], rownames(par_part)[-1]) # indicator: where is that parameter; minus 1 to remove intercept
+          
+          ind_v2 <- grepl(pred_names[v2], rownames(par_part)[-1], fixed = TRUE) # indicator: where is that parameter; minus 1 to remove intercept
 
           l_Par[[v]][[v2]][[cat]] <- par_part[-1,][ind_v2] # minus 1 to remove intercept
 
@@ -509,7 +509,7 @@ mvar <- function(data,         # n x p data matrix
         par_part[abs(par_part) < tau] <- 0
         mvarobj$nodemodels[[v]]$tau <- tau # Save tau threshold
 
-        ind_v2 <- grepl(pred_names[v2], rownames(par_part)[-1]) # indicator: where is that parameter
+        ind_v2 <- grepl(pred_names[v2], rownames(par_part)[-1], fixed = TRUE) # indicator: where is that parameter
 
         l_Par[[v]][[v2]] <- par_part[-1,][ind_v2] # minus 1 to remove intercept
 
@@ -641,7 +641,7 @@ mvar <- function(data,         # n x p data matrix
           if(a_signs[i, k, lag] == 1) a_edgecolor[i, k, lag] <- 'darkgreen'
         }
         
-        k <- k+1
+        k <- k + 1
 
       }
     }
