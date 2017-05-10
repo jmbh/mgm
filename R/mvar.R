@@ -611,7 +611,7 @@ mvar <- function(data,         # n x p data matrix
   list_wadj <- list_signs <- list()
 
   a_wadj <- a_signs <- array(dim=c(p, p, n_lags))
-  a_edgecolor <- array('black',dim=c(p, p, n_lags))
+  a_edgecolor <- array('darkgrey',dim=c(p, p, n_lags))
   mvarobj$rawlags <- vector('list', length = n_lags)
 
   for(lag in 1:n_lags) {

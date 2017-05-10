@@ -771,7 +771,7 @@ mgm <- function(data,         # n x p data matrix
   }
 
   # Create sign color matrix
-  sign_colors <- matrix('black', p, p)
+  sign_colors <- matrix('darkgrey', p, p)
   sign_colors[m_signs == 1] <- 'darkgreen'
   sign_colors[m_signs == -1] <- 'red'
 
