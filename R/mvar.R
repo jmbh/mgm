@@ -334,7 +334,8 @@ mvar <- function(data,         # n x p data matrix
                                             v = v,
                                             type = type,
                                             level = level,
-                                            emp_lev = emp_lev)
+                                            emp_lev = emp_lev,
+                                            overparameterize = overparameterize)
 
             # Calculte Out-of-sample deviance for current fold
             LL_model <- calcLL(X = test_X,
@@ -388,7 +389,8 @@ mvar <- function(data,         # n x p data matrix
                        v = v,
                        type = type,
                        level = level,
-                       emp_lev = emp_lev)
+                       emp_lev = emp_lev,
+                       overparameterize = overparameterize)
 
       mvarobj$nodemodels[[v]] <- model
 
@@ -420,7 +422,8 @@ mvar <- function(data,         # n x p data matrix
                                       v = v,
                                       type = type,
                                       level = level,
-                                      emp_lev = emp_lev)
+                                      emp_lev = emp_lev,
+                                      overparameterize = overparameterize)
 
         EBIC_Seq[a] <- l_alphaModels[[a]]$EBIC
 
