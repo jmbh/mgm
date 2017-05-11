@@ -2,9 +2,13 @@
 \docType{data}
 \alias{autism_data}
 \alias{autism_data_large}
+\alias{restingstate_data}
 
 \title{Autism Dataset}
 \description{
+FILL IN: description of and reference for all datasets
+
+
 Subset of a dataset of on the live of 3521 Dutch individuals diagnosed with Autism Disorder Spectrum (ASD). The full dataset used in Deserno et al. (2016) can be found here https://github.com/jmbh/AutismData.
 }
 
