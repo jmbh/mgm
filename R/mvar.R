@@ -531,13 +531,14 @@ mvar <- function(data,         # n x p data matrix
   # Define set of variables which allow sign
   type_long <- rep(type, times=no_lags)
   ind_binary_long <- rep(1:p %in% ind_cat[ind_binary], times=no_lags)
+  ind_cat_long <- rep(ind_cat, times=no_lags)
 
   # Define set of continous and binary variables: for interactions between these we can assign a sign
   # Depends on binarySign
   if(binarySign) {
-    set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
+    set_signdefined <- c(which(type_long == 'p'), which(type_long == 'g'), ind_cat_long[ind_binary_long])
   } else {
-    set_signdefined <- c(which(type == 'p'), which(type == 'g'))
+    set_signdefined <- c(which(type_long == 'p'), which(type_long == 'g'))
   }
 
 
@@ -571,9 +572,8 @@ mvar <- function(data,         # n x p data matrix
 
 
           } else {
-
+            
             # Sign extraction for standard parameterization
-
             if(type[v]=='c') {
               sign_sel <- sign(l_Par[[v]][[v2]][[2]]) # there will be two entries, second one is for category = 1 (other=0)
             } else {
@@ -596,8 +596,6 @@ mvar <- function(data,         # n x p data matrix
 
       } # end if: nonzero coefficient?
 
-
-
     } # end for: v2
   } # end for: v
 
@@ -613,10 +611,10 @@ mvar <- function(data,         # n x p data matrix
   # Storage
   list_wadj <- list_signs <- list()
 
-  a_wadj <- a_signs <- array(dim=c(p, p, n_lags))
-  a_edgecolor <- array('darkgrey',dim=c(p, p, n_lags))
+  a_wadj <- a_signs <- array(dim = c(p, p, n_lags))
+  a_edgecolor <- array('darkgrey', dim = c(p, p, n_lags))
   mvarobj$rawlags <- vector('list', length = n_lags)
-
+  
   for(lag in 1:n_lags) {
 
     # weighted version
@@ -654,7 +652,7 @@ mvar <- function(data,         # n x p data matrix
 
   } # end for: lag
   
-
+  # browser()
 
 
   # -------------------- Output -------------------
