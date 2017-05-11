@@ -2,7 +2,9 @@
 \docType{data}
 \alias{autism_data}
 \alias{autism_data_large}
-\alias{restingstate_data}
+\alias{mgm_data}
+\alias{mvar_data}
+
 
 \title{Autism Dataset}
 \description{
