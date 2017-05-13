@@ -325,6 +325,7 @@ bwSelect <- function(data,
   bwSelectObj$fullErrorFolds <- l_performance
   bwSelectObj$fullError <- l_perf_all
   bwSelectObj$meanError <- unlist(l_perf_mean)
+  names(bwSelectObj$meanError) <- bwSeq
 
 
   class(bwSelectObj) <- c(modeltype, 'bwSelect')
