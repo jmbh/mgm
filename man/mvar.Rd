@@ -131,6 +131,9 @@ A p x p x n_lags array, in which rows are predicted by columns, i.e. entry \code
 A p x p x n_lags array, specifying the signs corresponding to the entries of \code{wadj} (if defined), where n_lags is the number of specified lags in \code{lags}. 1/-1 indicate positive and negative relationships, respectively. 0 indicates that no sign is defined, which is the case for interactions that involve a categorical variable where an interaction can have more than one parameter. If \code{binarySign = TRUE}, a sign is calculated for interactions between binary variables and binary and continuous variables, where the interaction is still defined by one parameter and hence a sign can be specified. \code{NA} indicates that the corresponding parameter in \code{wadj} is zero.
 }
 
+\item{edgecolor}{
+A p x p x n_lags array of colors indicating the sign of each parameter. This array contains the same information is \code{signs} and is included for convenient plotting.
+}
 
 \item{rawlags}{
 List with entries equal to the number of specified lags in \code{lags}. Each entry is a nested list, with each p entries: the first level indicates the predicted variable, the second level the predictor variable. In case of categorical variables, interactions have more than one parameter.
