@@ -4,6 +4,7 @@
 \alias{autism_data_large}
 \alias{mgm_data}
 \alias{mvar_data}
+\alias{restingstate_data}
 \alias{fruitfly_data}
 
 

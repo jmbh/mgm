@@ -110,7 +110,7 @@ bwSelPredict <- function(data,
                               type = type[-v],
                               level = level[-v],
                               labels = colnames(data)[-v],
-                              d = args$d)
+                              d = args$d)  # defined above from  k
         X <- X_over
       } else {
         X <- X_standard

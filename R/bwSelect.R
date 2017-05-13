@@ -40,9 +40,12 @@ bwSelect <- function(data,
   # ----- Fill in Defaults -----
 
   if(missing(bwFolds)) bwFolds <- NULL
-  if(missing(bwFoldsize)) bwFoldsize <- NULL
+  if(missing(bwFoldsize)) bwFoldsize <Q- NULL
 
   if(is.null(args$saveData)) args$saveData <- FALSE
+
+  if(modeltype == 'mgm') if(is.null(args$overparameterize)) args$overparameterize <- TRUE
+  if(modeltype == 'mgm') if(is.null(args$overparameterize)) args$overparameterize <- FALSE
 
 
   # ----- Compute Aux Variables -----
@@ -197,6 +200,7 @@ bwSelect <- function(data,
                                               test = l_testsets[[fold]],
                                               lags = args$lags,
                                               modeltype = modeltype,
+                                              overparameterize = args$overparameterize,
                                               ...)
 
       }
@@ -264,6 +268,7 @@ bwSelect <- function(data,
                                               test = l_testsets[[fold]],
                                               lags = args$lags,
                                               modeltype = modeltype,
+                                              overparameterize = args$overparameterize,
                                               ...)
 
       }
