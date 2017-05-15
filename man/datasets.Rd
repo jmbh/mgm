@@ -6,6 +6,7 @@
 \alias{mvar_data}
 \alias{restingstate_data}
 \alias{fruitfly_data}
+\alias{symptom_data}
 
 
 \title{Autism Dataset}
