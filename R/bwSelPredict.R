@@ -160,15 +160,16 @@ bwSelPredict <- function(data,
 
   # -------------------- Compute Errors -------------------
 
-  if(modeltype == 'mvar') m_true <- as.matrix(data_response[test, ], nrow = n_test) # enforce matrix in case n_test = 1
-  if(modeltype == 'mgm') m_true <- as.matrix(data[test, ]) # enforce matrix in case n_test = 1
+  if(modeltype == 'mvar') m_true <- matrix(data_response[test, ], nrow = n_test) # enforce matrix in case n_test = 1
+  if(modeltype == 'mgm') m_true <- matrix(data[test, ], nrow = n_test) # enforce matrix in case n_test = 1
 
   m_error <- matrix(NA, nrow = n_test, ncol = p)
 
+  
   # 0/1 loss for categorical, RMSE for continuous (which here is just absolute error, because 1 element)
   for(i in 1:p) {
     if(type[v] == 'c') {
-      m_error[, i] <- abs(m_true[, i] - m_pred[, i])
+      m_error[, i] <- abs(m_true[, i] - m_pred[, i]) 
     } else {
       m_error[, i] <- abs(m_true[, i] - m_pred[, i])
     }

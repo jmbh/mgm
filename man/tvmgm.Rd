@@ -29,7 +29,7 @@ p vector indicating the number of categories of each variable. For continuous va
 A strictly increasing numeric vector of length \code{nrow(data)} indicating time points for the measurements in \code{data}. If \code{timepoints} is not specified, it is assumed that the time points are equally spaced. For details, see Haslbeck and Waldorp (2016).
 }
   \item{estpoints}{
-Vector indicating estimation points on interval [0, n-max(lags)]. Lags are passed to via the \code{...} arguments. See \code{?mvar} for how to specify lags. n-max(lags) is the number of rows in the design matrix in a VAR model: the first max(lags) rows of the data matrix have to be omitted, otherwise we have no data to predict the first row.
+Vector indicating estimation points on interval [0, n].
 }
   \item{bandwidth}{
 We use a gaussian density on the unit time-interval [0,1] to determine the weights for each observation at each estimated time point. The bandwidth specifies the standard deviation the Gaussian density. To get some intuition, which bandwidth results in the combination of how many data close in time one can plot Gaussians on [0,1] for different bandwidths. The bandwidth can also be selected in a data driven way using the function (see \code{bwSelect}).

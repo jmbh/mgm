@@ -134,6 +134,8 @@ tvmvar <- function(data,         # n x p data matrix
   l_weights <- list()
   for(i in 1:no_estpoints) {
     l_weights[[i]] <- dnorm(timevec, mean = estpoints_norm[i], sd = bandwidth)
+    # Normalize to [x,1]
+    l_weights[[i]] <- l_weights[[i]] / max(l_weights[[i]])
 
     # If tvmvar is used within bwSelect: set weights to zero for test samples
     if(!is.null(args$zero_weights)) {
@@ -219,6 +221,11 @@ tvmvar <- function(data,         # n x p data matrix
   # Save in output list
   tvmvar_object$wadj <- a_wadj
   tvmvar_object$signs <- a_signs
+  
+  
+  # Compute effectively used Sample size (relative to n)
+  Ne <- lapply(l_weights, sum)
+  tvmgmobj$Ne <- unlist(Ne)
 
 
   # -------------------- Output -------------------
