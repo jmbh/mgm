@@ -225,7 +225,7 @@ tvmvar <- function(data,         # n x p data matrix
   
   # Compute effectively used Sample size (relative to n)
   Ne <- lapply(l_weights, sum)
-  tvmgmobj$Ne <- unlist(Ne)
+  tvmvar_object$Ne <- unlist(Ne)
 
 
   # -------------------- Output -------------------
