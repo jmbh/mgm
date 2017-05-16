@@ -7,7 +7,7 @@
 \alias{restingstate_data}
 \alias{fruitfly_data}
 \alias{symptom_data}
-
+\alias{PTSD_data}
 
 \title{Autism Dataset}
 \description{
