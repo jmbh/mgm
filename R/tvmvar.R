@@ -197,25 +197,17 @@ tvmvar <- function(data,         # n x p data matrix
   # -------------------- Process Output -------------------
   # Restructure output to make time-varying model easier accessible
   
-  
-  
   n_lags <- length(lags)
-  a_wadj <- a_signs <- array(dim=c(p, p, n_lags, no_estpoints))
-  a_edgecolor <- array('darkgrey', dim=c(p, p, n_lags, no_estpoints))
-  
+  a_wadj <- a_signs <- a_edgecolor <- array(dim=c(p, p, n_lags, no_estpoints))
+
   for(lag in 1:n_lags) {
-    
-    wadj_array <- sign_array <- array(dim = c(p, p, no_estpoints))
     
     for(i in 1:no_estpoints) {
       
       a_wadj[ , , lag, i] <- l_mvar_models[[i]]$wadj[,,lag]
       a_signs[ , , lag, i] <- l_mvar_models[[i]]$signs[,,lag]
+      a_edgecolor[ , , lag, i] <- l_mvar_models[[i]]$edgecolor[,,lag]
       
-      if(!is.na(a_signs[ , , lag, i])) {
-        if(a_signs[ , , lag, i] == -1)  a_edgecolor[ , , lag, i] <- 'red'
-        if(a_signs[ , , lag, i] == 1)  a_edgecolor[ , , lag, i] <- 'darkgreen'
-      }
     }
     
   }
