@@ -86,6 +86,7 @@ tvmvar <- function(data,         # n x p data matrix
                              'threshold' = args$threshold,
                              'method' = args$method,
                              'binarySign' = args$binarySign,
+                             'scale' = args$scale,
                              'verbatim' = args$verbatim,
                              'warnings' = args$warnings,
                              'saveModels' = args$saveModels,
@@ -226,6 +227,10 @@ tvmvar <- function(data,         # n x p data matrix
   # Compute effectively used Sample size (relative to n)
   Ne <- lapply(l_weights, sum)
   tvmvar_object$Ne <- unlist(Ne)
+  
+  
+  # Copy lagged Data if saveData == TRUE (take from first time point, because always the same)
+  if(args$saveData) tvmvar_object$call$data_lagged <-  l_mvar_models[[1]]$call$data_lagged
 
 
   # -------------------- Output -------------------

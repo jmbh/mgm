@@ -109,6 +109,7 @@ tvmgm <- function(data,         # n x p data matrix
                         'threshold' = args$threshold,
                         'method' = args$method,
                         'binarySign' = args$binarySign,
+                        'scale' = args$scale,
                         'verbatim' = args$verbatim,
                         'pbar' = args$pbar,
                         'warnings' = args$warnings,

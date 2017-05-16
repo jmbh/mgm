@@ -46,6 +46,8 @@ Arguments passed to \code{tvmgm} or \code{tvmvar}.
 
 Performs a cross-validation scheme that is specified by \code{bwFolds} and \code{bwFoldsize}. In the first fold, the test set is defined by an equally spaced sequence between [1,  n - \code{bwFolds}] of length \code{bwFoldsize}. In the second fold, the test set is defined by an equally spaced sequence between [2, n - \code{bwFolds} + 1] of length \code{bwFoldsize}, etc. . Note that if \code{bwFoldsize} = n / \code{bwFolds}, this procedure is equal to \code{bwFolds}-fold cross valildation. However, full cross validation is computationally very expensive and a single split in test/training set by setting \code{bwFolds = 1} is sufficient in many situations. The procedure selects the bandwidth with the lowest prediction error, averaged over variables and time points in the test set.
 
+\code{bwSelect} computes the absolute error (continuous) or 0/1-loss (categorical) for each time point in the test set defined by \code{bwFoldsize} as described in the previous paragraph for every fold specified in \code{bwFolds}, separately for each variable. The computed errors are returned in different levels of aggregation in the output list (see below). Note that continuous variables are scaled (centered and divided by their standard deviation), hence the absolute error and 0/1-loss are roughly on the scale scale.
+
 Note that selecting the bandwidth with the EBIC is no alternative. This is because the EBIC always selects the intercept model with the lowest bandwidth.  The reason is that the unregularized intercept closely models the noise in the data and hence the penalty sets all other parameters to zero. This problem is solved by using out of sample prediction error in the cross validation scheme.
 
 
