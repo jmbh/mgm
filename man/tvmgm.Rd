@@ -187,10 +187,10 @@ mgm_c_cv$pairwise$wadj[3,4,] # recovers increase
 
 pred_mgm_cv_w <- predict.mgm(mgm_c_cv,
                              data = data,
-                             tvErrorType = 'weighted')
+                             tvMethod = 'weighted')
 pred_mgm_cv_cM <- predict.mgm(mgm_c_cv,
                               data = data,
-                              tvErrorType = 'closestModel')
+                              tvMethod = 'closestModel')
 
 pred_mgm_cv_w$errors
 pred_mgm_cv_cM$errors

@@ -190,11 +190,11 @@ legend('bottomright', c('5 <-- 6', '1 <-- 3', '1 <-- 5'),
 
 mvar_pred_w <- predict.mgm(object=mvar_obj,
                          data=dlist$data,
-                         tvErrorType = 'weighted')
+                         tvMethod = 'weighted')
 
 mvar_pred_cM <- predict.mgm(object=mvar_obj,
                          data=dlist$data,
-                         tvErrorType = 'closestModel')
+                         tvMethod = 'closestModel')
 
 mvar_pred_w$errors
 mvar_pred_cM$errors

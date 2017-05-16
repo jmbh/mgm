@@ -4,7 +4,7 @@ predict.mgm <- function(object, # One of the four mgm objects
                         data, # data in same format as used for fitting
                         errorCon, # specifying error or providing function for continuous variables
                         errorCat, # specifying error or providing function for categorical variables
-                        tvErrorType, # 'weighted' vs. 'closestModel'
+                        tvMethod, # 'weighted' vs. 'closestModel'
                         ...)
   
   
@@ -67,11 +67,11 @@ predict.mgm <- function(object, # One of the four mgm objects
   # Checks only for time-varying objects
   if(cobj %in% c('tvmgm', 'tvmvar')) {
     
-    if(missing(tvErrorType)) stop('Specify the type of error for the time-varying model, see ?tvmgm or ?tvmvar!')
+    if(missing(tvMethod)) stop('Specify the type of error for the time-varying model, see ?tvmgm or ?tvmvar!')
     
   } else {
     
-    tvErrorType <- 'NA'
+    tvMethod <- 'NA'
     
   }
   
@@ -217,7 +217,7 @@ predict.mgm <- function(object, # One of the four mgm objects
                        'data' = data,
                        'errorCon' = l_errorCon,
                        'errorCat' = l_errorCat,
-                       'tvErrorType' = tvErrorType)
+                       'tvMethod' = tvMethod)
   
   
   
@@ -283,7 +283,7 @@ predict.mgm <- function(object, # One of the four mgm objects
     
     l_errors_ep_con <- l_errors_ep_cat <- l_preds <- l_probs <- l_true <- vector('list', length = n_estpoints) # Storage
     
-    if(tvErrorType == 'weighted') {
+    if(tvMethod == 'weighted') {
       
       for(ep in 1:n_estpoints) {
         
@@ -340,13 +340,13 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       # Aggregate: across estimation points - no!
       
-    } # end if: tvErrorType weighted?
+    } # end if: tvMethod weighted?
     
     
     
     # ++++++++++ Prediction Option B.1: 'closestModel' ++++++++++
     
-    if(tvErrorType == 'closestModel') {
+    if(tvMethod == 'closestModel') {
       
       l_preds <- l_true <- l_probs <- vector('list', length = n_estpoints) # Storage
       
@@ -421,7 +421,7 @@ predict.mgm <- function(object, # One of the four mgm objects
       l_preds <- PredAll
       
       
-    } # end if: tvErrorType closestModel?
+    } # end if: tvMethod closestModel?
     
     
   } # end if: time-varying?
@@ -430,9 +430,9 @@ predict.mgm <- function(object, # One of the four mgm objects
   # ---------- Compute Error Matrix/Array ----------
   
   
-  if(cobj %in% c('tvmgm', 'tvmvar') & tvErrorType=='weighted') {
+  if(cobj %in% c('tvmgm', 'tvmvar') & tvMethod=='weighted') {
     
-    # ... if time-varying & tvErrorType==weighted: array
+    # ... if time-varying & tvMethod==weighted: array
     
     if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) exCCmarg <- 1 else exCCmarg <- 0
     
@@ -465,7 +465,7 @@ predict.mgm <- function(object, # One of the four mgm objects
     
   } else {
     
-    # ... if stationary or if time-varying & tvErrorType==closestModel: matrix
+    # ... if stationary or if time-varying & tvMethod==closestModel: matrix
     ea <- array(0, dim = c(p, 1+length(l_errorCon)+length(l_errorCat)))
     ea[, 1] <- 1:p
     if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))

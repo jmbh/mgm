@@ -11,7 +11,7 @@ Similar to other predict methods, this function computes predicted values and pr
 
 }
 \usage{
-\method{predict}{mgm}(object, data, errorCon, errorCat, tvErrorType, \dots)
+\method{predict}{mgm}(object, data, errorCon, errorCat, tvMethod, \dots)
 }
 
 \arguments{
@@ -24,16 +24,16 @@ A n x p data matrix with the same structure (number of variables p and types of 
   \item{errorCon}{
   Either a character vector specifying the types of nodewise error that should be computed, where the two provided error functions for continuous varaibles are \code{errorCon = 'RMSE'}, the Root Mean Squared Error and \code{errorCon = 'R2'}, the proportion of explained variance. The default is \code{errorCon = c('RMSE' 'R2')}.
 
-  Alternatively, \code{errorCon} can be a list, where each list entry is a custom error function of the form \code{foo(true, pred)}, where \code{true} and \code{pred} are the arguments for the vectors of true and predicted values, respectively.  If predictions are made for a time-varying model and \code{tvErrorType = 'weighted'}, the weighted R2 or RMSE are computed. If a costum function is used, an additional argument for the weights has to be provided: \code{foo(true, pred, weights)}. Note that custom error functios can also be combined with the buildt-in functions, i.e. \code{errorCon = list('RMSE', 'CustomError'=foo)}.}
+  Alternatively, \code{errorCon} can be a list, where each list entry is a custom error function of the form \code{foo(true, pred)}, where \code{true} and \code{pred} are the arguments for the vectors of true and predicted values, respectively.  If predictions are made for a time-varying model and \code{tvMethod = 'weighted'}, the weighted R2 or RMSE are computed. If a costum function is used, an additional argument for the weights has to be provided: \code{foo(true, pred, weights)}. Note that custom error functios can also be combined with the buildt-in functions, i.e. \code{errorCon = list('RMSE', 'CustomError'=foo)}.}
 
 
   \item{errorCat}{
   Either a character vector specifying the types of nodewise error that should be computed, where the two provided error functions for categorical varaibles are \code{errorCat = 'CC'}, the proportion of correct classification (accuracy) and \code{errorCat = 'nCC'}, the proportion of correct classification normalized by the marginal distribution of the variable at hand. Specifically, nCC = (CC - norm_constant) / (1 - norm_constant), where norm_constant is the relative frequency of the category with the highest relative frequency. The default is \code{errorCon = c('CC' 'nCC')}.
 
-  Alternatively, \code{errorCat} can be a list, where each list entry is a custom error function of the form \code{foo(true, pred)}, where \code{true} and \code{pred} are the arguments for the vectors of true and predicted values, respectively.  If predictions are made for a time-varying model and \code{tvErrorType = 'weighted'}, the weighted R2 or RMSE are computed. If a costum function is used, an additional argument for the weights has to be provided: \code{foo(true, pred, weights)}. Note that custom error functios can also be combined with the buildt-in functions, i.e. \code{errorCon = list('nCC', 'CustomError'=foo)}. }
+  Alternatively, \code{errorCat} can be a list, where each list entry is a custom error function of the form \code{foo(true, pred)}, where \code{true} and \code{pred} are the arguments for the vectors of true and predicted values, respectively.  If predictions are made for a time-varying model and \code{tvMethod = 'weighted'}, the weighted R2 or RMSE are computed. If a costum function is used, an additional argument for the weights has to be provided: \code{foo(true, pred, weights)}. Note that custom error functios can also be combined with the buildt-in functions, i.e. \code{errorCon = list('nCC', 'CustomError'=foo)}. }
 
-  \item{tvErrorType}{
-The type of error calculated for time-varying models: \code{tvErrorType = 'weighted'} computes errors by computing a weighted error over all cases in the time series at each estimation point specified in \code{estpoints} in \code{tvmgm()} or \code{tvmvar()}. The weighting corresponds to the weighting used for estimation (see \code{?tvmgm} or \code{?tvmvar}). \code{tvErrorType = 'closestModel'} determines for each time point the closest model and uses that model for prediction. See Details below for a more elaborate explanation.
+  \item{tvMethod}{
+The type of error calculated for time-varying models: \code{tvMethod = 'weighted'} computes errors by computing a weighted error over all cases in the time series at each estimation point specified in \code{estpoints} in \code{tvmgm()} or \code{tvmvar()}. The weighting corresponds to the weighting used for estimation (see \code{?tvmgm} or \code{?tvmvar}). \code{tvMethod = 'closestModel'} determines for each time point the closest model and uses that model for prediction. See Details below for a more elaborate explanation.
 }
 
 \item{...}{Additional arguments.}
@@ -75,7 +75,7 @@ Contains the true values. For \code{mgm} and \code{tvmgm} objects these are equa
 }
 
 \item{errors}{
-A matrix containing the all types of errors specified via \code{errorCon} and \code{errorCat}, for each variable. If \code{tvErrorType = 'weighted'}, the matrix becomes an array, with an additional dimension for the estimation point.
+A matrix containing the all types of errors specified via \code{errorCon} and \code{errorCat}, for each variable. If \code{tvMethod = 'weighted'}, the matrix becomes an array, with an additional dimension for the estimation point.
 }
 
 
