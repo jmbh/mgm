@@ -41,7 +41,6 @@ tvmvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array x N
                             'sds' = sds,
                             'type' = type,
                             'level' = level,
-                            'N' = N,
                             'pbar' = pbar)
 
 
