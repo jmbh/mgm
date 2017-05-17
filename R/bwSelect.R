@@ -40,7 +40,7 @@ bwSelect <- function(data,
   # ----- Fill in Defaults -----
 
   if(missing(bwFolds)) bwFolds <- NULL
-  if(missing(bwFoldsize)) bwFoldsize <Q- NULL
+  if(missing(bwFoldsize)) bwFoldsize <- NULL
 
   if(is.null(args$saveData)) args$saveData <- FALSE
 
