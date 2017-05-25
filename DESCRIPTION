@@ -9,6 +9,6 @@ Description: Estimation of time-varying Mixed Graphical models and mixed VAR mod
 URL: http://arxiv.org/abs/1510.06871v2
 BugReports: https://github.com/jmbh/mgm/issues
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.11.4), matrixcalc, glmnet, stringr, Hmisc
+Imports: matrixcalc, glmnet, stringr, Hmisc
 LazyData: true
 Packaged: 2017-04-30 19:13:23 UTC; jo

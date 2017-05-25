@@ -103,6 +103,10 @@ mvar <- function(data,         # n x p data matrix
 
   # ----- Basic Input Checks -----
 
+  if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
+  
+  if(nrow(data) < 2) ('The data matrix has to have at least 2 rows.')
+  
   if(is.null(lags)) stop('No lags specified')
   if(any(duplicated(lags))) stop('No duplicates allowed in specified lags.')
 
@@ -666,8 +670,12 @@ mvar <- function(data,         # n x p data matrix
   # Save intercepts
   mvarobj$intercepts <- l_intercepts
 
-  if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mvar')
-
+  if(pbar) {
+    if(signInfo) cat('\nNote that the sign of parameter estimates is stored separately; see ?mvar')    
+  } else {
+    if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mvar')    
+  }
+  
 
   class(mvarobj) <- c('mgm', 'mvar')
 

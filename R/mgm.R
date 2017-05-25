@@ -67,7 +67,7 @@ mgm <- function(data,         # n x p data matrix
   if(missing(warnings)) warnings <- TRUE
   if(missing(saveModels)) saveModels <- TRUE
   if(missing(saveData)) saveData <- FALSE
-  if(missing(overparameterize)) overparameterize <- TRUE
+  if(missing(overparameterize)) overparameterize <- FALSE
   if(missing(signInfo)) signInfo <- TRUE
 
 
@@ -113,6 +113,10 @@ mgm <- function(data,         # n x p data matrix
 
   # ----- Basic Checks -----
 
+  if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
+
+  if(nrow(data) < 2) ('The data matrix has to have at least 2 rows.')
+  
   if(missing(data)) stop('No data provided.')
   if(k<2) stop('The order of interactions should be at least k = 2 (pairwise interactions)')
   if(ncol(data)<3) stop('At least 3 variables required')
@@ -818,7 +822,12 @@ mgm <- function(data,         # n x p data matrix
     options(warn = oldw)
   }
 
-  if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mgm')
+  if(pbar) {
+    if(signInfo) cat('\nNote that the sign of parameter estimates is stored separately; see ?mgm')    
+  } else {
+    if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mgm')    
+  }
+
 
   # Assign class
   class(mgmobj) <- c('mgm', 'core')

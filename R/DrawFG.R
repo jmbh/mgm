@@ -69,7 +69,7 @@ DrawFG <- function(list_ind,
   order_ind <- c(rep(0,p), unlist(l_oi))
 
   # Calculate Color Matrix
-  Gcol <- matrix('black', p+pF, p+pF)
+  Gcol <- matrix('darkgrey', p+pF, p+pF)
   Gcol[Gsign == 1] <- 'darkgreen'
   Gcol[Gsign == -1] <- 'red'
 
@@ -185,7 +185,7 @@ DrawFGtv <- function(list_ind,
   order_ind <- c(rep(0,p), unlist(l_oi))
 
   # Calculate Color Matrix
-  Gcol <- matrix('black', p+pF, p+pF)
+  Gcol <- matrix('darkgrey', p+pF, p+pF)
   Gcol[Gsign == 1] <- 'darkgreen'
   Gcol[Gsign == -1] <- 'red'
 

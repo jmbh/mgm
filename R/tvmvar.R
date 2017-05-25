@@ -183,7 +183,7 @@ tvmvar <- function(data,         # n x p data matrix
                                saveModels = args$saveModels,
                                saveData = args$saveData,
                                overparameterize = args$overparameterize,
-                               signInfo = args$signInfo)
+                               signInfo = FALSE) # to avoid msg for each model
     
     # Update Progress Bar
     if(args$pbar==TRUE) setTxtProgressBar(pb, i)
@@ -236,7 +236,12 @@ tvmvar <- function(data,         # n x p data matrix
   
   class(tvmvar_object) <- c('mgm', 'tvmvar')
   
-  if(args$signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?tvmvar / ?mvar')
+  if(pbar) {
+    if(signInfo) cat('\nNote that the sign of parameter estimates is stored separately; see ?tvmvar')    
+  } else {
+    if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?tvmvar')    
+  }
+  
   
   return(tvmvar_object)
   

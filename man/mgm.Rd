@@ -93,7 +93,7 @@ If \code{saveModels = FALSE}, only information about the weighted adjacency matr
 If \code{saveData = TRUE}, the data is saved in the output list. Defaults to \code{saveData = FALSE}.
 }
   \item{overparameterize}{
-If \code{overparameterize = TRUE}, \code{mgm()} uses over-parameterized design-matrices for each neighborhood regression; this means that an interaction between two categorical variables with m and s categories is parameterized by m*s parameters. If \code{overparameterize = FALSE} the standard parameterization (in \code{glmnet}) with m*(s-1) parameters is used, where the first category of the predicting variable serves as reference category. If all variables are continuous both parameterizations are the same. Note that the default is set to \code{overparameterize = TRUE}, because the over-parameterization is necessary to properly recover higher order interactions between categorical variables. See the examples below for an illustration. Note that we can estimate the model despite the colinear columns in the design matrix because we use penalized regression.
+If \code{overparameterize = TRUE}, \code{mgm()} uses over-parameterized design-matrices for each neighborhood regression; this means that an interaction between two categorical variables with m and s categories is parameterized by m*s parameters. If \code{overparameterize = FALSE} the standard parameterization (in \code{glmnet}) with m*(s-1) parameters is used, where the first category of the predicting variable serves as reference category. If all variables are continuous both parameterizations are the same. Note that the default is set to \code{overparameterize = FALSE}, to be consistent with the previous mgm versions. However note that in order to recover higher order interactions categorical variables the overparameterized parameterization is often advantageous. See the examples below for an illustration. Note that we can estimate the model despite the colinear columns in the design matrix because we use penalized regression.
 }
 
   \item{signInfo}{
@@ -229,8 +229,6 @@ pred_obj <- predict(fit_d3, autism_data$data)
 head(pred_obj$predicted) # predicted values
 
 pred_obj$errors # Nodewise errors
-
-
 
 
 
