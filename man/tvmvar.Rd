@@ -199,6 +199,7 @@ mvar_pred_cM <- predict.mgm(object=mvar_obj,
 mvar_pred_w$errors
 mvar_pred_cM$errors
 
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 
 }

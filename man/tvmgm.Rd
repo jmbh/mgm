@@ -196,6 +196,7 @@ pred_mgm_cv_w$errors
 pred_mgm_cv_cM$errors
 
 
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 }
 

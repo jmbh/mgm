@@ -133,7 +133,7 @@ tvmgm_obj <- tvmgm(data = dlist$data,
                    level = level,
                    estpoints = seq(1, n_timepoints, length = 15),
                    bandwidth = .2,
-                   k = 3,
+                   d = 2,
                    lambdaSel = 'CV',
                    ruleReg = 'AND')
 
@@ -166,8 +166,7 @@ interactions[[2]] <- vector('list', length = 1)  # one 3-way interaction
 # 3-way interaction no1
 interactions[[2]][[1]] <- array(0, dim = c(level[1], level[2], level[3], n_timepoints))
 theta <- 2
-# fill in time-varying parameter: linear increase from 0 to 2
-interactions[[2]][[1]][1, 1, 1, ] <- seq(0, 2, length = n_timepoints)
+interactions[[2]][[1]][1, 1, 1, ] <- seq(0, 2, length = n_timepoints) # fill in nonzero entries
 
 # c) Define Thresholds
 thresholds <- list()
@@ -178,12 +177,12 @@ for(i in 1:p) thresholds[[i]] <- matrix(0, nrow = n_timepoints, ncol = level[i])
 
 set.seed(1)
 dlist <- tvmgmsampler(factors = factors,
-                      interactions = interactions,
-                      thresholds = thresholds,
-                      type = type,
-                      level = level,
-                      nIter = 150,
-                      pbar = TRUE)
+                    interactions = interactions,
+                    thresholds = thresholds,
+                    type = type,
+                    level = level,
+                    nIter = 150,
+                    pbar = TRUE)
 
 
 # ----- 3) Check Marginals -----
@@ -206,13 +205,15 @@ tvmgm_obj <- tvmgm(data = dlist$data,
                    level = level,
                    estpoints = seq(1, n_timepoints, length = 15),
                    bandwidth = .2,
-                   k = 3,
+                   d = 2,
                    lambdaSel = 'CV',
                    ruleReg = 'AND')
 
 tvmgm_obj$rawfactor$indicator
 # Seems very difficult to recover this time-varying 3-way binary interaction
-# See also the corresponding difficulties in the stationary version (examples of ?mgmsampler)
+# See also the corresponding stationary problems in the examples of ?mgmsampler
+
+
 
 
 

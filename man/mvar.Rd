@@ -264,6 +264,7 @@ head(pred_mvar$predicted) # predicted values
 
 pred_mvar$errors # Nodewise errors
 
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 }
 

@@ -17,6 +17,14 @@ predict.mgm <- function(object, # One of the four mgm objects
   type <- object$call$type
   p <- ncol(data)
   n <- nrow(data)
+  n_var <- n - max(object$call$lags)
+  
+  if(cobj %in% c('code', 'tvmgm'))  n_pred <- n  
+  if(cobj %in% c('mvar', 'tvmvar'))  n_pred <- n_var
+  
+
+  
+  level <- object$call$level
   
   # Scale Gaussians if scale==TRUE
   if(object$call$scale) {
@@ -292,7 +300,7 @@ predict.mgm <- function(object, # One of the four mgm objects
       # --- Continuous Variables ---
       
       l_w_predict_cat <- list()
-      a_w_predict_con <- array(NA, dim = c(n, length(p_ind_con), n_estpoints))
+      a_w_predict_con <- array(NA, dim = c(n_pred, length(p_ind_con), n_estpoints))
       for(ep in 1:n_estpoints) {
         
         object_ep <- object$tvmodels[[ep]]
@@ -302,6 +310,7 @@ predict.mgm <- function(object, # One of the four mgm objects
           w_pred_col <- x*m_weights[, ep]
           return(w_pred_col)
         })
+        
       }
       
       # Continuous: sum up and scale back
@@ -322,7 +331,7 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       for(v in p_ind_cat) {
         
-        a_w_predict_cat <- array(NA, dim = c(n, level[v], n_estpoints))
+        a_w_predict_cat <- array(NA, dim = c(n_pred, level[v], n_estpoints))
         
         for(ep in 1:n_estpoints) {
           
@@ -357,7 +366,7 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       # --- Putting all back together ---
       
-      m_preds_final <- matrix(NA, n, p)
+      m_preds_final <- matrix(NA, n_pred, p)
       m_preds_final[, p_ind_con] <- m_w_predict_con2
       m_preds_final[, p_ind_cat] <- m_cat_predicted
       

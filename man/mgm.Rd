@@ -309,6 +309,8 @@ coefs_over <- d_est_over$nodemodels[[1]]$model
 coefs_over # recovers exactly the 3-way interaction
 
 
+# For more examples see https://github.com/jmbh/mgmDocumentation
+
 
 }
 
