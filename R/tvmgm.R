@@ -314,7 +314,7 @@ tvmgm <- function(data,         # n x p data matrix
     options(warn = oldw)
   }
 
-  if(pbar) {
+  if(args$pbar) {
     if(args$signInfo) cat('\nNote that the sign of parameter estimates is stored separately; see ?tvmgm')    
   } else {
     if(args$signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?tvmgm')    

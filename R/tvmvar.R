@@ -236,7 +236,7 @@ tvmvar <- function(data,         # n x p data matrix
   
   class(tvmvar_object) <- c('mgm', 'tvmvar')
   
-  if(pbar) {
+  if(args$pbar) {
     if(args$signInfo) cat('\nNote that the sign of parameter estimates is stored separately; see ?tvmvar')    
   } else {
     if(args$signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?tvmvar')    

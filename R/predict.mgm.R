@@ -17,10 +17,9 @@ predict.mgm <- function(object, # One of the four mgm objects
   type <- object$call$type
   p <- ncol(data)
   n <- nrow(data)
-  n_var <- n - max(object$call$lags)
-  
+
   if(cobj %in% c('code', 'tvmgm'))  n_pred <- n  
-  if(cobj %in% c('mvar', 'tvmvar'))  n_pred <- n_var
+  if(cobj %in% c('mvar', 'tvmvar'))  n_pred <- n - max(object$call$lags)
   
 
   
@@ -537,8 +536,9 @@ predict.mgm <- function(object, # One of the four mgm objects
   
   
   
-  # ---------- Compute Error Matrix/Array ----------
+  # ---------- Compute Error Table for Output ----------
   
+  # This commented out code creates an array instead a matrix, with error measures for different time points
   
   # if(cobj %in% c('tvmgm', 'tvmvar') & tvMethod=='weighted') {
   #   
@@ -575,9 +575,17 @@ predict.mgm <- function(object, # One of the four mgm objects
   #   
   # } else {
   
-  # ... if stationary or if time-varying & tvMethod==closestModel: matrix
-  ea <- array(0, dim = c(p, 1+length(l_errorCon)+length(l_errorCat)))
-  ea[, 1] <- 1:p
+  
+  # get colnames if available, otherwise fill in 1:p
+  if(is.null(colnames(data))) {
+    cnames <- 1:p
+  } else {
+    cnames <- colnames(data)
+  }
+  
+  # create matrix with errords depending on specified errors
+  ea <- matrix(0, nrow = p, ncol = 1+length(l_errorCon)+length(l_errorCat))
+  ea[, 1] <- cnames
   if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))
   if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('Error.', names(l_errors_con))
   dimnames(ea)[[2]] <- c('Variable', names_con, names_cat)
@@ -596,6 +604,8 @@ predict.mgm <- function(object, # One of the four mgm objects
     ea <- cbind(ea, round(CCmarg, 3))
     dimnames(ea)[[2]][dim(ea)[2]] <- 'CCmarg'
   }
+  
+  ea <- as.data.frame(ea)
   
   predObj$errors <- ea
   
