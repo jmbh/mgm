@@ -1,4 +1,4 @@
-
+ 
 
 predict.mgm <- function(object, # One of the four mgm objects
                         data, # data in same format as used for fitting
