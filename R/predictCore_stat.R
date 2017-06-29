@@ -1,7 +1,8 @@
 
 
 predictCore_stat <- function(object,
-                             data)
+                             data, 
+                             consec = NULL)
 
 
 {
@@ -23,7 +24,8 @@ predictCore_stat <- function(object,
   # Create outlist and storage
   predCoreObj <- list('pred' = vector('list', length = nNodes),
                       'prob' = vector('list', length = nNodes),
-                      'true' = NULL)
+                      'true' = NULL,
+                      'included' = NULL)
 
 
   # Some Generic Data preparation
@@ -69,8 +71,6 @@ predictCore_stat <- function(object,
 
       if(type[v]=='c') {
 
-        # browser()
-
         ## Prediction Categorical
         coefs <- nodeModels[[v]]$model
         n_cat <- length(coefs)
@@ -107,12 +107,23 @@ predictCore_stat <- function(object,
   # ----- A.2) mvar -----
 
   if(cobj == 'mvar') {
-
+    
     # Prepare Data
-    data_lagged <- lagData(data, object$call$lags, consec = object$call$consec)
+    data_lagged <- lagData(data = data, 
+                           lags = object$call$lags, 
+                           consec = consec)
+    
+    predCoreObj$included <- data_lagged$included
+    
     data_response <- data_lagged$data_response
     l_data_lags <- data_lagged$l_data_lags
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
+
+    # if consec is used, then reduce dataset to usable observations
+    if(!is.null(consec)) {
+      data_response <- data_response[data_lagged$included, ]
+      l_data_lags <- lapply(l_data_lags, function(z) z <- z[data_lagged$included, ])
+    }
 
     nCases <- nrow(data_response)
 

@@ -258,6 +258,7 @@ mgm <- function(data,         # n x p data matrix
                             level = level[-v],
                             labels = colnames(data)[-v],
                             d = d)
+      
       X <- X_over
     } else {
       X <- X_standard
@@ -682,6 +683,7 @@ mgm <- function(data,         # n x p data matrix
           
           # if(sum(pair == c(1,3))==2) browser()
           
+          
           int_sign <- getSign(l_w_ind,
                               l_w_par,
                               type,
@@ -689,6 +691,7 @@ mgm <- function(data,         # n x p data matrix
                               overparameterize,
                               ord)
           
+
         } else {
           int_sign <- 0 # if not defined (set_signdefined): 0
         }

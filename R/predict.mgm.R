@@ -1,14 +1,20 @@
- 
+
 
 predict.mgm <- function(object, # One of the four mgm objects
                         data, # data in same format as used for fitting
                         errorCon, # specifying error or providing function for continuous variables
                         errorCat, # specifying error or providing function for categorical variables
                         tvMethod, # 'weighted' vs. 'closestModel'
+                        consec,
                         ...)
   
   
 {
+  
+  
+  # ----- Fill in defaults ----- 
+  
+  if(missing(consec)) consec <- NULL
   
   
   # ----- Compute Aux Variables -----
@@ -17,11 +23,11 @@ predict.mgm <- function(object, # One of the four mgm objects
   type <- object$call$type
   p <- ncol(data)
   n <- nrow(data)
-
+  
   if(cobj %in% c('code', 'tvmgm'))  n_pred <- n  
   if(cobj %in% c('mvar', 'tvmvar'))  n_pred <- n - max(object$call$lags)
   
-
+  
   
   level <- object$call$level
   
@@ -32,8 +38,12 @@ predict.mgm <- function(object, # One of the four mgm objects
   
   # ---------- Input Checks ----------
   
+  # Checks for all situations
+  
   if(!(cobj %in% c('core', 'mvar', 'tvmgm', 'tvmvar'))) stop('Please provide a mgm fit object.')
   
+  
+  # Checkes for stationary
   
   if(cobj %in% c('core', 'mvar')) {
     
@@ -46,10 +56,20 @@ predict.mgm <- function(object, # One of the four mgm objects
   }
   
   
+  # Checks for stationary/time-varying mVAR models
+  if(cobj %in% c('tvmvar', 'mvar')) {
+    
+    # Does consec match nrow(data) ?
+    if(!is.null(consec)) if(length(consec) != nrow(data)) stop("The length of consec has to be equal to the number of rows of data")
+    
+  }
+  
+  # Checks only for time-varying objects
   if(cobj %in% c('tvmgm', 'tvmvar')) {
     
-    # Has the provided time-series data the same lenght as the time-series used for fitting?
+    if(missing(tvMethod)) stop('Specify the type of error for the time-varying model, see ?tvmgm or ?tvmvar!')
     
+    # Has the provided time-series data the same lenght as the time-series used for fitting?
     if(cobj == 'tvmvar') {
       if(nrow(data)-max(object$tvmodels[[1]]$call$lags) != length(object$tvmodels[[1]]$call$weights)) {
         stop('For time-varying models the time-series used for prediction has to have the same lenght as the time-series used for estimation.')
@@ -68,14 +88,6 @@ predict.mgm <- function(object, # One of the four mgm objects
     # Is the model object saved?
     if(is.null(object$tvmodels[[1]]$nodemodels)) stop(paste0('Prediction is only possible if the model-object is saved. See ?', cobj))
     
-    
-  }
-  
-  
-  # Checks only for time-varying objects
-  if(cobj %in% c('tvmgm', 'tvmvar')) {
-    
-    if(missing(tvMethod)) stop('Specify the type of error for the time-varying model, see ?tvmgm or ?tvmvar!')
     
   } else {
     
@@ -229,6 +241,7 @@ predict.mgm <- function(object, # One of the four mgm objects
   
   
   
+  
   # ---------- A) Stationary Models ----------
   
   if(cobj %in% c('core', 'mvar')) {
@@ -236,9 +249,8 @@ predict.mgm <- function(object, # One of the four mgm objects
     # ----- Make Predictions -----
     
     corePred <- predictCore_stat(object = object,
-                                 data = data)
-    
-    
+                                 data = data,
+                                 consec = consec)
     
     m_pred <- do.call(cbind, corePred$pred) # Collapse predictions in matrix
     
@@ -269,19 +281,25 @@ predict.mgm <- function(object, # One of the four mgm objects
         
         # ----- Make Predictions -----
         
+        
         object_ep <- object$tvmodels[[ep]]
         class(object_ep) <- cobj_ep
         
         corePred <- l_preds[[ep]] <- predictCore_stat(object = object_ep,
-                                                      data = data)
+                                                      data = data, 
+                                                      consec = consec)
+        
+        if(!is.null(consec)) n_pred <- sum(corePred$included)
         
         # Save separate for output:
         l_preds[[ep]] <- do.call(cbind, corePred$pred)
         l_probs[[ep]] <- corePred$prob
         l_true[[ep]] <- corePred$true
         
-        # Save 
-        l_weights[[ep]] <- object_ep$call$weights
+        # Save weights (subset by consec, if provided)
+        wo <- object_ep$call$weights
+        if(!is.null(consec)) wo <- wo[corePred$included]
+        l_weights[[ep]] <- wo
         
       } # end for: estpoints
       
@@ -290,89 +308,105 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       # add up weights
       m_weights <- do.call(cbind, l_weights)
+      
       v_weights <- rowSums(m_weights)
       
       p_ind_con <- which(type != 'c')
       p_ind_cat <- which(type == 'c')
       
       
-      # --- Continuous Variables ---
-      
+      # Storage
       l_w_predict_cat <- list()
       a_w_predict_con <- array(NA, dim = c(n_pred, length(p_ind_con), n_estpoints))
-      for(ep in 1:n_estpoints) {
-        
-        object_ep <- object$tvmodels[[ep]]
-        
-        # For continuous variables (just convex combination of values)
-        a_w_predict_con[, , ep] <- apply(l_preds[[ep]][,p_ind_con], 2, function(x) {
-          w_pred_col <- x*m_weights[, ep]
-          return(w_pred_col)
-        })
-        
-      }
-      
-      # Continuous: sum up and scale back
-      m_w_predict_con1 <- apply(a_w_predict_con, 1:2, sum)
-      m_w_predict_con2 <- apply(m_w_predict_con1, 2, function(x)  {
-        
-        cb <- cbind(x, v_weights)
-        apply(cb, 1, function(x)  x[1] / x[2])
-        
-      })
-      
-      # --- Categorical Variables ---
       
       
-      # For categorical variables (convex combination of probabilities)
-      l_w_predict_cat <- list()
-      cat_counter <- 1
+      # --- Continuous Variables ---
       
-      for(v in p_ind_cat) {
-        
-        a_w_predict_cat <- array(NA, dim = c(n_pred, level[v], n_estpoints))
+      if(length(p_ind_con) > 0) {
         
         for(ep in 1:n_estpoints) {
           
-          a_w_predict_cat[, , ep] <- l_probs[[ep]][[v]]
-          a_w_predict_cat[, , ep] <- apply(a_w_predict_cat[, , ep], 2, function(x) x * m_weights[, ep])
+          object_ep <- object$tvmodels[[ep]]
+          
+          # For continuous variables (just convex combination of values)
+          a_w_predict_con[, , ep] <- apply(l_preds[[ep]][,p_ind_con], 2, function(x) {
+            w_pred_col <- x*m_weights[, ep]
+            return(w_pred_col)
+          })
           
         }
         
-        l_w_predict_cat[[cat_counter]] <- a_w_predict_cat        
-        cat_counter <- cat_counter + 1
+        # Continuous: sum up and scale back
+        m_w_predict_con1 <- apply(a_w_predict_con, 1:2, sum)
+        m_w_predict_con2 <- apply(m_w_predict_con1, 2, function(x)  {
+          
+          cb <- cbind(x, v_weights)
+          apply(cb, 1, function(x)  x[1] / x[2])
+          
+        })
         
-      }
+      } # if: any continuous variables?
       
-      l_cat_labels <- list()
-      for(i in 1:length(p_ind_cat)) l_cat_labels[[i]] <- sort(unique(data[, p_ind_cat[i]]))
       
-      # Sum up and scale back probabilities
-      l_probs_agg <- lapply(l_w_predict_cat, function(x) {
-        p_agg1 <- apply(x, 1:2, sum)
-        p_agg2 <- apply(p_agg1, 2, function(x) x / v_weights)
+      # --- Categorical Variables ---
+      
+      if(length(p_ind_cat) > 0) {
         
-      })
-      
-      # Predict category
-      l_cat_predicted <-  list()
-      for(i in 1:length(p_ind_cat)) {
-        l_cat_predicted[[i]] <- l_cat_labels[[i]][apply(l_probs_agg[[i]], 1, which.max)]
-      }
-      m_cat_predicted <- do.call(cbind, l_cat_predicted)
-      
+        # For categorical variables (convex combination of probabilities)
+        l_w_predict_cat <- list()
+        cat_counter <- 1
+        
+        # for all categorical variables
+        for(v in p_ind_cat) {
+          
+          a_w_predict_cat <- array(NA, dim = c(n_pred, level[v], n_estpoints))
+          
+          # for all estimation points
+          for(ep in 1:n_estpoints) {
+            
+            a_w_predict_cat[, , ep] <- l_probs[[ep]][[v]]
+            a_w_predict_cat[, , ep] <- apply(a_w_predict_cat[, , ep], 2, function(x) x * m_weights[, ep])
+            
+          }
+          
+          # one array for each categorical variable
+          l_w_predict_cat[[cat_counter]] <- a_w_predict_cat        
+          cat_counter <- cat_counter + 1
+          
+        }
+        
+        # Get category labels
+        l_cat_labels <- list()
+        for(i in 1:length(p_ind_cat)) l_cat_labels[[i]] <- sort(unique(data[, p_ind_cat[i]]))
+        
+        # Sum up and scale back probabilities
+        l_probs_agg <- lapply(l_w_predict_cat, function(x) {
+          p_agg1 <- apply(x, 1:2, sum)
+          p_agg2 <- apply(p_agg1, 2, function(x) x / v_weights)
+          
+        })
+        
+        # Predict category
+        l_cat_predicted <-  list()
+        for(i in 1:length(p_ind_cat)) {
+          l_cat_predicted[[i]] <- l_cat_labels[[i]][apply(l_probs_agg[[i]], 1, which.max)]
+        }
+        m_cat_predicted <- do.call(cbind, l_cat_predicted)
+        
+      } # if: any categorical variables?
       
       
       # --- Putting all back together ---
       
       m_preds_final <- matrix(NA, n_pred, p)
-      m_preds_final[, p_ind_con] <- m_w_predict_con2
-      m_preds_final[, p_ind_cat] <- m_cat_predicted
+      if(length(p_ind_con) > 0)  m_preds_final[, p_ind_con] <- m_w_predict_con2
+      if(length(p_ind_cat) > 0) m_preds_final[, p_ind_cat] <- m_cat_predicted
       
       # Bring in uniform output format
       preds <- m_preds_final
-      probs <- l_probs_agg
+      if(length(p_ind_cat) > 0) probs <- l_probs_agg else probs <- NULL
       true <- corePred$true
+      
       
       
       # ----- Calculate Errors -----
@@ -417,9 +451,6 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       # Aggregate: across estimation points - yes!
       
-      # browser()
-      
-      
       
     } # end if: tvMethod weighted?
     
@@ -431,42 +462,49 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       l_preds <- l_true <- l_probs <- vector('list', length = n_estpoints) # Storage
       
-      # ----- Determine closest Model for all time points -----
-      
-      v_timepoints <- object$call$timepoints # for both tvmgm and tvmvar
-      n_timepoints <- length(v_timepoints)
-      
-      m_assign <- matrix(NA,
-                         nrow = n_timepoints,
-                         ncol = n_estpoints)
-      for(tp in 1:n_timepoints) m_assign[tp, ] <- abs(v_timepoints[tp] - object$call$estpointsNorm)
-      
-      v_assign <- apply(m_assign, 1, which.min)
-      
-      
       # ----- Make Predictions -----
       
       for(ep in 1:n_estpoints) {
-        
-        # determine closest time points
         
         object_ep <- object$tvmodels[[ep]]
         class(object_ep) <- cobj_ep
         
         # we fit each model on all data to avoid problems with scaling and overlap with predictors because of the VAR model
-        codePred <- predictCore_stat(object = object_ep,
-                                     data = data) # only data closest to model at current time point
+        corePred <- predictCore_stat(object = object_ep,
+                                     data = data, 
+                                     consec = consec) # only data closest to model at current time point
+        
+        
+        # --- Determine closest Model for all time points ---
+        
+        # only for first ep, because invariant from 1:n_estpoints
+        if(ep == 1) {
+          
+          v_timepoints <- object$call$timepoints # for both tvmgm and tvmvar
+          n_timepoints <- length(v_timepoints)
+          
+          m_assign <- matrix(NA,
+                             nrow = n_timepoints,
+                             ncol = n_estpoints)
+          for(tp in 1:n_timepoints) m_assign[tp, ] <- abs(v_timepoints[tp] - object$call$estpointsNorm)
+          
+          v_assign <- apply(m_assign, 1, which.min)
+          
+          # if consec is defined, subset v_assign accordingly
+          if(!is.null(consec)) v_assign <- v_assign[corePred$included]
+        }
+        
         
         # Copy relevant predictions, defined by v_assign
-        if('core' %in% cobj_ep) ind_batch <- v_assign==ep
-        if('mvar' %in% cobj_ep) ind_batch <- v_assign[-c(1:max(object$call$lags))]==ep
+        if('core' %in% cobj_ep) ind_batch <- v_assign == ep
+        if('mvar' %in% cobj_ep) ind_batch <- v_assign[-c(1:max(object$call$lags))] == ep
         
-        l_preds[[ep]] <- do.call(cbind, codePred$pred)[ind_batch,]
-        l_true[[ep]] <- codePred$true[ind_batch,]
-        l_probs[[ep]] <- lapply(codePred$prob, function(x) x[ind_batch,])
+        # if consec is defined, only output predictions for valid rows
+        l_preds[[ep]] <- do.call(cbind, corePred$pred)[ind_batch,]
+        l_true[[ep]] <- corePred$true[ind_batch,]
+        l_probs[[ep]] <- lapply(corePred$prob, function(x) x[ind_batch,])
         
       } # end for: estpoints
-      
       
       # Combine predictions
       preds <- do.call(rbind, l_preds)
@@ -498,7 +536,7 @@ predict.mgm <- function(object, # One of the four mgm objects
       #   names(l_errors_cat) <- names(l_errorCat)
       # }
       
-
+      
     } # end if: tvMethod closestModel?
     
     
@@ -584,14 +622,17 @@ predict.mgm <- function(object, # One of the four mgm objects
   }
   
   # create matrix with errords depending on specified errors
-  ea <- matrix(0, nrow = p, ncol = 1+length(l_errorCon)+length(l_errorCat))
+  ea <- as.data.frame(matrix(0, nrow = p, ncol = 1+length(l_errorCon)+length(l_errorCat)))
   ea[, 1] <- cnames
+  
+  # Get column names of Errors
   if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))
   if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('Error.', names(l_errors_con))
-  dimnames(ea)[[2]] <- c('Variable', names_con, names_cat)
   
-  if(length(l_errors_con) > 0) ea[,2:(1+length(l_errorCon))] <- round(do.call(cbind, l_errors_con),3)
-  if(length(l_errors_cat) > 0)  ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1)] <- round(do.call(cbind, l_errors_cat),3)
+  colnames(ea) <- c('Variable', names_con, names_cat)
+  
+  if(length(l_errors_con) > 0) ea[,2:(1+length(l_errorCon))] <- as.numeric(round(do.call(cbind, l_errors_con),3))
+  if(length(l_errors_cat) > 0)  ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1)] <- as.numeric(round(do.call(cbind, l_errors_cat),3))
   
   # Intercept performance for categoricals
   if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) {
@@ -605,9 +646,9 @@ predict.mgm <- function(object, # One of the four mgm objects
     dimnames(ea)[[2]][dim(ea)[2]] <- 'CCmarg'
   }
   
-  ea <- as.data.frame(ea)
-  
   predObj$errors <- ea
+  
+
   
   # }
   
@@ -617,6 +658,9 @@ predict.mgm <- function(object, # One of the four mgm objects
   predObj$predicted <- preds
   predObj$probabilties <- probs
   predObj$true <- true
+  
+  # add included vector for VAR models
+  if(cobj %in% c('mvar', 'tvmvar')) predObj$included <- corePred$included else predObj$included <- NULL
   
   
   # ---------- Output ----------

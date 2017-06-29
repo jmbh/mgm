@@ -44,8 +44,7 @@ bwSelect <- function(data,
 
   if(is.null(args$saveData)) args$saveData <- FALSE
 
-  if(modeltype == 'mgm') if(is.null(args$overparameterize)) args$overparameterize <- TRUE
-  if(modeltype == 'mgm') if(is.null(args$overparameterize)) args$overparameterize <- FALSE
+  if(is.null(args$overparameterize)) args$overparameterize <- TRUE
 
 
   # ----- Compute Aux Variables -----

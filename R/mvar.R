@@ -168,9 +168,12 @@ mvar <- function(data,         # n x p data matrix
 
 
   # ----- Split up predictor Sets by lags -----
+  
 
   # Divide Data in several parts: one response set, and one set of each lag
-  data_lagged <- lagData(data, lags, consec)
+  data_lagged <- lagData(data = data, 
+                          lags = lags, 
+                         consec = consec)
 
   data_response <- data_lagged$data_response
   l_data_lags <- data_lagged$l_data_lags
@@ -253,6 +256,7 @@ mvar <- function(data,         # n x p data matrix
   npar_standard <- rep(NA, p)
 
   for(v in 1:p) {
+  
 
     # ----- Create VAR Design Matrix -----
 
@@ -442,6 +446,7 @@ mvar <- function(data,         # n x p data matrix
 
     # Update Progress Bar
     if(pbar==TRUE) setTxtProgressBar(pb, v)
+    
 
   } # end for: p
 
@@ -464,6 +469,8 @@ mvar <- function(data,         # n x p data matrix
   if(length(pred_names) != (no_lags * p)) stop('Length of predictor variable names does not match calculated number of predictor varibales')
 
 
+  
+  
   # Fill parameter list
 
   for(v in 1:p) {

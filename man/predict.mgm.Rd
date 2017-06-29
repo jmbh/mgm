@@ -11,7 +11,7 @@ Similar to other predict methods, this function computes predicted values and pr
 
 }
 \usage{
-\method{predict}{mgm}(object, data, errorCon, errorCat, tvMethod, \dots)
+\method{predict}{mgm}(object, data, errorCon, errorCat, tvMethod, consec, \dots)
 }
 
 \arguments{
@@ -35,6 +35,8 @@ A n x p data matrix with the same structure (number of variables p and types of 
   \item{tvMethod}{
 The type of error calculated for time-varying models: \code{tvMethod = 'weighted'} computes errors by computing a weighted error over all cases in the time series at each estimation point specified in \code{estpoints} in \code{tvmgm()} or \code{tvmvar()}. The weighting corresponds to the weighting used for estimation (see \code{?tvmgm} or \code{?tvmvar}). \code{tvMethod = 'closestModel'} determines for each time point the closest model and uses that model for prediction. See Details below for a more elaborate explanation.
 }
+
+\item{consec}{A integer vector of length \code{nrow(data)}, indicating the sequence of measurement points in a time series. For details see \code{?mvar}. This is only relevant for mVAR models and time series with unequal time intervals. Defaults to \code{consec = NULL}, which assumes equal time intervals. \code{consec} is ignored if a \code{mgm} or \code{tvmgm} object is provided to \code{predict.mgm()}}
 
 \item{...}{Additional arguments.}
 

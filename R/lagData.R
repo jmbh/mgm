@@ -75,12 +75,17 @@ lagData <- function(data, lags, consec = NULL) {
 
 
   # ---------- Output ----------
-
+  
   outlist <- list()
   outlist$data_response <- data_response
   outlist$l_data_lags <- l_data_lags
 
-  if(!is.null(consec)) outlist$included <- v_check
+  if(!is.null(consec)) {
+    outlist$included <- v_check
+  } else {
+    outlist$included <- rep(TRUE, n)
+    outlist$included[lags_ext] <- FALSE
+  }
 
 
   return(outlist)
