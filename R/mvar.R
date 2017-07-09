@@ -102,6 +102,8 @@ mvar <- function(data,         # n x p data matrix
   if(scale) for(i in ind_Gauss) data[, i] <- scale(data[, i])
 
   # ----- Basic Input Checks -----
+  
+  if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
 
   if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
   

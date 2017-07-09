@@ -1,3 +1,8 @@
+Changes in Version 1.2-2
+  o Al estimation functions require a matrix object as data input to avoid problems with properties of data.frame objects
+
+Changes in Version 1.2-1
+  o Added consec argument to predict.mgm(), which allows prediction for VAR models in time series with unequal time intervals by excluding time points that are not preceded by enough measurements (see ?mvar)
 
 Changes in Version 1.2-0
   o The whole package has been rewritten from scratch to reduce susceptibility to bugs and to allow new features
@@ -18,6 +23,7 @@ Changes in Version 1.2-0
   o Fixed bug in mgmsampler() that was present in binary-Gaussian graphs
   o Fixed bug in predict.mgm() which caused the prediction of incorrect category labels in some situations
   o Fixed bug in mgm() which did not use the weight-argument in case of lambdaSel = 'CV'
+  o Default for argument lambdaSel changed from 'EBIC' to 'CV'
 
 Changes in Version 1.1-7
   o The predict() function now returns the predicted probabilities in addition to the predicted category for categorical variables

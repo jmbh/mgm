@@ -111,6 +111,8 @@ mgm <- function(data,         # n x p data matrix
   
   # ----- Basic Checks -----
   
+  if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
+  
   if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
   
   if(nrow(data) < 2) ('The data matrix has to have at least 2 rows.')
