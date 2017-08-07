@@ -12,7 +12,7 @@ Selects the bandwidth parameter with lowest out of sample prediction error for M
 
 \usage{
 bwSelect(data, type, level, bwSeq, bwFolds,
-         bwFoldsize, modeltype, ...)
+         bwFoldsize, modeltype, pbar, ...)
 }
 
 \arguments{
@@ -37,6 +37,11 @@ The size of each fold (see details below).
   \item{modeltype}{
 If \code{modeltype = 'mvar'} model, the optimal bandwidth parameter for a \code{tvmvar()} model is selected. If \code{modeltype = 'mgm'} model, the optimal bandwidth parameter for a \code{tvmgm()} model is selected. Additional arguments to \code{tvmvar()} or \code{tvmgm()} can be passed via the \code{\dots} argument.
 }
+
+  \item{pbar}{
+If TRUE a progress bar is shown. Defaults to \code{pbar = 'TRUE'}.
+}
+
   \item{\dots}{
 Arguments passed to \code{tvmgm} or \code{tvmvar}.
 }

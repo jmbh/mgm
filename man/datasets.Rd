@@ -1,5 +1,7 @@
 \name{datasets}
 \docType{data}
+
+\alias{datasets}
 \alias{autism_data}
 \alias{autism_data_large}
 \alias{restingstate_data}

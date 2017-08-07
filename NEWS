@@ -1,5 +1,6 @@
 Changes in Version 1.2-2
-  o Al estimation functions require a matrix object as data input to avoid problems with properties of data.frame objects
+  o All estimation functions require a matrix object as data input to avoid problems with properties of data.frame objects
+  o Corrected row-order in dataset "symptom_data"  
 
 Changes in Version 1.2-1
   o Added consec argument to predict.mgm(), which allows prediction for VAR models in time series with unequal time intervals by excluding time points that are not preceded by enough measurements (see ?mvar)
