@@ -8,7 +8,7 @@ import(matrixcalc)
 import(Hmisc)
 
 importFrom("stats", "as.formula", "coef", "dnorm", "dpois",
-             "model.matrix", "var")
+             "model.matrix", "var", "quantile")
 importFrom("utils", "combn", "setTxtProgressBar", "txtProgressBar")
 importFrom("stats", "rnorm", "rpois")
 
@@ -26,6 +26,8 @@ export(mvarsampler)
 export(tvmgmsampler)
 export(tvmvarsampler)
 
+export(resample)
+
 # Export old functions with defunct msg
 export(mgmfit)
 export(var.mgm)
@@ -36,4 +38,5 @@ export(tv_var.mgm)
 # Exported S3 Methods
 S3method(predict, mgm)
 S3method(print, mgm)
+S3method(print, resample)
 
