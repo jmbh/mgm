@@ -435,8 +435,6 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     n_estpoints <- length(model_obj$call$estpoints)
     nquantiles <- length(quantiles)
     
-    browser()
-    
     # Collect all estimates in one array
     collect_array <- collect_array_sign <- array(NA, dim = c(p, p, nlags, n_estpoints, nB))
     for(b in 1:nB) collect_array[, , , , b] <- outlist$models[[b]]$wadj
