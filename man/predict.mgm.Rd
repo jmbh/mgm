@@ -80,6 +80,10 @@ Contains the true values. For \code{mgm} and \code{tvmgm} objects these are equa
 A matrix containing the all types of errors specified via \code{errorCon} and \code{errorCat}, for each variable. If \code{tvMethod = 'weighted'}, the matrix becomes an array, with an additional dimension for the estimation point.
 }
 
+\item{tverrors}{
+If \code{tvMethod = 'weighted'}, this list entry contains a list with errors of the format of \code{errors}, separately for each estimation point. The errors are computed from predictions of the model at the given estimation points and weighted by the weight-vector at that estimation point. If \code{tvMethod = 'closestModel'}, this entry is empty.
+}
+
 
 }
 \references{

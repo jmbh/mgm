@@ -1,4 +1,58 @@
 
+# Used within predict.mgm to compute nice output error table
+
+f_makeErrorTable <- function(data, 
+                             l_errorCon,
+                             l_errorCat,
+                             l_errors_con,
+                             l_errors_cat,
+                             p,
+                             errorCat,
+                             errorCon)
+  
+{
+  
+  # browser()
+  
+  # get colnames if available, otherwise fill in 1:p
+  if(is.null(colnames(data))) {
+    cnames <- 1:p
+  } else {
+    cnames <- colnames(data)
+  }
+  
+  # create matrix with errords depending on specified errors
+  ea <- as.data.frame(matrix(0, nrow = p, ncol = 1+length(l_errorCon)+length(l_errorCat)))
+  ea[, 1] <- cnames
+  
+  # Get column names of Errors
+  if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))
+  if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('Error.', names(l_errors_con))
+  
+  colnames(ea) <- c('Variable', names_con, names_cat)
+  
+  if(length(l_errors_con) > 0) ea[,2:(1+length(l_errorCon))] <- as.numeric(round(do.call(cbind, l_errors_con),3))
+  if(length(l_errors_cat) > 0)  ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1)] <- as.numeric(round(do.call(cbind, l_errors_cat),3))
+  
+  # Intercept performance for categoricals
+  if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) {
+    
+    CCmarg <- rep(NA, p)
+    CC <- ea[ , which(colnames(ea) =='Error.CC')]
+    nCC <- ea[ , which(colnames(ea) =='Error.nCC')]
+    for(j in which(type=='c')) CCmarg[j] <- (nCC[j] - CC[j]) / (nCC[j] - 1)
+    
+    ea <- cbind(ea, round(CCmarg, 3))
+    dimnames(ea)[[2]][dim(ea)[2]] <- 'CCmarg'
+  }
+  
+  return(ea)
+  
+}
+
+
+
+
 
 predict.mgm <- function(object, # One of the four mgm objects
                         data, # data in same format as used for fitting
@@ -228,7 +282,8 @@ predict.mgm <- function(object, # One of the four mgm objects
                   'predicted' = NULL,
                   'probabilties' = NULL,
                   'true' = NULL,
-                  'errors' = NULL)
+                  'errors' = NULL, 
+                  'tverrors' = NULL)
   
   
   # Copy the Call
@@ -300,6 +355,20 @@ predict.mgm <- function(object, # One of the four mgm objects
         wo <- object_ep$call$weights
         if(!is.null(consec)) wo <- wo[corePred$included]
         l_weights[[ep]] <- wo
+        
+        
+        # Here in addition: 
+        
+        # Compute Errors for given estpoint
+        
+        
+        # Weight by weight-vector of given estpoint
+        
+        
+        # Save in list
+        
+        
+        
         
       } # end for: estpoints
       
@@ -571,86 +640,76 @@ predict.mgm <- function(object, # One of the four mgm objects
   }
   
   
+  # browser()
   
   
+  # ---------- Compute time-varying Nodewise Errors ----------
   
-  # ---------- Compute Error Table for Output ----------
-  
-  # This commented out code creates an array instead a matrix, with error measures for different time points
-  
-  # if(cobj %in% c('tvmgm', 'tvmvar') & tvMethod=='weighted') {
-  #   
-  #   # ... if time-varying & tvMethod==weighted: array
-  #   
-  #   if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) exCCmarg <- 1 else exCCmarg <- 0
-  #   
-  #   ea <- array(0, dim = c(p, 1+length(l_errorCon)+length(l_errorCat)+exCCmarg, n_estpoints))
-  #   ea[, 1,] <- 1:p
-  #   if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))
-  #   if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('Error.', names(l_errors_con))
-  #   
-  #   if(length(l_errors_con) > 0) for(ep in 1:n_estpoints) ea[,2:(1+length(l_errorCon)), ep] <- round(do.call(cbind, l_errors_ep_con[[ep]]),3)
-  #   if(length(l_errors_cat) > 0) for(ep in 1:n_estpoints) ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1), ep] <- round(do.call(cbind, l_errors_ep_cat[[ep]]),3)
-  #   
-  #   if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) dimnames(ea)[[2]] <- c('Variable', names_con, names_cat, 'CCmarg') else dimnames(ea)[[2]] <- c('Variable', names_con, names_cat)
-  #   
-  #   
-  #   # Intercept performance for categoricals
-  #   if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) {
-  #     
-  #     for(ep in 1:n_estpoints) {
-  #       CCmarg <- rep(NA, p)
-  #       CC <- ea[ , which(colnames(ea) =='Error.CC'), ep]
-  #       nCC <- ea[ , which(colnames(ea) =='Error.nCC'), ep]
-  #       for(j in which(type=='c')) CCmarg[j] <- (nCC[j] - CC[j]) / (nCC[j] - 1)
-  #       
-  #       ea[, dim(ea)[2], ep] <- round(CCmarg, 3)
-  #     }
-  #   }
-  #   
-  #   predObj$errors <- ea
-  #   
-  #   
-  # } else {
-  
-  
-  # get colnames if available, otherwise fill in 1:p
-  if(is.null(colnames(data))) {
-    cnames <- 1:p
-  } else {
-    cnames <- colnames(data)
-  }
-  
-  # create matrix with errords depending on specified errors
-  ea <- as.data.frame(matrix(0, nrow = p, ncol = 1+length(l_errorCon)+length(l_errorCat)))
-  ea[, 1] <- cnames
-  
-  # Get column names of Errors
-  if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))
-  if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('Error.', names(l_errors_con))
-  
-  colnames(ea) <- c('Variable', names_con, names_cat)
-  
-  if(length(l_errors_con) > 0) ea[,2:(1+length(l_errorCon))] <- as.numeric(round(do.call(cbind, l_errors_con),3))
-  if(length(l_errors_cat) > 0)  ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1)] <- as.numeric(round(do.call(cbind, l_errors_cat),3))
-  
-  # Intercept performance for categoricals
-  if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) {
+  if(tvMethod == "weighted") {
     
-    CCmarg <- rep(NA, p)
-    CC <- ea[ , which(colnames(ea) =='Error.CC')]
-    nCC <- ea[ , which(colnames(ea) =='Error.nCC')]
-    for(j in which(type=='c')) CCmarg[j] <- (nCC[j] - CC[j]) / (nCC[j] - 1)
+    l_tverrors <- list()
     
-    ea <- cbind(ea, round(CCmarg, 3))
-    dimnames(ea)[[2]][dim(ea)[2]] <- 'CCmarg'
-  }
+    for(ep in 1:n_estpoints) {
+      
+      object_ep <- object$tvmodels[[ep]]
+      
+      # Errors Continuous
+      l_errors_con_tv <- list()
+      if(!is.null(l_errorCon)) {
+        for(e in 1:length(l_errorCon)) {
+          v_errors <- rep(NA, p)
+          for(j in 1:p)  if(type[j] != 'c')  v_errors[j] <- l_errorCon[[e]](true = true[, j], 
+                                                                            pred = l_preds[[ep]][, j], 
+                                                                            weights = object_ep$call$weights_design)
+          l_errors_con_tv[[e]] <- v_errors
+        }
+        names(l_errors_con_tv) <- names(l_errorCon)
+      }
+      
+      # Errors Categorical
+      l_errors_cat_tv <- list()
+      if(!is.null(l_errorCat)) {
+        for(e in 1:length(l_errorCat)) {
+          v_errors <- rep(NA, p)
+          for(j in 1:p)  if(type[j] == 'c')  v_errors[j] <- l_errorCat[[e]](true = true[, j], 
+                                                                            pred = preds[, j],
+                                                                            weights = object_ep$call$weights_design)
+          l_errors_cat_tv[[e]] <- v_errors
+        }
+        names(l_errors_cat_tv) <- names(l_errorCat)
+      }
+      
+      
+      l_tverrors[[ep]] <- f_makeErrorTable(data, 
+                                           l_errorCon,
+                                           l_errorCat,
+                                           l_errors_con_tv,
+                                           l_errors_cat_tv,
+                                           p,
+                                           errorCat,
+                                           errorCon)
+      
+      
+      
+    } # end for: est points
+    
+    
+    
+    predObj$tverrors <- l_tverrors
+    
+    
+  } # end if: tvMethod weighted?
   
-  predObj$errors <- ea
   
-
-  
-  # }
+  # Make error table for overall errors
+  predObj$errors <- f_makeErrorTable(data, 
+                                     l_errorCon,
+                                     l_errorCat,
+                                     l_errors_con,
+                                     l_errors_cat,
+                                     p,
+                                     errorCat,
+                                     errorCon)
   
   
   # ---------- Prepare Remaining Output ----------
@@ -661,6 +720,8 @@ predict.mgm <- function(object, # One of the four mgm objects
   
   # add included vector for VAR models
   if(cobj %in% c('mvar', 'tvmvar')) predObj$included <- corePred$included else predObj$included <- NULL
+  
+  
   
   
   # ---------- Output ----------
