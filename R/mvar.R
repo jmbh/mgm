@@ -180,16 +180,23 @@ mvar <- function(data,         # n x p data matrix
   data_response <- data_lagged$data_response
   l_data_lags <- data_lagged$l_data_lags
   
-  # set weights for cases with not enough preceding complete measurements to zero
-  if(!is.null(consec)) {
-    weights[data_lagged$included == FALSE] <- 0
-    nadj <- sum(weights) # calc adjusted n again for case of non-consecutive measurements
-  }
+  # # set weights for cases with not enough preceding complete measurements to zero
+  # if(!is.null(consec)) {
+  #   weights[data_lagged$included == FALSE] <- 0
+  #   nadj <- sum(weights) # calc adjusted n again for case of non-consecutive measurements
+  # }
+  
+  # do different, to make below bootstrap scheme simpler;
+  # Subset instead:
+  data_response <- data_response[data_lagged$included, ]
+  l_data_lags <- lapply(l_data_lags, function(x) x[data_lagged$included, ])
+  weights <- weights[data_lagged$included]
+  nadj <- sum(weights)
+  
   
   
   # ----- Use bootstrap instead of original data (called from resample()) -----
 
-  
   if(!is.null(args$bootstrap)) {
     if(args$bootstrap) {
 

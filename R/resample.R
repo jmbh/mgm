@@ -290,21 +290,19 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     
     # --- Define bootstrap samples ---
     
-    # browser()
-    
     # Compute design matrix to find out how many rows it has
     data_lagged <- lagData(data = data, 
                            lags = o_call$lags, 
                            consec = o_call$consec)
     
-    n_design <- nrow(data_lagged$data_response)
     timepoints_design <- o_call$timepoints[data_lagged$included]
     
     # Break data into blocks of equal time-duration (unsing timepoints vector)
     Qt <- quantile(timepoints_design, probs = seq(0, 1, length = blocks + 1))
-    ind_blocks <- cut(x = timepoints_design, 
+    ind_blocks <- cut(x = timepoints_design,  # important: indices in the design matrix
                       breaks = Qt,
                       labels = FALSE)
+    
     ind_blocks[1] <- 1 # for some reason the first entry is NA
     
     # Storage
