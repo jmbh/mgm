@@ -76,6 +76,8 @@ mvar <- function(data,         # n x p data matrix
   if(verbatim) pbar <- FALSE
   if(verbatim) warnings <- FALSE
   
+  weights_initial <- weights
+  
   
   # ----- Compute Auxilliary Variables II -----
   
@@ -253,7 +255,8 @@ mvar <- function(data,         # n x p data matrix
                        'alphaFolds' = alphaFolds,
                        'alphaGam' = alphaGam,
                        'lags' = lags,
-                       'weights' = weights,
+                       'weights' = weights_initial,
+                       'weights_design' = weights,
                        'threshold' = threshold,
                        'method' = method,
                        'binarySign' = binarySign,
