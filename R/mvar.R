@@ -192,8 +192,10 @@ mvar <- function(data,         # n x p data matrix
   # Subset instead:
   data_response <- data_response[data_lagged$included, ]
   l_data_lags <- lapply(l_data_lags, function(x) x[data_lagged$included, ])
-  weights <- weights[data_lagged$included]
+  ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # the weights-vector has alread length nrow-max(lags)
+  weights <- weights[ind_included_wo_begin]
   nadj <- sum(weights)
+  
   
   
   
