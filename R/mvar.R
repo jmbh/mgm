@@ -43,6 +43,7 @@ mvar <- function(data,         # n x p data matrix
   n <- nrow(data)
   p <- ncol(data)
   n_var <- n - max(lags)
+  n_lags <- length(lags)
   
   args <- list(...)
   
@@ -182,6 +183,8 @@ mvar <- function(data,         # n x p data matrix
   data_response <- data_lagged$data_response
   l_data_lags <- data_lagged$l_data_lags
   
+  n_design <- nrow(data_response)
+  
   # # set weights for cases with not enough preceding complete measurements to zero
   # if(!is.null(consec)) {
   #   weights[data_lagged$included == FALSE] <- 0
@@ -190,14 +193,14 @@ mvar <- function(data,         # n x p data matrix
   
   # do different, to make below bootstrap scheme simpler;
   # Subset instead:
-  data_response <- data_response[data_lagged$included, ]
-  l_data_lags <- lapply(l_data_lags, function(x) x[data_lagged$included, ])
   ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # the weights-vector has alread length nrow-max(lags)
+  
+  data_response <- data_response[ind_included_wo_begin, ]
+  l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])
   weights <- weights[ind_included_wo_begin]
   nadj <- sum(weights)
   
-  
-  
+  # browser()
   
   # ----- Use bootstrap instead of original data (called from resample()) -----
 
@@ -326,6 +329,8 @@ mvar <- function(data,         # n x p data matrix
       
     }
     
+
+    
     
     # ----- Fit each neighborhood using the same procedure as in mgm -----
     
@@ -338,7 +343,7 @@ mvar <- function(data,         # n x p data matrix
     if(alphaSel == 'CV') {
       
       l_alphaModels <- list() # Storage
-      ind <- sample(1:alphaFolds, size = n, replace = TRUE) # fold-indicators, use same for each alpha
+      ind <- sample(1:alphaFolds, size = n_design, replace = TRUE) # fold-indicators, use same for each alpha
       
       v_mean_OOS_deviance <- rep(NA, n_alpha)
       
@@ -418,6 +423,8 @@ mvar <- function(data,         # n x p data matrix
       
       # Refit Model on whole data, with selected alpha
       
+      # browser()
+      
       model <- nodeEst(y = y,
                        X = X,
                        lambdaSeq = lambdaSeq,
@@ -426,7 +433,7 @@ mvar <- function(data,         # n x p data matrix
                        lambdaGam = lambdaGam,
                        alpha = alpha_select,
                        weights = weights,
-                       n = n,
+                       n = n_design,
                        nadj = nadj,
                        v = v,
                        type = type,
