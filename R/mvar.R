@@ -193,12 +193,14 @@ mvar <- function(data,         # n x p data matrix
   
   # do different, to make below bootstrap scheme simpler;
   # Subset instead:
-  ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # the weights-vector has alread length nrow-max(lags)
+  ind_included_wo_begin <- data_lagged$included #[-c(1:n_lags)] # the weights-vector has alread length nrow-max(lags)
   
   data_response <- data_response[ind_included_wo_begin, ]
   l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])
   weights <- weights[ind_included_wo_begin]
   nadj <- sum(weights)
+  
+  
   
   # browser()
   

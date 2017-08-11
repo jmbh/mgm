@@ -344,7 +344,7 @@ predict.mgm <- function(object, # One of the four mgm objects
                                                       data = data, 
                                                       consec = consec)
         
-        if(!is.null(consec)) n_pred <- sum(corePred$included)
+        if(!is.null(consec)) n_pred <- sum(corePred$included) #+ max(object$call$lags) # 
         
         # Save separate for output:
         l_preds[[ep]] <- do.call(cbind, corePred$pred)
@@ -355,21 +355,7 @@ predict.mgm <- function(object, # One of the four mgm objects
         wo <- object_ep$call$weights
         if(!is.null(consec)) wo <- wo[corePred$included]
         l_weights[[ep]] <- wo
-        
-        
-        # Here in addition: 
-        
-        # Compute Errors for given estpoint
-        
-        
-        # Weight by weight-vector of given estpoint
-        
-        
-        # Save in list
-        
-        
-        
-        
+
       } # end for: estpoints
       
       
@@ -610,6 +596,8 @@ predict.mgm <- function(object, # One of the four mgm objects
     
     
   } # end if: time-varying?
+  
+  # browser()
   
   
   # ---------- Compute Nodewise Errors ----------

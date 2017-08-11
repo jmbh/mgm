@@ -1,5 +1,7 @@
 
-lagData <- function(data, lags, consec = NULL) {
+lagData <- function(data, 
+                    lags, 
+                    consec = NULL) {
 
 
   # ---------- Compute Aux Variables ----------
