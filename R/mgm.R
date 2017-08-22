@@ -42,6 +42,8 @@ mgm <- function(data,         # n x p data matrix
   colnames(data)[1:p] <- paste("V", 1:p, '.', sep = "")
   # colnames(data)[type == 'c'] <- paste("V", (1:p)[type == 'c'], '.', sep = "") # dot deliminator for categorical variables; needed to identify parameters assiciated with some k-order interaction below
   
+  # Catch other passed on arguments
+  args <- list(...)
   
   # ----- Fill in Defaults -----
   
@@ -58,7 +60,15 @@ mgm <- function(data,         # n x p data matrix
   if(missing(weights)) weights <- rep(1, n)
   if(missing(threshold)) threshold <- 'LW'
   if(missing(method)) method <- 'glm'
-  if(missing(binarySign)) binarySign <- FALSE
+  if(missing(binarySign)) {
+    if(!is.null(args$binary.sign)) binarySign <- args$binary.sign else binarySign <- FALSE
+  }
+  
+  if(!is.null(args$binary.sign)) {
+    warning("The argument 'binary.sign' is deprecated Use 'binarySign' instead.")
+  }
+  
+
   if(missing(scale)) scale <- TRUE
   if(missing(verbatim)) verbatim <- FALSE
   if(missing(pbar)) pbar <- TRUE

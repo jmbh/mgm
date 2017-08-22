@@ -8,7 +8,8 @@ f_makeErrorTable <- function(data,
                              l_errors_cat,
                              p,
                              errorCat,
-                             errorCon)
+                             errorCon,
+                             type)
   
 {
   
@@ -675,7 +676,8 @@ predict.mgm <- function(object, # One of the four mgm objects
                                            l_errors_cat_tv,
                                            p,
                                            errorCat,
-                                           errorCon)
+                                           errorCon, 
+                                           type)
       
       
       
@@ -697,7 +699,8 @@ predict.mgm <- function(object, # One of the four mgm objects
                                      l_errors_cat,
                                      p,
                                      errorCat,
-                                     errorCon)
+                                     errorCon,
+                                     type)
   
   
   # ---------- Prepare Remaining Output ----------

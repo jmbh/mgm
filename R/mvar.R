@@ -63,7 +63,17 @@ mvar <- function(data,         # n x p data matrix
   if(missing(weights)) weights <- rep(1, n-max(lags))
   if(missing(threshold)) threshold <- 'LW'
   if(missing(method)) method <- 'glm'
-  if(missing(binarySign)) binarySign <- FALSE
+
+  if(missing(binarySign)) {
+    if(!is.null(args$binary.sign)) binarySign <- args$binary.sign else binarySign <- FALSE
+  }
+  
+  if(!is.null(args$binary.sign)) {
+    warning("The argument 'binary.sign' is deprecated Use 'binarySign' instead.")
+  }
+  
+  
+  
   if(missing(verbatim)) verbatim <- FALSE
   if(missing(pbar)) pbar <- TRUE
   if(missing(warnings)) warnings <- TRUE
