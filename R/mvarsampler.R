@@ -145,6 +145,7 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
 
   # ---------- Output ----------
 
+  # browser()
 
   mvarsamp_obj$data <- data[(max_lag+1):(N+max_lag), ]
 

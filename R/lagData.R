@@ -15,6 +15,9 @@ lagData <- function(data,
   n_lags <- length(lags_ext)
 
   data_response <- data[-c(1:max_lag), ]
+  # data_response <- as.matrix(data_response)
+  
+  # browser()
 
   if(!is.null(consec)) m_consec <- matrix(NA, nrow = n_var, ncol = n_lags)
 
@@ -38,6 +41,7 @@ lagData <- function(data,
     } else {
 
       l_data_lags[[lag_pos]] <- data[-c((1:front),((n-end+1):n)), ]
+      # l_data_lags[[lag_pos]] <- as.matrix(l_data_lags[[lag_pos]])
       colnames(l_data_lags[[lag_pos]]) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
 
     }

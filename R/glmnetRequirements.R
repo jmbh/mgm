@@ -42,6 +42,7 @@ glmnetRequirements <- function(data,
       return(v_wfrq)
     }
 
+    
     ind_cat <- which(type == 'c')
     check2 <- rep(NA, length(ind_cat))
     for(i in 1:length(ind_cat)) check2[i] <- min(wtable(data[,ind_cat[i]], weights)) < 10^-5 # smaller = error

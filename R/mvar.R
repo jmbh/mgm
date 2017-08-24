@@ -203,16 +203,16 @@ mvar <- function(data,         # n x p data matrix
   
   # do different, to make below bootstrap scheme simpler;
   # Subset instead:
-  ind_included_wo_begin <- data_lagged$included #[-c(1:n_lags)] # the weights-vector has alread length nrow-max(lags)
+  ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
   
   data_response <- data_response[ind_included_wo_begin, ]
   l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])
-  weights <- weights[ind_included_wo_begin]
-  nadj <- sum(weights)
   
+  # weights <- weights[ind_included_wo_begin]
+  weights_design <- weights[ind_included_wo_begin] # to length of design matrix
+  nadj <- sum(weights_design)
   
-  
-  # browser()
+
   
   # ----- Use bootstrap instead of original data (called from resample()) -----
 
@@ -224,7 +224,7 @@ mvar <- function(data,         # n x p data matrix
       l_data_lags <- lapply(l_data_lags, function(x) x[args$boot_ind, ])
 
       # overwrite weights
-      weights <- weights[args$boot_ind]
+      weights_design <- weights_design[args$boot_ind]
       
     }
   }
@@ -240,7 +240,7 @@ mvar <- function(data,         # n x p data matrix
     
     glmnetRequirements(data = l_data_lags[[lag]],
                        type = type,
-                       weights = weights)
+                       weights = weights_design)
     
   }
   
@@ -273,7 +273,7 @@ mvar <- function(data,         # n x p data matrix
                        'alphaGam' = alphaGam,
                        'lags' = lags,
                        'weights' = weights_initial,
-                       'weights_design' = weights,
+                       'weights_design' = weights_design,
                        'threshold' = threshold,
                        'method' = method,
                        'binarySign' = binarySign,
@@ -378,7 +378,7 @@ mvar <- function(data,         # n x p data matrix
             
             # Recompute variables for training set
             n_train <- nrow(train_X)
-            nadj_train <- sum(weights[ind != fold])
+            nadj_train <- sum(weights_design[ind != fold])
             
             l_foldmodels[[fold]] <- nodeEst(y = train_y,
                                             X = train_X,
@@ -387,7 +387,7 @@ mvar <- function(data,         # n x p data matrix
                                             lambdaFolds = lambdaFolds,
                                             lambdaGam = lambdaGam,
                                             alpha = alphaSeq[a],
-                                            weights = weights[ind != fold],
+                                            weights = weights_design[ind != fold],
                                             n = n_train,
                                             nadj = nadj_train,
                                             v = v,
@@ -403,7 +403,7 @@ mvar <- function(data,         # n x p data matrix
                                type = type,
                                level = level,
                                v = v,
-                               weights = weights[ind == fold],
+                               weights = weights_design[ind == fold],
                                lambda = l_foldmodels[[fold]]$lambda,
                                LLtype = 'model')
             
@@ -413,7 +413,7 @@ mvar <- function(data,         # n x p data matrix
                                    type = type,
                                    level = level,
                                    v = v,
-                                   weights = weights[ind == fold],
+                                   weights = weights_design[ind == fold],
                                    lambda = l_foldmodels[[fold]]$lambda,
                                    LLtype = 'saturated')
             
@@ -444,7 +444,7 @@ mvar <- function(data,         # n x p data matrix
                        lambdaFolds = lambdaFolds,
                        lambdaGam = lambdaGam,
                        alpha = alpha_select,
-                       weights = weights,
+                       weights = weights_design,
                        n = n_design,
                        nadj = nadj,
                        v = v,
@@ -477,7 +477,7 @@ mvar <- function(data,         # n x p data matrix
                                       lambdaFolds = lambdaFolds,
                                       lambdaGam = lambdaGam,
                                       alpha = alphaSeq[a],
-                                      weights = weights,
+                                      weights = weights_design,
                                       n = n,
                                       nadj = nadj,
                                       v = v,
