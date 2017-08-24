@@ -64,7 +64,7 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 \dontrun{
 
 
-# a) Set up mvar model
+# a) Set up time-varying mvar model
 
 p <- 6 # Six variables
 type <- c('c', 'c', 'c', 'c', 'g', 'g') # 4 categorical, 2 gaussians
@@ -74,57 +74,60 @@ max_level <- max(level)
 lags <- c(1, 3, 9) # include lagged effects of order 1, 3, 9
 n_lags <- length(lags)
 
+N <- 5000
+
 # Specify thresholds
-thresholds[[1]] <- c(0, 0)
-thresholds[[2]] <- c(0, 0)
-thresholds[[3]] <- c(0, 0, 0, 0)
-thresholds[[4]] <- c(0, 0, 0, 0)
-thresholds[[5]] <- c(0)
-thresholds[[6]] <- c(0)
+thresholds <- list()
+thresholds[[1]] <- matrix(0, ncol=2, nrow=N)
+thresholds[[2]] <- matrix(0, ncol=2, nrow=N)
+thresholds[[3]] <- matrix(0, ncol=4, nrow=N)
+thresholds[[4]] <- matrix(0, ncol=4, nrow=N)
+thresholds[[5]] <- matrix(0, ncol=1, nrow=N)
+thresholds[[6]] <- matrix(0, ncol=1, nrow=N)
 
 # Specify standard deviations for the Gaussians
-sds <- rep(NULL, p)
-sds[5:6] <- 1
+sds <- matrix(NA, ncol=6, nrow=N)
+sds[,5:6] <- 1
 
 # Create coefficient array
-coefarray <- array(0, dim=c(p, p, max_level, max_level, n_lags))
+coefarray <- array(0, dim=c(p, p, max_level, max_level, n_lags, N))
 
 # a.1) interaction between continuous 5<-6, lag=3
-coefarray[5, 6, 1, 1, 2] <- .4
+coefarray[5, 6, 1, 1, 2, ] <- c(rep(.5, N/2), rep(0, N/2))
 # a.2) interaction between 1<-3, lag=1
 m1 <- matrix(0, nrow=level[2], ncol=level[4])
-m1[1,1:2] <- 1
-m1[2,3:4] <- 1
-coefarray[1, 3, 1:level[2], 1:level[4], 1] <- m1
+m1[1, 1:2] <- 1
+m1[2, 3:4] <- 1
+coefarray[1, 3, 1:level[2], 1:level[4], 1, ] <- m1
 # a.3) interaction between 1<-5, lag=9
-coefarray[1, 5, 1:level[1], 1:level[5], 3] <- c(0, 1)
+coefarray[1, 5, 1:level[1], 1:level[5], 3, ] <- c(0, 1)
 
+dim(coefarray)
 
 # b) Sample
 set.seed(1)
-dlist <- mvarsampler(coefarray = coefarray,
-                     lags = lags,
-                     thresholds = thresholds,
-                     sds = sds,
+dlist <- tvmvarsampler(coefarray = coefarray,
+                       lags = lags,
+                       thresholds = thresholds,
+                       sds = sds,
+                       type = type,
+                       level = level,
+                       pbar = TRUE)
+
+
+# c) Recover: time-varying mVAR model
+set.seed(1)
+tvmvar_obj <- tvmvar(data = dlist$data,
                      type = type,
                      level = level,
-                     N = 200,
-                     pbar = TRUE)
+                     lambdaSel = 'CV',
+                     lags = c(1, 3, 9),
+                     estpoints = seq(0, N-9, length=10),
+                     bandwidth = .05)
 
-
-
-# c) Recover
-set.seed(1)
-mvar_obj <- mvar(data = dlist$data,
-                 type = type,
-                 level = level,
-                 lambdaSel = 'CV',
-                 lags = c(1, 3, 9))
-
-# Did we recover the true parameters?
-mvar_obj$wadj[5, 6, 2] # yes
-mvar_obj$wadj[1, 3, 1] # yes
-mvar_obj$wadj[1, 5, 3] # yes
+tvmvar_obj$wadj[5, 6, 2, ] # parameter goes down, as specified
+tvmvar_obj$wadj[1, 3, 1, ]
+tvmvar_obj$wadj[1, 5, 3, ]
 
 
 }

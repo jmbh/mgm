@@ -62,7 +62,7 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
   }
 
 
-  if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=N, initial=0, char="-", style = 3)
+  if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=N, initial=0, char = "-", style = 3)
 
 
   for(r in (max_lag+1):(N+max_lag)) {
@@ -89,8 +89,10 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
 
         mu <- thresholds[[v]] + sum(unlist(potential_lag))
 
+        # if(v==3) browser()
+        
         if(type[v] == 'g') data[r, v] <- rnorm(1, mean = mu, sd = sds[v])
-        if(type[v] == 'p') data[r, v] <- rnorm(1, mean = mu, sd = sds[v])
+        if(type[v] == 'p') data[r, v] <- rpois(1, lambda = mu)
 
       } # end if: !='c'
 
