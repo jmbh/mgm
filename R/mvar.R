@@ -117,6 +117,9 @@ mvar <- function(data,         # n x p data matrix
   
   # ----- Basic Input Checks -----
   
+  if(length(consec) != nrow(data)) stop("The length of consec has to be equal to the number of rows of the data matrix.")
+  
+  
   if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
   
   if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
@@ -203,13 +206,13 @@ mvar <- function(data,         # n x p data matrix
   
   # do different, to make below bootstrap scheme simpler;
   # Subset instead:
-  ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
+  # ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
   
-  data_response <- data_response[ind_included_wo_begin, ]
-  l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])
+  data_response <- data_response[data_lagged$included, ]
+  l_data_lags <- lapply(l_data_lags, function(x) x[data_lagged$included, ])
   
   # weights <- weights[ind_included_wo_begin]
-  weights_design <- weights[ind_included_wo_begin] # to length of design matrix
+  weights_design <- weights[data_lagged$included] # to length of design matrix
   nadj <- sum(weights_design)
   
 
