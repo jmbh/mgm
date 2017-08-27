@@ -165,6 +165,7 @@ bwSelPredict <- function(data,
 
   m_error <- matrix(NA, nrow = n_test, ncol = p)
 
+  # browser()
   
   # 0/1 loss for categorical, RMSE for continuous (which here is just absolute error, because 1 element)
   for(i in 1:p) {

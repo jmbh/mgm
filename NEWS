@@ -2,9 +2,9 @@ Changes in Version 1.2-2
   o All estimation functions require a matrix object as data input to avoid problems with properties of data.frame objects
   o Corrected row-order in dataset "symptom_data"  
   o In mVAR models we use an adjusted sample size that is equal to the number of rows in the design matrix. The adjusted sample size can be smaller than nrow(data) - max(lags) if measurements are not consecutive, or if non-uniform weighting is used. In earlier versions the sample size was only adjusted for non-uniform weighting. The adjusted sample size is used in the additional thresholding of parameter estimates (see ?mgm or ?mvar).
+  o Added function resample() that fits any model class to a specified number of bootstrap samples and provides the bootstrapped sampling distribution in an array. For time series data, the block bootstrap is used, where the number of blocks can be specified.
   
   
-
 Changes in Version 1.2-1
   o Added consec argument to predict.mgm(), which allows prediction for VAR models in time series with unequal time intervals by excluding time points that are not preceded by enough measurements (see ?mvar)
 

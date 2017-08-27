@@ -44,6 +44,7 @@ mvar <- function(data,         # n x p data matrix
   p <- ncol(data)
   n_var <- n - max(lags)
   n_lags <- length(lags)
+  max_lags <- max(lags)
   
   args <- list(...)
   
@@ -198,7 +199,7 @@ mvar <- function(data,         # n x p data matrix
   n_design <- nrow(data_response)
   
   # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
-  ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] 
+  ind_included_wo_begin <- data_lagged$included[-c(1:max_lags)] 
   
   data_response <- data_response[ind_included_wo_begin, ]
   l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])

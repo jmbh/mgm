@@ -295,7 +295,12 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                            lags = o_call$lags, 
                            consec = o_call$consec)
     
-    timepoints_design <- o_call$timepoints[data_lagged$included]
+
+    # add false for excluded 1:max_lags time points at beginning of time series
+    max_lags <- max(o_call$lags)
+    full_included_vec <- c(rep(FALSE, max_lags), data_lagged$included)
+
+    timepoints_design <- o_call$timepoints[full_included_vec]
     
     # Break data into blocks of equal time-duration (unsing timepoints vector)
     Qt <- quantile(timepoints_design, probs = seq(0, 1, length = blocks + 1))
