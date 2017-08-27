@@ -63,7 +63,7 @@ mvar <- function(data,         # n x p data matrix
   if(missing(weights)) weights <- rep(1, n-max(lags))
   if(missing(threshold)) threshold <- 'LW'
   if(missing(method)) method <- 'glm'
-
+  
   if(missing(binarySign)) {
     if(!is.null(args$binary.sign)) binarySign <- args$binary.sign else binarySign <- FALSE
   }
@@ -117,8 +117,7 @@ mvar <- function(data,         # n x p data matrix
   
   # ----- Basic Input Checks -----
   
-  if(length(consec) != nrow(data)) stop("The length of consec has to be equal to the number of rows of the data matrix.")
-  
+  if(!is.null(consec)) if(length(consec) != nrow(data)) stop("The length of consec has to be equal to the number of rows of the data matrix.")
   
   if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
   
@@ -183,7 +182,7 @@ mvar <- function(data,         # n x p data matrix
   data <- as.data.frame(data)
   
   # Categoricals into factors (Needed to use formula to construct design matrix)
-  for(i in which(type=='c')) data[, i] <- as.factor(data[, i])
+  # for(i in which(type=='c')) data[, i] <- as.factor(data[, i])
   
   
   # ----- Split up predictor Sets by lags -----
@@ -198,40 +197,31 @@ mvar <- function(data,         # n x p data matrix
   
   n_design <- nrow(data_response)
   
-  # # set weights for cases with not enough preceding complete measurements to zero
-  # if(!is.null(consec)) {
-  #   weights[data_lagged$included == FALSE] <- 0
-  #   nadj <- sum(weights) # calc adjusted n again for case of non-consecutive measurements
-  # }
+  # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
+  ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] 
   
-  # do different, to make below bootstrap scheme simpler;
-  # Subset instead:
-  # ind_included_wo_begin <- data_lagged$included[-c(1:n_lags)] # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
-  
-  data_response <- data_response[data_lagged$included, ]
-  l_data_lags <- lapply(l_data_lags, function(x) x[data_lagged$included, ])
+  data_response <- data_response[ind_included_wo_begin, ]
+  l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])
   
   # weights <- weights[ind_included_wo_begin]
-  weights_design <- weights[data_lagged$included] # to length of design matrix
+  weights_design <- weights[ind_included_wo_begin] # to length of design matrix
   nadj <- sum(weights_design)
   
-
-  
   # ----- Use bootstrap instead of original data (called from resample()) -----
-
+  
   if(!is.null(args$bootstrap)) {
     if(args$bootstrap) {
-
+      
       # overwrite data with bootstrap sample, passed on from resample()
       data_response <- data_response[args$boot_ind, ]
       l_data_lags <- lapply(l_data_lags, function(x) x[args$boot_ind, ])
-
+      
       # overwrite weights
       weights_design <- weights_design[args$boot_ind]
       
     }
   }
-
+  
   
   # -------------------- Input Checks Local (for each set of predictors) -------------------
   
@@ -313,10 +303,15 @@ mvar <- function(data,         # n x p data matrix
     # ----- Create VAR Design Matrix -----
     
     # append response with predictors
-    y <- data_response[,v] # response variable v
-    data_v <- cbind(y, do.call(cbind, l_data_lags)) # combine
-    data <- data_v[, -1]
+    y <- data_response[, v] # response variable v
+    data_input_MM <- do.call(cbind, l_data_lags)
     
+    # turn categoricals into factors for model.matrix()
+    for(i in which(type=='c')) data_input_MM[, i] <- as.factor(data_input_MM[, i])  
+    
+    # need to have response and predictors in one dataframe for model.matrix()
+    data_v <- cbind(y, data_input_MM) 
+
     # Dummy coding
     form <- as.formula('y ~ (.)')
     
@@ -331,10 +326,10 @@ mvar <- function(data,         # n x p data matrix
       level_aug <- rep(level, n_lags)
       
       # Construct over-parameterized design matrix
-      X_over <- ModelMatrix(data = data,
+      X_over <- ModelMatrix(data = data_input_MM,
                             type = type_aug,
                             level = level_aug,
-                            labels = colnames(data),
+                            labels = colnames(data_input_MM),
                             d = 1)
       X <- X_over
       
@@ -344,7 +339,7 @@ mvar <- function(data,         # n x p data matrix
       
     }
     
-
+    
     
     
     # ----- Fit each neighborhood using the same procedure as in mgm -----
