@@ -46,7 +46,7 @@ bwSelect <- function(data,
 
   if(is.null(args$saveData)) args$saveData <- FALSE
 
-  if(is.null(args$overparameterize)) args$overparameterize <- TRUE
+  if(is.null(args$overparameterize)) args$overparameterize <- FALSE
 
 
   # ----- Compute Aux Variables -----

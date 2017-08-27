@@ -311,7 +311,7 @@ mvar <- function(data,         # n x p data matrix
     
     # need to have response and predictors in one dataframe for model.matrix()
     data_v <- cbind(y, data_input_MM) 
-
+    
     # Dummy coding
     form <- as.formula('y ~ (.)')
     
