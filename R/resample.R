@@ -15,7 +15,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   if(missing(pbar)) pbar <- TRUE
   if(missing(seeds)) seeds <- 1:nB
   if(missing(blocks)) blocks <- 10
-  if(missing(quantiles)) quantiles <- c(0.5, .95)
+  if(missing(quantiles)) quantiles <- c(0.05, .95)
   
   # --- Define aux variables ---
   
