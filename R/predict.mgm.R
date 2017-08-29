@@ -80,7 +80,11 @@ predict.mgm <- function(object, # One of the four mgm objects
   n <- nrow(data)
   
   if(cobj %in% c('code', 'tvmgm'))  n_pred <- n  
-  if(cobj %in% c('mvar', 'tvmvar'))  n_pred <- n - max(object$call$lags)
+  if(cobj %in% c('mvar', 'tvmvar'))  {
+
+    max_lags <- max(object$call$lags)
+    n_pred <- n - max_lags
+  } 
   
   
   

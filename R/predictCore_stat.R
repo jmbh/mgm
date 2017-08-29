@@ -19,6 +19,7 @@ predictCore_stat <- function(object,
   level <- call$level
   k <- call$k
   n_lags <- length(call$lags)
+  max_lags <- max(call$lags)
   
   
   # Create outlist and storage
@@ -121,7 +122,7 @@ predictCore_stat <- function(object,
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
     
     # if consec is used, then reduce dataset to usable observations
-    ind_included_wo_begin <- data_lagged$included #[-c(1:n_lags)] # the weights-vector has alread length nrow-max(lags)
+    ind_included_wo_begin <- data_lagged$included[-c(1:max_lags)] 
     
     data_response <- data_response[ind_included_wo_begin, ]
     l_data_lags <- lapply(l_data_lags, function(z) z <- z[ind_included_wo_begin, ])
