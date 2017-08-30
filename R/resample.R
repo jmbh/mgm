@@ -298,11 +298,13 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
 
     # add false for excluded 1:max_lags time points at beginning of time series
     max_lags <- max(o_call$lags)
-    full_included_vec <- c(rep(FALSE, max_lags), data_lagged$included)
+    # full_included_vec <- c(rep(FALSE, max_lags), data_lagged$included)
 
-    timepoints_design <- o_call$timepoints[full_included_vec]
+    timepoints_design <- o_call$timepoints[data_lagged$included]
     
     # Break data into blocks of equal time-duration (unsing timepoints vector)
+    # browser()
+    
     Qt <- quantile(timepoints_design, probs = seq(0, 1, length = blocks + 1))
     ind_blocks <- cut(x = timepoints_design,  # important: indices in the design matrix
                       breaks = Qt,
