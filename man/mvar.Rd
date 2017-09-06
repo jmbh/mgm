@@ -197,6 +197,7 @@ lags <- c(1, 3, 9) # include lagged effects of order 1, 3, 9
 n_lags <- length(lags)
 
 # Specify thresholds
+thresholds <- list()
 thresholds[[1]] <- rep(0, level[1])
 thresholds[[2]] <- rep(0, level[2])
 thresholds[[3]] <- rep(0, level[3])
