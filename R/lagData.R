@@ -36,6 +36,7 @@ lagData <- function(data,
     if(lag == max_lag) {
 
       l_data_lags[[lag_pos]] <- data[-((n-end+1):n), ]
+      l_data_lags[[lag_pos]] <- matrix(l_data_lags[[lag_pos]], ncol = p, nrow = n)
       colnames(l_data_lags[[lag_pos]]) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
 
     } else {
