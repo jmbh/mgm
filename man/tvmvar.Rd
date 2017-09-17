@@ -108,6 +108,7 @@ lags <- c(1, 3, 9) # include lagged effects of order 1, 3, 9
 n_lags <- length(lags)
 
 # Specify thresholds
+thresholds <- list()
 thresholds[[1]] <- matrix(0, ncol=level[1], nrow=n_timepoints)
 thresholds[[2]] <- matrix(0, ncol=level[2], nrow=n_timepoints)
 thresholds[[3]] <- matrix(0, ncol=level[3], nrow=n_timepoints)

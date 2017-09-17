@@ -6,6 +6,8 @@ lagData <- function(data,
 
   # ---------- Compute Aux Variables ----------
 
+  data <- as.matrix(data) # turn into matrix
+  
   max_lag <- max(lags) # maximum lag
   lags_ext <- 1:max(lags) # makes it easier to delete right columns
 
@@ -15,13 +17,10 @@ lagData <- function(data,
   n_lags <- length(lags_ext)
 
   data_response <- data[-c(1:max_lag), ]
-  # data_response <- as.matrix(data_response)
-  
+
   # browser()
 
   if(!is.null(consec)) m_consec <- matrix(NA, nrow = n_var, ncol = n_lags)
-
-  # browser()
 
   # ---------- Lag Variables ----------
 
@@ -36,13 +35,13 @@ lagData <- function(data,
     if(lag == max_lag) {
 
       l_data_lags[[lag_pos]] <- data[-((n-end+1):n), ]
-      l_data_lags[[lag_pos]] <- matrix(l_data_lags[[lag_pos]], ncol = p, nrow = n)
+      l_data_lags[[lag_pos]] <- matrix(l_data_lags[[lag_pos]], ncol = p, nrow = n_var) # enforce 2 dimensions to ensure that the function also works for 1 variable only
       colnames(l_data_lags[[lag_pos]]) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
 
     } else {
 
       l_data_lags[[lag_pos]] <- data[-c((1:front),((n-end+1):n)), ]
-      # l_data_lags[[lag_pos]] <- as.matrix(l_data_lags[[lag_pos]])
+      l_data_lags[[lag_pos]] <- matrix(l_data_lags[[lag_pos]], ncol = p, nrow = n_var)
       colnames(l_data_lags[[lag_pos]]) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
 
     }

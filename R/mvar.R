@@ -91,6 +91,7 @@ mvar <- function(data,         # n x p data matrix
   weights_initial <- weights
   
   
+  
   # ----- Compute Auxilliary Variables II -----
   
   # Empirical Levels of each variable
@@ -174,7 +175,6 @@ mvar <- function(data,         # n x p data matrix
   }
   
   
-  
   # -------------------- Create VAR data structure -------------------
   
   # ----- Give Names to Variables & create data.frame -----
@@ -189,6 +189,7 @@ mvar <- function(data,         # n x p data matrix
   # ----- Split up predictor Sets by lags -----
   
   # Divide Data in several parts: one response set, and one set of each lag
+  
   data_lagged <- lagData(data = data, 
                          lags = lags, 
                          consec = consec)
@@ -207,6 +208,7 @@ mvar <- function(data,         # n x p data matrix
   # weights <- weights[ind_included_wo_begin]
   weights_design <- weights[ind_included_wo_begin] # to length of design matrix
   nadj <- sum(weights_design)
+  
   
   # ----- Use bootstrap instead of original data (called from resample()) -----
   
@@ -228,6 +230,7 @@ mvar <- function(data,         # n x p data matrix
   
   # This checks glmnet requirements wrt categorical predictors, for each lag set
   
+  
   n_lags <- length(lags)
   
   for(lag in 1:n_lags) {
@@ -237,6 +240,7 @@ mvar <- function(data,         # n x p data matrix
                        weights = weights_design)
     
   }
+  
   
   
   # ----- Storage: Create empty mgm object -----
@@ -306,6 +310,7 @@ mvar <- function(data,         # n x p data matrix
     # append response with predictors
     y <- data_response[, v] # response variable v
     data_input_MM <- do.call(cbind, l_data_lags)
+    data_input_MM <- as.data.frame(data_input_MM)
     
     # turn categoricals into factors for model.matrix()
     for(i in which(type=='c')) data_input_MM[, i] <- as.factor(data_input_MM[, i])  
