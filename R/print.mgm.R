@@ -26,9 +26,17 @@ print.mgm <- function(x,
 
 
     if('mvar' %in% class(x)) {
+
+      n_incl <- sum(x$call$data_lagged$included == TRUE)
+      n_exp <- sum(x$call$data_lagged$included == FALSE)
+      n <- n_incl + n_exp
+      perc <- n_incl / n
+      perc <- round(perc, 4) * 100
+      
       cat('mgm fit-object',
           '\n\nModel class: ', model_classes[2],
           '\nLags: ' , x$call$lags,
+          '\nRows included in VAR design matrix: ' , n_incl ,'/', n, '(', perc, '%)',
           '\nNodes: ' , length(x$call$type))
     }
 
@@ -44,9 +52,19 @@ print.mgm <- function(x,
 
 
     if('tvmvar' %in% class(x)) {
+      
+      
+      n_incl <- sum(x$call$data_lagged$included == TRUE)
+      n_exp <- sum(x$call$data_lagged$included == FALSE)
+      n <- n_incl + n_exp
+      perc <- n_incl / n
+      perc <- round(perc, 4) * 100
+      
+      
       cat('mgm fit-object',
           '\n\nModel class: ', model_classes[4],
           '\nLags: ' , x$call$lags,
+          '\nRows included in VAR design matrix: ' , n_incl ,'/', n, '(', perc, '%)',
           '\nNodes: ' , length(x$call$type),
           '\nEstimation points: ' , length(x$call$estpoints))
     }

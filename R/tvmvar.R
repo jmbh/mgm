@@ -237,7 +237,7 @@ tvmvar <- function(data,         # n x p data matrix
   
   
   # Copy lagged Data if saveData == TRUE (take from first time point, because always the same)
-  if(args$saveData) tvmvar_object$call$data_lagged <-  l_mvar_models[[1]]$call$data_lagged
+  tvmvar_object$call$data_lagged <-  l_mvar_models[[1]]$call$data_lagged
   
   
   # -------------------- Output -------------------

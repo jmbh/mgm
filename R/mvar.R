@@ -283,16 +283,18 @@ mvar <- function(data,         # n x p data matrix
                        'saveData' = saveData,
                        'overparameterize' = overparameterize,
                        'signInfo' = signInfo)
+
+  # Save original data  
+  if(saveData) mvarobj$call$data <- data
+
+  # Save lagged data (done this way so stats on how many included is always returned)
+  mvarobj$call$data_lagged <- data_lagged
+  if(!saveData) { 
+    mvarobj$call$data_lagged$l_data_lags <- NULL
+    mvarobj$call$data_lagged$data_response <- NULL
+    }
   
-  if(saveData)
-  {
-    mvarobj$call$data <- data
-    mvarobj$call$data_lagged <- data_lagged
-  }
-  
-  
-  
-  
+
   # -------------------- Estimate -------------------
   
   # Progress bar

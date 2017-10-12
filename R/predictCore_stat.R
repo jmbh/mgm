@@ -19,7 +19,7 @@ predictCore_stat <- function(object,
   level <- call$level
   k <- call$k
   n_lags <- length(call$lags)
-  max_lags <- max(call$lags)
+  if(cobj == "mvar") max_lags <- max(call$lags)
   
   
   # Create outlist and storage
