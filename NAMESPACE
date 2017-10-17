@@ -27,6 +27,7 @@ export(tvmgmsampler)
 export(tvmvarsampler)
 
 export(resample)
+export(showInteraction)
 
 # Export old functions with defunct msg
 export(mgmfit)
