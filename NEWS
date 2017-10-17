@@ -1,4 +1,5 @@
 Changes in Version 1.2-2
+  o New function showInteraction() retrieves details of interactions from mgm model objects
   o The print method now also shows number of rows in the VAR design matrix compared to the number of rows of the original data matrix.
   o All estimation functions require a matrix object as data input to avoid problems with properties of data.frame objects
   o Corrected row-order in dataset "symptom_data"  
