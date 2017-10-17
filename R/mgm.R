@@ -208,6 +208,7 @@ mgm <- function(data,         # n x p data matrix
   mgmobj$call <- list('data' = NULL,
                       'type' = type,
                       'level' = level,
+                      "levelNames" = NULL,
                       'lambdaSeq' = lambdaSeq,
                       'lambdaSel' = lambdaSel,
                       'lambdaFolds' = lambdaFolds,
@@ -842,6 +843,13 @@ mgm <- function(data,         # n x p data matrix
     if(signInfo) cat('Note that the sign of parameter estimates is stored separately; see ?mgm')    
   }
   
+  # Return level names (used in showInteraction())
+  levelNames <- list()
+  for(i in 1:p) {
+    if(type[i] == "c") levelNames[[i]] <- sort(as.numeric(as.character(unique(data[, i])))) else levelNames[[i]] <- NA
+  }
+  
+  mgmobj$call$levelNames <- levelNames
   
   # Assign class
   class(mgmobj) <- c('mgm', 'core')
