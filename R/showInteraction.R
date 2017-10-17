@@ -58,10 +58,10 @@ showInteraction <- function(object,
     # Fill array
     if(type[i] == "c") { # if response = categorical
       
-      if(type[-1] == "c") { # if predictor = categorical
+      if(type[-i] == "c") { # if predictor = categorical
         for(i_resp in 1:length(int_i)) par_mat[i_resp, -1] <- int_i[[i_resp]]
       } else {
-        for(i_resp in 1:length(int_i)) par_mat[i_resp, ] <- int_i[[i_resp]]
+        par_mat[, 1] <- int_i
       }
 
       } else { # if response = continuous
@@ -73,11 +73,10 @@ showInteraction <- function(object,
         }
       }
     
-    # browser()
     
     # Set dimension names in array
     if(type[i] == "c") row.names(par_mat) <- paste0(int[i], ".", 1:level[i]) else row.names(par_mat) <- int[i]
-    if(type[-i] == "c") colnames(par_mat) <- paste0(int[i], ".", 1:level[-i]) else colnames(par_mat) <- int[-i]
+    if(type[-i] == "c") colnames(par_mat) <- paste0(int[-i], ".", 1:level[-i]) else colnames(par_mat) <- int[-i]
     
     # Save array in output list
     outlist$parameters[[paste0("Predict_", int[i])]] <- par_mat
