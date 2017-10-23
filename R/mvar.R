@@ -100,11 +100,9 @@ mvar <- function(data,         # n x p data matrix
   if(!is.null(consec) & !is.null(beepvar)) stop("Please specify the consecutiveness of measurements either via consec, or via dayvar and beepvar")
   if(!is.null(consec) & !is.null(dayvar)) stop("Please specify the consecutiveness of measurements either via consec, or via dayvar and beepvar")
   
-  if(is.null(consec) & (is.null(beepvar) | is.null(dayvar))) {
-    if(is.null(beepvar)) stop("Argument beepvar not specified.")
-    if(is.null(dayvar)) stop("Argument dayvar not specified.")
-  } # end if: consec specification via beepvar & dayvar?
-  
+  if(!is.null(dayvar)) if(is.null(beepvar)) stop("Argument beepvar not specified.")
+  if(!is.null(beepvar)) if(is.null(dayvar)) stop("Argument dayvar not specified.")
+
   if(!is.null(beepvar) & !is.null(dayvar)) {
     
     consec <- beepday2consec(beepvar = beepvar,
