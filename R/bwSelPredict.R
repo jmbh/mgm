@@ -61,8 +61,9 @@ bwSelPredict <- function(data,
       # append response with predictors
       y <- data_response[,v] # response variable v
       data_v <- cbind(y, do.call(cbind, l_data_lags)) # combine
+      data_v <- as.data.frame(data_v) # because model.matrix() below requries a data.frame
       data <- data_v[, -1]
-
+      
       # Dummy coding
       form <- as.formula('y ~ (.)')
 
@@ -170,12 +171,13 @@ bwSelPredict <- function(data,
   # 0/1 loss for categorical, RMSE for continuous (which here is just absolute error, because 1 element)
   for(i in 1:p) {
     if(type[v] == 'c') {
-      m_error[, i] <- abs(m_true[, i] - m_pred[, i]) 
+      m_error[, i] <- abs(m_true[, i] - m_pred[, i])  
     } else {
-      m_error[, i] <- abs(m_true[, i] - m_pred[, i])
+      m_error[, i] <- abs(m_true[, i] - m_pred[, i]) # RMSE for 1 case = abs error
     }
   }
-
+  
+  
 
   # -------------------- Output -------------------
 

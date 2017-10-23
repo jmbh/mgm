@@ -173,6 +173,8 @@ bwSelect <- function(data,
     # Storage
     l_performance <- list()
     l_bw_models <- list()
+    
+    
 
     for(i in 1:n_bw) {
 
@@ -193,7 +195,7 @@ bwSelect <- function(data,
                                        saveModels = TRUE, # otherwise we can't make any predictions
                                        signInfo = FALSE,
                                        ...)
-
+        
         # Make Predictions at test-locations
         l_foldPerform[[fold]] <- bwSelPredict(data = data,
                                               type = type,
@@ -204,6 +206,8 @@ bwSelect <- function(data,
                                               modeltype = modeltype,
                                               overparameterize = args$overparameterize,
                                               ...)
+        
+        # browser()
 
       }
 
