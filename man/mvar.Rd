@@ -11,13 +11,14 @@ Estimates Mixed Vector Autoregressive Model (mVAR) via elastic-net regularized G
 \usage{
 mvar(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
 lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, lags,
-consec, weights, threshold, method, binarySign, scale, verbatim,
-pbar, warnings, saveModels, saveData, overparameterize, signInfo, ...)
+consec, beepvar, dayvar, weights, threshold, method, binarySign, 
+scale, verbatim, pbar, warnings, saveModels, saveData, 
+overparameterize, signInfo, ...)
 }
 
 \arguments{
   \item{data}{
-n x p data matrix
+n x p data matrix.
 }
   \item{type}{
 p vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' for categorical.
@@ -54,8 +55,14 @@ Hyperparameter gamma in the EBIC if \code{alphaSel = 'EBIC'}. Defaults to \code{
 Vector of positive integers indicating the lags included in the mVAR model (e.g. 1:3 or c(1,3,5))
 }
   \item{consec}{
-An integer vector of length n, indicating the measurement points of the rows in \code{data}. The time difference of 1 is what we model as a lag with size 1 in the VAR model. This vector is used to delete all rows from the VAR design matrix, for which no \code{max(lags)} complete previous measurements are available. This is useful in many applications where some time points are completely missing, or gaps in the time series have structural reasons (respondents only respond during the hours they are awake). The 'trimmed' dataset is returned in \code{call$data_lagged} if \code{saveData = TRUE}. Defaults to \code{consec = NULL}, which assumes that all measurements are consecutive, i.e. \code{consec = 1:n}. In this case only the first \code{max(lags)} lags are excluded to obtain the VAR design matrix.
+An integer vector of length n, indicating the consecutiveness of measurement points of the rows in \code{data}. This means that rows for which the necessary (defined by the specified VAR model) measurements at previous time points are not available are excluded from the analysis. For instance for a VAR model with lag 1 a consec vector of \code{consec = c(1,2,3,5)} would mean that the fourth row is excluded from the analysis, since no measurement 5-1=4 is available. This is useful in many applications where some time points are completely missing, or gaps in the time series have structural reasons (respondents only respond during the hours they are awake). The 'trimmed' dataset is returned in \code{call$data_lagged} if \code{saveData = TRUE}. Defaults to \code{consec = NULL}, which assumes that all measurements are consecutive, i.e. \code{consec = 1:n}. In this case only the first \code{max(lags)} lags are excluded to obtain the VAR design matrix.
 }
+
+\item{beepvar}{Together with the argument \code{dayvar}, this argument is an alternative to the \code{consec} argument (see above) to specify the consecutiveness of measurements. This is tailored to ecological momentary assessment (EMA) studies, where the consectutiveness is defined by the number of notification on a given day (\code{beepvar}) and the given day (\code{dayvar}).
+}
+
+\item{dayvar}{See \code{beepvar}.}
+
   \item{weights}{
 A vector with n - max(lags) entries, indicating the weight for each observation. The mVAR design matrix has with n - max(lags) rows, because the first row must be predictable by the highest lag. The weights have to be on the scale [0, n - max(lags) ].
 }

@@ -13,7 +13,9 @@ mvar <- function(data,         # n x p data matrix
                  alphaFolds,   # number of folds if alphaSel = 'CV'
                  alphaGam,     # EBIC hyperparameter gamma, if alphaSel = 'EBIC',
                  lags,
-                 consec,
+                 consec,       # vector specifying the consecutiveness 
+                 beepvar,      # alternative way to specify consecutiveness of measurements together with dayvar, tailored to ESM experiments
+                 dayvar,       # alternative way to specify consecutiveness of measurements together with beepvar, tailored to ESM experiments
                  weights,      # p vector of observation weights for weighted regression
                  threshold,    # defaults to 'LW', see helpfile
                  method,       # glm vs. 'linear'; for now only implement glm
@@ -22,7 +24,7 @@ mvar <- function(data,         # n x p data matrix
                  verbatim,     # turns off all notifications
                  pbar,         #
                  warnings,     #
-                 saveModels,    # defaults to TRUE, saves all estimated models
+                 saveModels,   # defaults to TRUE, saves all estimated models
                  saveData,     # defaults to FALSE, saves the data, =TRUE makes sense for easier prediction routine in predict.mgm()
                  overparameterize,
                  signInfo,
@@ -37,8 +39,6 @@ mvar <- function(data,         # n x p data matrix
   # -------------------- Input Checks Global -------------------
   
   # ----- Compute Aux Variables -----
-  
-  # browser()
   
   n <- nrow(data)
   p <- ncol(data)
@@ -60,6 +60,8 @@ mvar <- function(data,         # n x p data matrix
   if(missing(alphaGam)) alphaGam <- .25
   if(missing(lags)) lags <- 1
   if(missing(consec)) consec <- NULL
+  if(missing(beepvar)) beepvar <- NULL
+  if(missing(dayvar)) dayvar <- NULL
   # no AND rule necessary
   if(missing(weights)) weights <- rep(1, n-max(lags))
   if(missing(threshold)) threshold <- 'LW'
@@ -72,7 +74,6 @@ mvar <- function(data,         # n x p data matrix
   if(!is.null(args$binary.sign)) {
     warning("The argument 'binary.sign' is deprecated Use 'binarySign' instead.")
   }
-  
   
   
   if(missing(verbatim)) verbatim <- FALSE
@@ -91,6 +92,27 @@ mvar <- function(data,         # n x p data matrix
   weights_initial <- weights
   
   
+  
+  # ----- Compute consec argument -----
+  
+  # Input checks (can only specify consec OR beepvar and dayvar)
+  
+  if(!is.null(consec) & !is.null(beepvar)) stop("Please specify the consecutiveness of measurements either via consec, or via dayvar and beepvar")
+  if(!is.null(consec) & !is.null(dayvar)) stop("Please specify the consecutiveness of measurements either via consec, or via dayvar and beepvar")
+  
+  if(is.null(consec) & (is.null(beepvar) | is.null(dayvar))) {
+    if(is.null(beepvar)) stop("Argument beepvar not specified.")
+    if(is.null(dayvar)) stop("Argument dayvar not specified.")
+  } # end if: consec specification via beepvar & dayvar?
+  
+  if(!is.null(beepvar) & !is.null(dayvar)) {
+    
+    consec <- beepday2consec(beepvar = beepvar,
+                             dayvar = dayvar)
+    
+  } # if: specification of consecutiveness via beepvar and dayvar
+
+
   
   # ----- Compute Auxilliary Variables II -----
   
@@ -270,6 +292,9 @@ mvar <- function(data,         # n x p data matrix
                        'alphaFolds' = alphaFolds,
                        'alphaGam' = alphaGam,
                        'lags' = lags,
+                       'consec' = consec,
+                       'beepvar' = beepvar,
+                       'dayvar' = dayvar,
                        'weights' = weights_initial,
                        'weights_design' = weights_design,
                        'threshold' = threshold,
@@ -283,18 +308,18 @@ mvar <- function(data,         # n x p data matrix
                        'saveData' = saveData,
                        'overparameterize' = overparameterize,
                        'signInfo' = signInfo)
-
+  
   # Save original data  
   if(saveData) mvarobj$call$data <- data
-
+  
   # Save lagged data (done this way so stats on how many included is always returned)
   mvarobj$call$data_lagged <- data_lagged
   if(!saveData) { 
     mvarobj$call$data_lagged$l_data_lags <- NULL
     mvarobj$call$data_lagged$data_response <- NULL
-    }
+  }
   
-
+  
   # -------------------- Estimate -------------------
   
   # Progress bar
