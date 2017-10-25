@@ -71,6 +71,7 @@ mvar <- function(data,         # n x p data matrix
     if(!is.null(args$binary.sign)) binarySign <- args$binary.sign else binarySign <- FALSE
   }
   
+  
   if(!is.null(args$binary.sign)) {
     warning("The argument 'binary.sign' is deprecated Use 'binarySign' instead.")
   }

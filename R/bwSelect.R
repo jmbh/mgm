@@ -43,9 +43,7 @@ bwSelect <- function(data,
   if(missing(bwFolds)) bwFolds <- NULL
   if(missing(bwFoldsize)) bwFoldsize <- NULL
   if(missing(pbar)) pbar <- TRUE
-
   if(is.null(args$saveData)) args$saveData <- FALSE
-
   if(is.null(args$overparameterize)) args$overparameterize <- FALSE
 
 

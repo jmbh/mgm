@@ -123,8 +123,8 @@ nodeEst <- function(y,
                                                            v = v)
     # btw: n_neighbors = fit$df
 
-    # if(v==5)browser()
-
+    # if(v==4) browser()
+    
     EBIC_lambda <- - 2 * LL_lambda_models + n_neighbors * log(nadj) + 2 * lambdaGam * n_neighbors * log(ncol(X))
 
     EBIC_min <- min(EBIC_lambda)

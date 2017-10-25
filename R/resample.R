@@ -81,14 +81,14 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                              lambdaSeq = o_call$lambdaSeq,
                              lambdaSel = o_call$lambdaSel,
                              lambdaFolds = o_call$lambdaFolds,
-                             lambdaGam = call$lambdaGam,
+                             lambdaGam = o_call$lambdaGam,
                              alphaSeq = o_call$alphaSeq,
                              alphaSel = o_call$alphaSel,
                              alphaFolds = o_call$alphaFolds,
                              alphaGam = o_call$alphaGam,
                              k = o_call$k,
                              ruleReg = o_call$ruleReg,
-                             weights = o_call$weights[l_ind[[b]]],
+                             weights = o_call$weights[l_ind[[b]]], # just copying, no other vector describing rows
                              threshold = o_call$threshold,
                              method = o_call$method,
                              binarySign = o_call$binarySign,
@@ -164,7 +164,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       l_b_models[[b]] <- tvmgm(data = data[l_ind[[b]],],
                                type = o_call$type,
                                level = o_call$level,
-                               timepoints = o_call$timepoints[l_ind[[b]]],
+                               timepoints = o_call$timepoints[l_ind[[b]]], # just copying
                                estpoints = o_call$estpoints,
                                bandwidth = o_call$bandwidth,
                                # mgm arguments passed via (...):
@@ -178,7 +178,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                                alphaGam = o_call$alphaGam,
                                k = o_call$k,
                                ruleReg = o_call$ruleReg,
-                               weights = o_call$weights[l_ind[[b]]],
+                               weights = o_call$weights[l_ind[[b]]], # just copying
                                threshold = o_call$threshold,
                                method = o_call$method,
                                binarySign = o_call$binarySign,

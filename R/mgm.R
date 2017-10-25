@@ -242,6 +242,7 @@ mgm <- function(data,         # n x p data matrix
   for(i in which(type=='c')) data[, i] <- as.factor(data[, i])
   
   # -------------------- Estimation -------------------
+
   
   # Progress bar
   if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=p, initial=0, char="-", style = 3)
@@ -363,6 +364,8 @@ mgm <- function(data,         # n x p data matrix
         
         alpha_select <- alphaSeq[which.min(v_mean_OOS_deviance)]
         
+        
+        # If there is no search for alpha, goes continue and use default alpha
       } else {
         
         alpha_select <- alphaSeq # in case alpha is just specified
@@ -370,6 +373,8 @@ mgm <- function(data,         # n x p data matrix
       }
       
       # Refit Model on whole data, with selected alpha
+      
+      # browser()
       
       model <- nodeEst(y = y,
                        X = X,
@@ -390,8 +395,7 @@ mgm <- function(data,         # n x p data matrix
       mgmobj$nodemodels[[v]] <- model
       
     }
-    
-    
+
     
     # alpha Section via EBIC
     
@@ -591,6 +595,7 @@ mgm <- function(data,         # n x p data matrix
     
   } # end for: v
   
+  # browser()
   
   
   
