@@ -12,6 +12,9 @@ importFrom("stats", "as.formula", "coef", "dnorm", "dpois",
 importFrom("utils", "combn", "setTxtProgressBar", "txtProgressBar")
 importFrom("stats", "rnorm", "rpois")
 
+importFrom("graphics", "abline", "axis", "layout", "par", "plot.new",
+             "plot.window", "points", "segments", "text")
+
 # Exported functions
 export(mgm)
 export(mvar)
@@ -28,6 +31,7 @@ export(tvmvarsampler)
 
 export(resample)
 export(showInteraction)
+export(plotRes)
 
 # Export old functions with defunct msg
 export(mgmfit)
