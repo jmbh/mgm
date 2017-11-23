@@ -35,7 +35,9 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   outlist <- list('call' = call,
                   'bootParameters' = NULL,
                   'bootQuantiles' = NULL,
-                  'models' = NULL)
+                  'models' = NULL,
+                  "Times" = rep(NA, nB),
+                  "totalTime" = NULL)
   
   
   # ----- General input checks -----
@@ -74,6 +76,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      tt <- proc.time()[3]
       
       l_b_models[[b]] <- mgm(data = data[l_ind[[b]], ],
                              type = o_call$type,
@@ -101,6 +104,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                              overparameterize = o_call$overparameterize,
                              signInfo = FALSE) # to avoid msg for each model
       
+      outlist$Times[b] <- proc.time()[3] - tt
       if(pbar==TRUE) setTxtProgressBar(pb, b)
       
     }
@@ -160,6 +164,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      tt <- proc.time()[3]
       
       l_b_models[[b]] <- tvmgm(data = data[l_ind[[b]],],
                                type = o_call$type,
@@ -191,6 +196,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                                overparameterize = o_call$overparameterize,
                                signInfo = FALSE)
       
+      outlist$Times[b] <- proc.time()[3] - tt
       if(pbar==TRUE) setTxtProgressBar(pb, b)
       
       
@@ -243,6 +249,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      tt <- proc.time()[3]
       
       l_b_models[[b]] <- mvar(data = data, # not changed here because changed via boot_ind inside of mvar()
                               type = o_call$type,
@@ -273,6 +280,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                               bootstrap = TRUE,
                               boot_ind = l_ind[[b]]) 
       
+      outlist$Times[b] <- proc.time()[3] - tt
       if(pbar==TRUE) setTxtProgressBar(pb, b)
       
     } # end loop: bootstraps
@@ -347,6 +355,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      tt <- proc.time()[3]
       
       l_b_models[[b]] <- tvmvar(data = data, # not changed here because changed via boot_ind inside of mvar() / tvmvar()
                                 type = o_call$type, 
@@ -380,6 +389,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                                 bootstrap = TRUE,
                                 boot_ind = l_ind[[b]])
       
+      outlist$Times[b] <- proc.time()[3] - tt
       if(pbar==TRUE) setTxtProgressBar(pb, b)
       
     } # end loop: bootstraps
@@ -524,6 +534,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   
   # ----- Return outlist -----
   
+  outlist$totalTime <- sum(outlist$Times)
   class(outlist) <- 'resample'
   
   return(outlist)

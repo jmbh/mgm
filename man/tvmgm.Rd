@@ -44,6 +44,7 @@ Arguments passed to \code{mgm}, specifying how each single model should be estim
 \details{
 Estimates a sequence of MGMs at the time points specified at the locations specified via \code{estpoints}. \code{tvmgm()} is a wrapper around \code{mgm()} and estimates a series of MGM with different weightings which are defined by the estimation locations in \code{estpoints} and the banwdith parameter specified in \code{bandwidth}. For details see Haslbeck and Waldorp (2016).
 
+Note that MGMs are not normalizable for all parameter values. See Chen, Witten & Shojaie (2015) for an overview of when pairwise MGMs are normalizable. To our best knowledge, for MGMs with interactions of order > 2 that include non-categorical variables, the conditions for normalizablity are unknown.
 
 }
 \value{
@@ -83,6 +84,10 @@ Contains the MGM model estimated by \code{mgm()} at each time point specified vi
 Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure Estimation for time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
 Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.05677.
+
+Chen S, Witten DM & Shojaie (2015). Selection and estimation for mixed graphical models. Biometrika, 102(1), 47.
+
+Yang, E., Baker, Y., Ravikumar, P., Allen, G. I., & Liu, Z. (2014, April). Mixed Graphical Models via Exponential Families. In AISTATS (Vol. 2012, pp. 1042-1050).
 
 }
 

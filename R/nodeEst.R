@@ -20,7 +20,8 @@ nodeEst <- function(y,
 
 {
 
-
+# if(v == 1) browser()
+  
   # ---------- Calc Aux Variables ----------
 
   # Define Exponential Family of Node at Hand

@@ -170,7 +170,7 @@ predict.mgm <- function(object, # One of the four mgm objects
   
   if(missing(errorCat)) {
     if('c' %in% type) {
-      errorCat <- c('CC', 'nCC')
+      errorCat <- c('CC', 'nCC', 'CCmarg')
     } else {
       errorCat <- NULL
     }

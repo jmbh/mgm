@@ -64,6 +64,10 @@ The output consists of a list with the entries
 
 \item{bootQuantiles}{Contains the specified quantiles of the bootstrapped sampling distribution for each parameter. Has the same structure as \code{bootParameters}. See "Details" above. }
 
+\item{Times}{Returns the running time for each bootstrap model in seconds.}
+
+\item{totalTime}{Returns the running time for all bootstrap models together in seconds.}
+
 }
 
 

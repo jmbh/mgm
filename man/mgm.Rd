@@ -112,7 +112,7 @@ Additional arguments.
 
 
 \details{
-\code{mgm()} estimates an exponential mixed graphical model as introduced in Yang and colleagies (2014). Haslbeck and Waldorp (2016) show that the estimation procedure is consistent.
+\code{mgm()} estimates an exponential mixed graphical model as introduced in Yang and colleagies (2014). Note that MGMs are not normalizable for all parameter values. See Chen, Witten & Shojaie (2015) for an overview of when pairwise MGMs are normalizable. To our best knowledge, for MGMs with interactions of order > 2 that include non-categorical variables, the conditions for normalizablity are unknown.
 }
 
 
@@ -163,6 +163,8 @@ Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical 
 Haslbeck, J., & Waldorp, L. J. (2017). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
 Loh, P. L., & Wainwright, M. J. (2012, December). Structure estimation for discrete graphical models: Generalized covariance matrices and their inverses. In NIPS (pp. 2096-2104).
+
+Chen S, Witten DM & Shojaie (2015). Selection and estimation for mixed graphical models. Biometrika, 102(1), 47.
 
 Yang, E., Baker, Y., Ravikumar, P., Allen, G. I., & Liu, Z. (2014, April). Mixed Graphical Models via Exponential Families. In AISTATS (Vol. 2012, pp. 1042-1050).
 

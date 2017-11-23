@@ -42,6 +42,8 @@ mvar <- function(data,         # n x p data matrix
   
   n <- nrow(data)
   p <- ncol(data)
+  data <- as.matrix(data)
+  
   n_var <- n - max(lags)
   n_lags <- length(lags)
   max_lags <- max(lags)
@@ -140,28 +142,23 @@ mvar <- function(data,         # n x p data matrix
   
   # ----- Basic Input Checks -----
   
-  if(!is.null(consec)) if(length(consec) != nrow(data)) stop("The length of consec has to be equal to the number of rows of the data matrix.")
-  
-  if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
-  
-  if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
-  
+  # Checks on Data
   if(nrow(data) < 2) ('The data matrix has to have at least 2 rows.')
-  
-  if(is.null(lags)) stop('No lags specified')
-  if(any(duplicated(lags))) stop('No duplicates allowed in specified lags.')
-  
-  if(any(lags<1)) stop('Specified lags have to be in {1, 2, ..., n -1}')
-  if(any(round(lags)!=lags)) stop('Specified lags have to be positive integers')
   if(missing(data)) stop('No data provided')
   if(ncol(data)<2) stop('At least 2 variables required')
-  if(missing(type)) stop('No type vector provided.')
-  
-  if(sum(!(type %in% c('g', 'c', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables permitted.")
   if(any(is.na(data))) stop('No missing values permitted.')
   if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
   if(any(!(apply(data, 2, class) %in% c('numeric', 'integer')))) stop('Only integer and numeric values permitted.')
   
+  # Checks on other arguments
+  if(!is.null(consec)) if(length(consec) != nrow(data)) stop("The length of consec has to be equal to the number of rows of the data matrix.")
+  if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
+  if(is.null(lags)) stop('No lags specified')
+  if(any(duplicated(lags))) stop('No duplicates allowed in specified lags.')
+  if(any(lags<1)) stop('Specified lags have to be in {1, 2, ..., n -1}')
+  if(any(round(lags)!=lags)) stop('Specified lags have to be positive integers')
+  if(missing(type)) stop('No type vector provided.')
+  if(sum(!(type %in% c('g', 'c', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables permitted.")
   if(ncol(data) != length(type)) stop('Number of variables is not equal to length of type vector.')
   if(!missing(level)) if(ncol(data) != length(level)) stop('Number of variables is not equal to length of level vector.')
   if((nrow(data)-max(lags)) != length(weights)) stop('Weights vector has to be equal to the number of observations n - max(lags)')
@@ -174,6 +171,7 @@ mvar <- function(data,         # n x p data matrix
     for(i in 1:nPois) v_PoisCheck[i] <- sum(data[, ind_Pois[i]] != round(data[, ind_Pois[i]])) > 0
     if(sum(v_PoisCheck) > 0) stop('Only integers permitted for Poisson variables.')
   }
+  
   
   # ----- Binary Sign => values have to be in {0,1} -----
   # (compute anyway, because used later for sign extraction)
@@ -203,14 +201,10 @@ mvar <- function(data,         # n x p data matrix
   colnames(data)[1:p] <- paste("V", 1:p, '.', sep = "")
   data <- as.data.frame(data)
   
-  # Categoricals into factors (Needed to use formula to construct design matrix)
-  # for(i in which(type=='c')) data[, i] <- as.factor(data[, i])
-  
   
   # ----- Split up predictor Sets by lags -----
   
-  # Divide Data in several parts: one response set, and one set of each lag
-  
+  # Divide Data in several parts: one response set, and one set of predictors for each lag
   data_lagged <- lagData(data = data, 
                          lags = lags, 
                          consec = consec)

@@ -37,6 +37,7 @@ mgm <- function(data,         # n x p data matrix
   
   p <- ncol(data)
   n <- nrow(data)
+  data <- as.matrix(data)
   
   # Give Names to variables (Needed to use formula to construct design matrix and to give informative error messages)
   colnames(data)[1:p] <- paste("V", 1:p, '.', sep = "")
@@ -121,27 +122,25 @@ mgm <- function(data,         # n x p data matrix
   
   # ----- Basic Checks -----
   
-  if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
-  
-  if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
-  
+  # Checks on data
+  # if(!is.matrix(data)) stop('The data has to be provided as a n x p matrix (no data.frame)')
   if(nrow(data) < 2) ('The data matrix has to have at least 2 rows.')
-  
+  if(any(!(apply(data, 2, class) %in% c('numeric', 'integer')))) stop('Only integer and numeric values permitted.')
   if(missing(data)) stop('No data provided.')
+  if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
+  if(any(is.na(data))) stop('No missing values permitted.')
+  
+  
+  # Checks on other arguments
+  if(!(threshold %in% c('none', 'LW', 'HW'))) stop('Please select one of the three threshold options "HW", "LW" and "none" ')
   if(k<2) stop('The order of interactions should be at least k = 2 (pairwise interactions)')
   if(ncol(data)<3) stop('At least 3 variables required')
   if(missing(type)) stop('No type vector provided.')
-  
   if(sum(!(type %in% c('g', 'c', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables permitted.")
-  if(any(is.na(data))) stop('No missing values permitted.')
-  if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
-  
-  
-  if(any(!(apply(data, 2, class) %in% c('numeric', 'integer')))) stop('Only integer and numeric values permitted.')
-  
   if(ncol(data) != length(type)) stop('Number of variables is not equal to length of type vector.')
   if(!missing(level)) if(ncol(data) != length(level)) stop('Number of variables is not equal to length of level vector.')
   if(nrow(data) != length(weights)) stop('Number of observations is not equal to length of weights vector.')
+  
   
   # Are Poisson variables integers?
   if('p' %in% type) {

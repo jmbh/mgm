@@ -1,4 +1,8 @@
+Changes in Version 1.2-3
+  o 
 Changes in Version 1.2-2
+  o Add running time to output of resample() function
+  o Added a note and references on the normalizability of MGMs
   o Added function plotRes() to plot summaries of sampling distributions resampled with the resample() function
   o The consecutiveness of measurements in mvar() and tvmvar() models now can be specified alternatively to the consec argument with the arguments beepvar and dayvar. This is tailored to the typical time stamps of ecological momentary assessment (EMA) studies, where the consecutiveness is defined by the number of notification on a given day (beepvar) and the number of that given day (dayvar).
   o New function showInteraction() retrieves details of interactions from mgm model objects
