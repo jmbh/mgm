@@ -285,7 +285,7 @@ bwSelect <- function(data,
 
 
       # Update Progress Bar
-      if(args$pbar==TRUE) setTxtProgressBar(pb_bw, i)
+      if(pbar==TRUE) setTxtProgressBar(pb_bw, i)
 
     }
 
