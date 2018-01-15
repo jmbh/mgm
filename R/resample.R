@@ -6,6 +6,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                      blocks, # type of resampling for time-series data
                      quantiles,
                      pbar, # progress bar
+                     verbatim,
                      ...)
   
 {
@@ -13,6 +14,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   # ----- Fill in defaults -----
   
   if(missing(pbar)) pbar <- TRUE
+  if(missing(verbatim)) verbatim <- FALSE
   if(missing(seeds)) seeds <- 1:nB
   if(missing(blocks)) blocks <- 10
   if(missing(quantiles)) quantiles <- c(0.05, .95)
@@ -75,9 +77,10 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     
     for(b in 1:nB) {
       
-      set.seed(seeds[b])
+      set.seed(seeds[b]) # for cross validation
+      if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
-      
+  
       l_b_models[[b]] <- mgm(data = data[l_ind[[b]], ],
                              type = o_call$type,
                              level = o_call$level,
@@ -164,6 +167,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
       l_b_models[[b]] <- tvmgm(data = data[l_ind[[b]],],
@@ -249,6 +253,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
       l_b_models[[b]] <- mvar(data = data, # not changed here because changed via boot_ind inside of mvar()
@@ -355,6 +360,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b])
+      if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
       l_b_models[[b]] <- tvmvar(data = data, # not changed here because changed via boot_ind inside of mvar() / tvmvar()

@@ -36,6 +36,9 @@ A vector with values in [0, 1], specifying quantiles computed on the bootstrappe
   \item{pbar}{
 If \code{TRUE}, a progress bar is shown. Defaults to \code{pbar = TRUE}.
 }
+  \item{verbatim}{
+If \code{TRUE}, the seed of the current bootstrap sample is printed in the console. Useful to exclude zero-variance bootstrap samples in datasets with low variance.
+}
   \item{\dots}{
 Additional arguments.
 }

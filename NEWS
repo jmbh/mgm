@@ -1,5 +1,5 @@
 Changes in Version 1.2-3
-  o 
+  o Bugfix in bwSelect()
 Changes in Version 1.2-2
   o Add running time to output of resample() function
   o Added a note and references on the normalizability of MGMs

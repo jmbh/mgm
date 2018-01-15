@@ -240,9 +240,11 @@ mgm <- function(data,         # n x p data matrix
   # Categoricals into factors (Needed to use formula to construct design matrix)
   for(i in which(type=='c')) data[, i] <- as.factor(data[, i])
   
+  
+  
+  
   # -------------------- Estimation -------------------
 
-  
   # Progress bar
   if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=p, initial=0, char="-", style = 3)
   
@@ -252,6 +254,8 @@ mgm <- function(data,         # n x p data matrix
   for(v in 1:p) {
     
     # ----- Construct Design Matrix -----
+    
+    ## DEV: Here define formula for moderation model
     
     if(d > (p - 1)) {
       stop("Order of interactions cannot be larger than the number of predictors.")
@@ -372,9 +376,7 @@ mgm <- function(data,         # n x p data matrix
       }
       
       # Refit Model on whole data, with selected alpha
-      
-      # browser()
-      
+
       model <- nodeEst(y = y,
                        X = X,
                        lambdaSeq = lambdaSeq,
