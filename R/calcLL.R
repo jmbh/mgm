@@ -26,14 +26,14 @@ calcLL <- function(X,
 
     if(type[v] == 'g') {
       beta_vector <- matrix(coef(fit, s = lambda), ncol = 1)
-      predicted_mean <- cbind(rep(1, n), X) %*% beta_vector
+      predicted_mean <- cbind(rep(1, n), X) %*% as.vector(beta_vector)
       LL_model <- dnorm(y, mean = predicted_mean, sd = 1, log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }
 
     if(type[v] == 'p') {
       beta_vector <- matrix(coef(fit, s = lambda), ncol = 1)
-      predicted_mean <- cbind(rep(1, n), X) %*% beta_vector
+      predicted_mean <- cbind(rep(1, n), X) %*% as.vector(beta_vector)
       LL_model <- dpois(y, exp(predicted_mean), log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }
@@ -68,14 +68,14 @@ calcLL <- function(X,
 
     if(type[v] == 'g') {
       beta_vector <- matrix(coef(fit, s = 1)[1], ncol = 1) # only intercept here
-      predicted_mean <- rep(1, n) * beta_vector
+      predicted_mean <- rep(1, n) * as.vector(beta_vector)
       LL_model <- dnorm(y, mean = predicted_mean, sd = 1, log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }
 
     if(type[v] == 'p') {
       beta_vector <- matrix(coef(fit, s = 1)[1], ncol = 1)
-      predicted_mean <- rep(1, n) %*% beta_vector
+      predicted_mean <- rep(1, n) %*% as.vector(beta_vector)
       LL_model <- dpois(y, exp(predicted_mean), log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }
