@@ -8,7 +8,7 @@ Resampling scheme for mgm objects
 Fits mgm model types (mgm, mvar, tvmgm, tvmvar) to a specified number of bootstrap samples
 }
 \usage{
-resample(object, data, nB, seeds, blocks, quantiles, pbar, ...)
+resample(object, data, nB, seeds, blocks, quantiles, pbar, verbatim, ...)
 }
 
 \arguments{

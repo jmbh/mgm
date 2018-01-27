@@ -170,7 +170,7 @@ mgmsampler <- function(factors,
                   }
                   
                   # Convergence Check
-                  if(any(abs(sampling_seq[!is.na(sampling_seq)]) > divWarning)) warning('Gibbs Sampler diverged; adapt parameterization of continuous varibales.')
+                  if(any(abs(sampling_seq[!is.na(sampling_seq)]) > divWarning)) warning('Gibbs Sampler diverged; adapt parameterization of continuous variables.')
                   
                   
                   # prepare fill in matrix:

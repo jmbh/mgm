@@ -230,12 +230,20 @@ mvar <- function(data,         # n x p data matrix
   if(!is.null(args$bootstrap)) {
     if(args$bootstrap) {
       
+      # overwrite above
+      data_lagged <- lagData(data = data, 
+                             lags = lags, 
+                             consec = NULL) # consec comes out of the bootstrap args$boot_ind
+      
+      data_response <- data_lagged$data_response
+      l_data_lags <- data_lagged$l_data_lags
+      
       # overwrite data with bootstrap sample, passed on from resample()
       data_response <- data_response[args$boot_ind, ]
       l_data_lags <- lapply(l_data_lags, function(x) x[args$boot_ind, ])
       
       # overwrite weights
-      weights_design <- weights_design[args$boot_ind]
+      weights_design <- weights[args$boot_ind]
       
     }
   }

@@ -126,7 +126,7 @@ set.seed(1)
 mgm_obj <- mgm(data = data$data,
                type = type,
                level = level,
-               d = 2,
+               k = 2,
                lambdaSel = 'CV',
                ruleReg = 'AND')
 
@@ -187,7 +187,7 @@ table(dat[,1], dat[,2], dat[,3]) # this is what we expected
 mgm_obj <- mgm(data = dlist$data,
                type = type,
                level = level,
-               d = 2,
+               k = 2,
                lambdaSel = 'CV')
 
 mgm_obj$rawfactor$indicator

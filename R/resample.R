@@ -223,21 +223,26 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     # --- Define bootstrap samples ---
     
     # Compute design matrix to find out how many rows it has
-    data_lagged <- lagData(data = data, 
-                           lags = o_call$lags, 
+    if(!is.null(o_call$beepvar) & !is.null(o_call$dayvar)) {
+      o_call$consec <- beepday2consec(beepvar = o_call$beepvar,
+                               dayvar = o_call$dayvar)
+    } # if: specification of consecutiveness via beepvar and dayvar
+
+    data_lagged <- lagData(data = data,
+                           lags = o_call$lags,
                            consec = o_call$consec)
-    
-    n_design <- nrow(data_lagged$data_response)
-    
+
+    n_design <- nrow(data_lagged$data_response) # data_response has the first 1:max_lag already excluded; this is not great and should be put into $included at some point
+    ind_valid_rows <-  (1:n_design)[data_lagged$included]
+
     # Take bootstrap sample from rows in design matrix
-    
     l_ind <- list()
     
     for(b in 1:nB) {
       
       set.seed(seeds[b])
       
-      l_ind[[b]] <- sample(x = 1:n_design, 
+      l_ind[[b]] <- sample(x = ind_valid_rows, 
                            size = n_design, 
                            replace = TRUE)
       
@@ -304,6 +309,11 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     # --- Define bootstrap samples ---
     
     # Compute design matrix to find out how many rows it has
+    if(!is.null(o_call$beepvar) & !is.null(o_call$dayvar)) {
+      o_call$consec <- beepday2consec(beepvar = o_call$beepvar,
+                               dayvar = o_call$dayvar)
+    } # if: specification of consecutiveness via beepvar and dayvar
+    
     data_lagged <- lagData(data = data, 
                            lags = o_call$lags, 
                            consec = o_call$consec)
