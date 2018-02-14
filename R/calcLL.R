@@ -75,7 +75,7 @@ calcLL <- function(X,
 
     if(type[v] == 'p') {
       beta_vector <- matrix(coef(fit, s = 1)[1], ncol = 1)
-      predicted_mean <- rep(1, n) %*% as.vector(beta_vector)
+      predicted_mean <- rep(1, n) * as.vector(beta_vector) # log mean actually
       LL_model <- dpois(y, exp(predicted_mean), log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }

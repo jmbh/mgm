@@ -10,12 +10,11 @@ Function to estimate k-degree Mixed Graphical Models via neighborhood regression
 }
 \usage{
 mgm(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
-    lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, k,
-    ruleReg, weights, threshold, method, binarySign, scale,
-    verbatim, pbar, warnings, saveModels, saveData,
-    overparameterize, signInfo, ...)
+    lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, 
+    k, moderators, ruleReg, weights, threshold, method, 
+    binarySign, scale, verbatim, pbar, warnings, saveModels, 
+    saveData, overparameterize, signInfo, ...)
 }
-
 
 \arguments{
   \item{data}{
@@ -53,6 +52,10 @@ Hyperparameter gamma in the EBIC if \code{alphaSel = 'EBIC'}. Defaults to \code{
 }
   \item{k}{
 Order up until including which interactions are included in the model. \code{k = 2} means that all pairwise interactions are included, \code{k = 3} means that all pairwise and all three-way interactions are included, etc. In previous versions of mgm the order of interactions was specified by the parameter d, the largest size or a neighborhood. Note that k = d + 1.
+}
+
+  \item{moderators}{
+Integer vector with elements in \code{1:p}, specifying moderation effects to be included in the model. For instance, \code{moderators = c(4)} includes all linear moderation effects of variable 4. This is equivalent to including all 3-way interactions that include variable 4. Note that \code{moderators = 1:p} gives the same model as setting \code{k = 3} (see previous argument).
 }
 
   \item{ruleReg}{

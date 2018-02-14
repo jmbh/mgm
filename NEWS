@@ -3,8 +3,12 @@ Changes in Version 1.2-3
   o Added verbatim option in resample() to detect zero variance bootstrap samples
   o Fixed warning due to R 3.4.0: "Recycling array of length 1 in vector-array arithmetic is deprecatd.Use c() or as.vector() instead."
   o Bugfix: resampling did not work together with new mvar() arguments dayvar/beepvar since Version 1.2-2
-  o 
-  
+  o Added argument "moderators" to the mgm() function that allows to ...
+
+
+
+
+
 Changes in Version 1.2-2
   o Add running time to output of resample() function
   o Added a note and references on the normalizability of MGMs
@@ -16,6 +20,10 @@ Changes in Version 1.2-2
   o Corrected row-order in dataset "symptom_data"  
   o In mVAR models we use an adjusted sample size that is equal to the number of rows in the design matrix. The adjusted sample size can be smaller than nrow(data) - max(lags) if measurements are not consecutive, or if non-uniform weighting is used. In earlier versions the sample size was only adjusted for non-uniform weighting. The adjusted sample size is used in the additional thresholding of parameter estimates (see ?mgm or ?mvar).
   o Added function resample() that fits any model class to a specified number of bootstrap samples and provides the bootstrapped sampling distribution in an array. For time series data, the block bootstrap is used, where the number of blocks can be specified.
+  o ...
+  o 
+  o 
+  o 
   
 Changes in Version 1.2-1
   o Added consec argument to predict.mgm(), which allows prediction for VAR models in time series with unequal time intervals by excluding time points that are not preceded by enough measurements (see ?mvar)

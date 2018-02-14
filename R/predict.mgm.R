@@ -27,8 +27,8 @@ f_makeErrorTable <- function(data,
   ea[, 1] <- cnames
   
   # Get column names of Errors
-  if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('Error.', names(l_errors_cat))
-  if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('Error.', names(l_errors_con))
+  if(length(l_errors_cat) == 0) names_cat <- NULL else names_cat <- paste0('', names(l_errors_cat))
+  if(length(l_errors_con) == 0) names_con <- NULL else names_con <- paste0('', names(l_errors_con))
   
   colnames(ea) <- c('Variable', names_con, names_cat)
   
@@ -39,8 +39,8 @@ f_makeErrorTable <- function(data,
   if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) {
     
     CCmarg <- rep(NA, p)
-    CC <- ea[ , which(colnames(ea) =='Error.CC')]
-    nCC <- ea[ , which(colnames(ea) =='Error.nCC')]
+    CC <- ea[ , which(colnames(ea) =='CC')]
+    nCC <- ea[ , which(colnames(ea) =='nCC')]
     for(j in which(type=='c')) CCmarg[j] <- (nCC[j] - CC[j]) / (nCC[j] - 1)
     
     ea <- cbind(ea, round(CCmarg, 3))
