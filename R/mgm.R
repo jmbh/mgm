@@ -81,7 +81,7 @@ mgm <- function(data,         # n x p data matrix
   if(missing(saveData)) saveData <- FALSE
   if(missing(overparameterize)) overparameterize <- FALSE
   if(missing(signInfo)) signInfo <- TRUE
-  if(missing(thresholdCat)) if(overparameterize) thresholdCat <- FALSE else thresholdCat <- FALSE # always better
+  if(missing(thresholdCat)) if(overparameterize) thresholdCat <- TRUE else thresholdCat <- TRUE # always better
   
   if(verbatim) pbar <- FALSE
   if(verbatim) warnings <- FALSE
@@ -974,13 +974,7 @@ mgm <- function(data,         # n x p data matrix
   
   # -------------------- Compute Moderator Output -------------------
   
-  
-  
-  
   # ....
-  
-  
-  
   
   
   # -------------------- Output -------------------
