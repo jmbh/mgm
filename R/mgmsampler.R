@@ -97,11 +97,7 @@ mgmsampler <- function(factors,
                            'pbar' = pbar,
                            'divWarning' = divWarning)
   
-  
-  
-  
-  
-  
+
   # ---------- Optional: Enforce positive definite Gaussian subgraph ----------
   
   # browser()
@@ -196,6 +192,7 @@ mgmsampler <- function(factors,
             
           } # end loop: ord
           
+
           # Compute Natural Parameter (collapse and sum all interaction terms)
           natPar <- sum(unlist(l_natPar))
           
@@ -203,17 +200,16 @@ mgmsampler <- function(factors,
           if(type[v] == 'g') sampling_seq[iter, v] <- rnorm(1, mean = natPar, sd = sds[v])
           
           if(type[v] == 'p') {
-            if(natPar < 0) warning(paste0('Lambda parameter of Poisson variable ', v, ' is negative. Sampler returns NA.'))
+            if(natPar < 0) stop(paste0('Lambda parameter of Poisson variable ', v, ' is negative. Sampler returns NA.'))
             sampling_seq[iter, v] <- rpois(1, lambda = natPar)
           }
           
           
         } #end if: v == continuous?
         
-        
-        # browser()
-        
+
         # A) ------ Categorical conditional ------
+        
         if(type[v] == 'c') {
           
           v_Potential <- rep(NA, level[v]) # Storage to collect potentials
@@ -232,18 +228,17 @@ mgmsampler <- function(factors,
               row_counter <- 1
               
               
-              
               if(!is.null(n_rows)) { # only loop over factors if there are factors for given ord
                 for(row in 1:n_rows) {
                   
                   f_ind <- factors[[ord]][row, ]
                   
-                  # is the current variable in that row?
+                  # is the current (v) variable in that row? If not the interaction doesn't matter for (v)
                   if(v %in% f_ind) {
                     
                     # find out: which is current var, where is it, fill in 1 for continuous
                     # (hack; this will be slightly more complicated for categorical response)
-                    fill_in <- rep(NA, ord + 1)
+                    fill_in <- rep(NA, ord + 1) # here we collect the value in the previous iteration of the respective variables in f_ind 
                     get_cont <- rep(NA, ord + 1) # get values of continuous variables
                     k_counter <- 1
                     
@@ -252,6 +247,7 @@ mgmsampler <- function(factors,
                       # Gibbs algorithm: take always the freshest data
                       if(k >= v) gibbs_shift <- iter - 1 else gibbs_shift <- iter # equal case doesn't matter as excluded below
                       
+                      # level[k]==1 indicates a continuous varibale
                       if(level[k]==1) fill_in[k_counter] <- 1 else fill_in[k_counter] <- sampling_seq[gibbs_shift, k]
                       if(level[k]==1) get_cont[k_counter] <- sampling_seq[gibbs_shift, k] else get_cont[k_counter] <- 1 # numeric value for cat is always one for the present category (indicator function)
                       k_counter <- k_counter + 1
@@ -262,14 +258,14 @@ mgmsampler <- function(factors,
                     if(any(abs(sampling_seq[!is.na(sampling_seq)]) > divWarning)) warning('Gibbs Sampler diverged; adapt parameterization of continuous varibales.')
                     
                     # fill in current category
-                    fill_in[which(v == f_ind)] <- cat
+                    fill_in[which(v == f_ind)] <- cat # we fix the category of v to cat in 1:level, since we compute all level potentials
                     
                     # prepare fill in matrix:
                     m_fill_in <- matrix(fill_in, ncol=length(fill_in))
                     
                     # get the parameter for ord-interaction out the the ord-order parameter array
                     row_int <- interactions[[ord]][[row]][m_fill_in]
-                    
+
                     
                     # multiply it by continuous variables if in interaction and save in list
                     l_row_terms[[row_counter]] <- prod(get_cont[-which(f_ind == v)]) * row_int

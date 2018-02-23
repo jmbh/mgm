@@ -801,7 +801,11 @@ mgm <- function(data,         # n x p data matrix
     
     # Get set of unique interactions
     unique_set_int_ord <- cbind(set_int_ord, ids)[!duplicated(ids), ]
+    unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
     n_unique <- nrow(unique_set_int_ord)
+    
+    # print(v)
+    # browser()
     
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
