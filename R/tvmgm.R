@@ -47,7 +47,7 @@ tvmgm <- function(data,         # n x p data matrix
   if(is.null(args$saveData)) args$saveData <- FALSE
   if(is.null(args$pbar)) args$pbar <- pbar <-  TRUE
   if(is.null(args$overparameterize)) args$overparameterize <- FALSE
-  if(missing(args$thresholdCat)) if(args$overparameterize) args$thresholdCat <- FALSE else args$thresholdCat <- FALSE # always better
+  if(missing(args$thresholdCat)) if(args$overparameterize) args$thresholdCat <- TRUE else args$thresholdCat <- TRUE # always better
   if(is.null(args$signInfo)) args$signInfo <-  TRUE
 
   if(missing(level)) level <- NULL

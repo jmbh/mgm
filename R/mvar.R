@@ -27,10 +27,10 @@ mvar <- function(data,         # n x p data matrix
                  saveModels,   # defaults to TRUE, saves all estimated models
                  saveData,     # defaults to FALSE, saves the data, =TRUE makes sense for easier prediction routine in predict.mgm()
                  overparameterize,
+                 thresholdCat,
                  signInfo,
                  ...
 )
-
 
 
 {
@@ -85,6 +85,7 @@ mvar <- function(data,         # n x p data matrix
   if(missing(saveModels)) saveModels <- TRUE
   if(missing(saveData)) saveData <- FALSE
   if(missing(overparameterize)) overparameterize <- FALSE
+  if(missing(thresholdCat)) if(overparameterize) thresholdCat <- TRUE else thresholdCat <- TRUE # always better
   if(missing(signInfo)) signInfo <- TRUE
   
   if(missing(scale)) scale <- TRUE
@@ -308,6 +309,7 @@ mvar <- function(data,         # n x p data matrix
                        'saveModels' = saveModels,
                        'saveData' = saveData,
                        'overparameterize' = overparameterize,
+                       "thresholdCat" = thresholdCat,
                        'signInfo' = signInfo)
   
   # Save original data  
@@ -426,7 +428,8 @@ mvar <- function(data,         # n x p data matrix
                                             type = type,
                                             level = level,
                                             emp_lev = emp_lev,
-                                            overparameterize = overparameterize)
+                                            overparameterize = overparameterize,
+                                            thresholdCat = thresholdCat)
             
             # Calculte Out-of-sample deviance for current fold
             LL_model <- calcLL(X = test_X,
@@ -483,7 +486,8 @@ mvar <- function(data,         # n x p data matrix
                        type = type,
                        level = level,
                        emp_lev = emp_lev,
-                       overparameterize = overparameterize)
+                       overparameterize = overparameterize,
+                       thresholdCat = thresholdCat)
       
       mvarobj$nodemodels[[v]] <- model
       
@@ -516,7 +520,8 @@ mvar <- function(data,         # n x p data matrix
                                       type = type,
                                       level = level,
                                       emp_lev = emp_lev,
-                                      overparameterize = overparameterize)
+                                      overparameterize = overparameterize,
+                                      thresholdCat = thresholdCat)
         
         EBIC_Seq[a] <- l_alphaModels[[a]]$EBIC
         
@@ -708,6 +713,10 @@ mvar <- function(data,         # n x p data matrix
   list_wadj <- list_signs <- list()
   
   a_wadj <- a_signs <- array(dim = c(p, p, n_lags))
+  
+  
+  # browser()
+  
   a_edgecolor <- array('darkgrey', dim = c(p, p, n_lags))
   mvarobj$rawlags <- vector('list', length = n_lags)
   

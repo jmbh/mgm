@@ -7,7 +7,7 @@ ModelMatrix <- function(data,  # matrix
                         level, # level vector
                         labels,
                         d      , # largest neighborhood size
-                        moderators,
+                        moderators = NULL,
                         v,
                         allCats = FALSE # if true, the model matrix does not use all unique categories, but the categories specified in level, this exists because I use this function within the sampling function
 )
