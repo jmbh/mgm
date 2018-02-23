@@ -15,7 +15,8 @@ nodeEst <- function(y,
                     type,
                     level,
                     emp_lev,
-                    overparameterize)
+                    overparameterize, 
+                    thresholdCat)
 
 
 {
@@ -30,10 +31,11 @@ nodeEst <- function(y,
   if(type[v] == 'p') fam = 'poisson'
   
   
-  if(type[v] == 'c' & overparameterize) {
-    intercept <- FALSE 
+  # Set threshold (intercept) parameter to zero?
+  if(type[v] == 'c') {
+    intercept <- thresholdCat
   } else {
-    intercept <- TRUE 
+    intercept <- TRUE # for continuous variables always estimated
   }
 
 

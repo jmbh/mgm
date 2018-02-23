@@ -25,6 +25,7 @@ mgm <- function(data,         # n x p data matrix
                 saveModels,   # defaults to TRUE, saves all estimated models
                 saveData,     # defaults to FALSE, saves the data, =TRUE makes sense for easier prediction routine in predict.mgm()
                 overparameterize, # if TRUE, uses the over-parameterized version,
+                thresholdCat, # TRUE if overparameterize=FALSE; FALSE if overparamterize=TRUE; this argument overwrites this
                 signInfo,
                 ...
 )
@@ -80,7 +81,7 @@ mgm <- function(data,         # n x p data matrix
   if(missing(saveData)) saveData <- FALSE
   if(missing(overparameterize)) overparameterize <- FALSE
   if(missing(signInfo)) signInfo <- TRUE
-  
+  if(missing(thresholdCat)) if(overparameterize) thresholdCat <- FALSE else thresholdCat <- FALSE # always better
   
   if(verbatim) pbar <- FALSE
   if(verbatim) warnings <- FALSE
@@ -229,7 +230,9 @@ mgm <- function(data,         # n x p data matrix
                       'warnings' = warnings,
                       'saveModels' = saveModels,
                       'saveData' = saveData,
-                      'overparameterize' = overparameterize)
+                      'overparameterize' = overparameterize,
+                      "thresholdCat" = thresholdCat,
+                      "signInfo" = signInfo)
   
   if(saveData) mgmobj$call$data <- data
   
@@ -414,7 +417,8 @@ mgm <- function(data,         # n x p data matrix
                                             type = type,
                                             level = level,
                                             emp_lev = emp_lev,
-                                            overparameterize = overparameterize)
+                                            overparameterize = overparameterize,
+                                            thresholdCat = thresholdCat)
             
             
             # Calculte Out-of-sample deviance for current fold
@@ -472,7 +476,8 @@ mgm <- function(data,         # n x p data matrix
                        type = type,
                        level= level,
                        emp_lev = emp_lev,
-                       overparameterize = overparameterize)
+                       overparameterize = overparameterize,
+                       thresholdCat = thresholdCat)
       
       mgmobj$nodemodels[[v]] <- model
       
@@ -504,7 +509,8 @@ mgm <- function(data,         # n x p data matrix
                                       type = type,
                                       level = level,
                                       emp_lev = emp_lev, 
-                                      overparameterize = overparameterize)
+                                      overparameterize = overparameterize,
+                                      thresholdCat = thresholdCat)
         
         EBIC_Seq[a] <- l_alphaModels[[a]]$EBIC
         

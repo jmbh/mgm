@@ -34,6 +34,7 @@ tvmgm <- function(data,         # n x p data matrix
   if(is.null(args$alphaFolds)) args$alphaFolds <- 10
   if(is.null(args$alphaGam)) args$alphaGam <- .25
   if(is.null(args$k)) args$k <- 2
+  if(missing(args$moderators)) args$moderators <- NULL
   if(is.null(args$ruleReg)) args$ruleReg <- 'AND'
   if(is.null(args$threshold)) args$threshold <- 'HW'
   if(is.null(args$method)) args$method <- 'glm'
@@ -45,7 +46,8 @@ tvmgm <- function(data,         # n x p data matrix
   if(is.null(args$saveModels)) args$saveModels <- TRUE
   if(is.null(args$saveData)) args$saveData <- FALSE
   if(is.null(args$pbar)) args$pbar <- pbar <-  TRUE
-  if(is.null(args$overparameterize)) args$overparameterize <-  TRUE
+  if(is.null(args$overparameterize)) args$overparameterize <- FALSE
+  if(missing(args$thresholdCat)) if(args$overparameterize) args$thresholdCat <- FALSE else args$thresholdCat <- FALSE # always better
   if(is.null(args$signInfo)) args$signInfo <-  TRUE
 
   if(missing(level)) level <- NULL
@@ -105,6 +107,7 @@ tvmgm <- function(data,         # n x p data matrix
                         'alphaFolds' = args$alphaFolds,
                         'alphaGam' = args$alphaGam,
                         'k' = args$k,
+                        "moderators" = args$moderators, 
                         'ruleReg' = args$ruleReg,
                         'threshold' = args$threshold,
                         'method' = args$method,
@@ -116,6 +119,7 @@ tvmgm <- function(data,         # n x p data matrix
                         'saveModels' = args$saveModels,
                         'saveData' = args$saveData,
                         'overparameterize' = args$overparameterize,
+                        "thresholdCat" = args$thresholdCat,
                         'signInfo' = args$signInfo)
 
 
