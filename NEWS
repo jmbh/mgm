@@ -6,6 +6,8 @@ Changes in Version 1.2-3
   o Added argument "moderators" to the mgm() function that allows to ...
   o Change default: in earlier versions if overparameterize=TRUE, all thresholds (intercepts) of categorical variables were set to zero. From this version on this threshold is estimated. The thresholds of categoricals can still be set to zero with the new argument "thresholdCat"
   o If scale=TRUE, now interaction terms (k>2 or moderation) are scaled after computing the design matrix to ensure that all predictors have the same mean and standard deviation, which avoids different penalization depending on the scaling of a predictor
+  o Add CES-D depression dataset taken from Fried et al. (2015) to example datasets
+
 
 
 Changes in Version 1.2-2

@@ -13,7 +13,7 @@ mvar(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
 lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, lags,
 consec, beepvar, dayvar, weights, threshold, method, binarySign, 
 scale, verbatim, pbar, warnings, saveModels, saveData, 
-overparameterize, signInfo, ...)
+overparameterize, thresholdCat, signInfo, ...)
 }
 
 \arguments{
@@ -101,6 +101,9 @@ If \code{saveData = TRUE}, the data is saved in the output list. Defaults to \co
 If \code{overparameterize = TRUE}, \code{mgm()} uses over-parameterized design-matrices for each neighborhood regression; this means that a cross-lagged effect between two categorical variables with m and s categories is parameterized by m*s parameters. If \code{overparameterize = FALSE} the standard parameterization (in \code{glmnet}) with m*(s-1) parameters is used, where the first category of the predicting variable serves as reference category. If all variables are continuous both parameterizations are the same. The default is set to \code{overparameterize = FALSE}.
 }
 
+  \item{thresholdCat}{
+If \code{thresholdCat = FALSE}, the thresholds of categorical variables are set to zero. Defaults to \code{thresholdCat = TRUE} for which the thresholds are esimated.
+}
 
   \item{signInfo}{
 If \code{signInfo = TRUE}, a message is shown in the console, indicating that the sign of estimates is stored separately. Defaults to \code{signInfo = TRUE}.
