@@ -130,7 +130,7 @@ mgm <- function(data,         # n x p data matrix
   if(scale) for(i in ind_Gauss) data[, i] <- scale(data[, i])
   
   
-
+  
   # ----- Basic Checks II -----
   
   # Checks on other arguments
@@ -332,18 +332,16 @@ mgm <- function(data,         # n x p data matrix
                       v_mods)
       }
       
-      # if(v == 2) browser()
-      
       form <- as.formula(form)
       
       # Create design matrix
       X_standard <- model.matrix(form, data = data)[, -1] # delete intercept (added by glmnet later)
       npar_standard[v] <- ncol(X_standard)
       
-      # Case II.b: Overparameterization (no intercept, all categories in design matrix)
+      # Case II.b: Overparameterization (all category-configuration in design matrix)
       
       if(overparameterize) {
-
+        
         X_over <- ModelMatrix(data = data[, -v],
                               type = type[-v],
                               level = level[-v],
@@ -358,15 +356,29 @@ mgm <- function(data,         # n x p data matrix
         
         X <- X_standard
         
-      }
+        
+      } # end if: overparameterize
       
       
     } # end if: Moderation
     
     
+    ## Scale Gaussian variables after computing design matrix
+    # Compute vector that tell us which interactions are purely consisting of continuous variables?
+    if(scale) {
+      cn <- colnames(X)
+      l_ints_split <- strsplit(cn, ":")
+      ind_allc <- unlist(lapply(l_ints_split, function(x) {
+        x2 <- sub("V", "", x)
+        vars <- as.numeric(unlist(lapply(strsplit(x2, "[.]"), function(y) y[1] )))
+        all(type[vars] == "g")
+      }))
+      
+      X[, ind_allc] <- apply(X[, ind_allc], 2, scale)
+    }
+    
     # Response 
     y <- as.numeric(data[, v])
-    
     
     
     # ----- Tuning Parameter Selection (lambda and alpha) -----

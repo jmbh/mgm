@@ -46,6 +46,8 @@ nodeEst <- function(y,
 
     # ----- Fit Model -----
   
+    # if(v == 3) browser()
+    
     fit <- glmnet(x = X,
                   y = y,
                   family = fam,
@@ -54,6 +56,8 @@ nodeEst <- function(y,
                   lambda = lambdaSeq,
                   intercept = intercept)
 
+
+    
     n_lambdas <- length(fit$lambda) # length of fitted lambda sequence
 
     # coef(fit, s = fit$lambda[61])
@@ -135,7 +139,6 @@ nodeEst <- function(y,
     ind_lambda_min <- which.min(EBIC_lambda)
     lambda_min <- fit$lambda[ind_lambda_min]
     lambad_min_model <- coef(fit, s = lambda_min)
-
 
     # ----- Output -----
 
