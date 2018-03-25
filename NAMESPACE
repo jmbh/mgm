@@ -6,6 +6,7 @@ import(stringr)
 import(glmnet)
 import(matrixcalc)
 import(Hmisc)
+import(qgraph) # for FactorGraph()
 
 importFrom("stats", "as.formula", "coef", "dnorm", "dpois",
              "model.matrix", "var", "quantile")
@@ -32,6 +33,9 @@ export(tvmvarsampler)
 export(resample)
 export(showInteraction)
 export(plotRes)
+
+export(FactorGraph)
+
 
 # Export old functions with defunct msg
 export(mgmfit)

@@ -34,7 +34,7 @@ tvmgm <- function(data,         # n x p data matrix
   if(is.null(args$alphaFolds)) args$alphaFolds <- 10
   if(is.null(args$alphaGam)) args$alphaGam <- .25
   if(is.null(args$k)) args$k <- 2
-  if(missing(args$moderators)) args$moderators <- NULL
+  if(is.null(args$moderators)) args$moderators <- NULL
   if(is.null(args$ruleReg)) args$ruleReg <- 'AND'
   if(is.null(args$threshold)) args$threshold <- 'HW'
   if(is.null(args$method)) args$method <- 'glm'
@@ -47,7 +47,7 @@ tvmgm <- function(data,         # n x p data matrix
   if(is.null(args$saveData)) args$saveData <- FALSE
   if(is.null(args$pbar)) args$pbar <- pbar <-  TRUE
   if(is.null(args$overparameterize)) args$overparameterize <- FALSE
-  if(missing(args$thresholdCat)) if(args$overparameterize) args$thresholdCat <- TRUE else args$thresholdCat <- TRUE # always better
+  if(is.null(args$thresholdCat)) if(args$overparameterize) args$thresholdCat <- TRUE else args$thresholdCat <- TRUE # always better
   if(is.null(args$signInfo)) args$signInfo <-  TRUE
 
   if(missing(level)) level <- NULL
@@ -77,12 +77,7 @@ tvmgm <- function(data,         # n x p data matrix
                    'pairwise' = list('wadj' = NULL,
                                      'signs' = NULL,
                                      'edgecolor'= NULL),
-                   'factorgraph' = list('graph' = NULL,
-                                        'signs' = NULL,
-                                        'edgecolor' = NULL,
-                                        'order' = NULL,
-                                        'nodetype' = NULL),
-                   'rawfactor' = list('indicator' = NULL,
+                   'interactions' = list('indicator' = NULL,
                                       'weights' = NULL,
                                       'signs' = NULL),
                    'intercepts' = NULL,
@@ -206,50 +201,19 @@ tvmgm <- function(data,         # n x p data matrix
   # Save into output list
   tvmgmobj$tvmodels <- l_tvmgm_models
 
-
-  # -------------------- Create time-varying Factorgraph -------------------
-
-  d <- args$k - 1
-
-  # Obtain set of all interactions that occur at least once in the time series
-  l_all_indicators <- list()
-  l_unique_indicators <- vector('list', length = d)
-  l_unique_indicators <- lapply(l_unique_indicators, function(x) vector('list', length=no_estpoints))
-  for(i in 1:no_estpoints)  {
-    l_all_indicators[[i]] <- tvmgmobj$tvmodels[[i]]$rawfactor$indicator
-    for(ii in 1:d) l_unique_indicators[[ii]][[i]] <- l_all_indicators[[i]][[ii]]
-  }
-
-  # get unique set of interactions for each order
-  l_unique_indicators <- lapply(l_unique_indicators, function(x) {
-    x_comb <- do.call(rbind, x)
-    x_comb[!duplicated(x_comb),]
-  })
-
-
-  # Call time-varying DrawFG function:
-  l_FG <- list()
-  for(i in 1:no_estpoints)  {
-    l_FG[[i]] <- DrawFGtv(list_ind = tvmgmobj$tvmodels[[i]]$rawfactor$indicator,
-                        list_weights = tvmgmobj$tvmodels[[i]]$rawfactor$weightsAgg,
-                        list_signs = tvmgmobj$tvmodels[[i]]$rawfactor$signs,
-                        list_ind_all = l_unique_indicators,
-                        p = p)
-  }
-
-
+  
   # -------------------- Process Output -------------------
 
   # Output:
   # pairwise and factorgraph: 3d arrays
-  # rawfactor and intercepts: lists
+  # interactions and intercepts: lists
 
-  col_factorgraph <- ncol(l_FG[[1]]$weightedgraph) # all the same, so i = 1 does the job
+  # col_factorgraph <- ncol(l_FG[[1]]$weightedgraph) # all the same, so i = 1 does the job
 
   # Create Storage
   a_pairwise_wadj <- a_pairwise_signs <- a_pairwise_edgecolor <- array(dim = c(p, p, no_estpoints))
-  a_factorgraph_graph <- a_factorgraph_signs <- a_factorgraph_edgecolor <-array(dim = c(col_factorgraph, col_factorgraph, no_estpoints))
-  l_factorgraph_order <- l_factorgraph_nodetype <- l_rawfactor_indicator <- l_rawfactor_weights <- l_rawfactor_signs <- l_intercepts <- list()
+  # a_factorgraph_graph <- a_factorgraph_signs <- a_factorgraph_edgecolor <-array(dim = c(col_factorgraph, col_factorgraph, no_estpoints))
+  l_factorgraph_order <- l_factorgraph_nodetype <- l_interactions_indicator <- l_interactions_weights <- l_interactions_signs <- l_intercepts <- list()
 
   # Loop over timepoints and restructure
     for(i in 1:no_estpoints) {
@@ -259,17 +223,17 @@ tvmgm <- function(data,         # n x p data matrix
       a_pairwise_signs[,,i] <- tvmgmobj$tvmodels[[i]]$pairwise$signs
       a_pairwise_edgecolor[,,i] <- tvmgmobj$tvmodels[[i]]$pairwise$edgecolor
 
-      # Factorgraph
-      a_factorgraph_graph[,,i] <- l_FG[[i]]$weightedgraph # Fill in from extended Factor graph (see above, DrawFGtv())
-      a_factorgraph_signs[,,i] <- l_FG[[i]]$signs
-      a_factorgraph_edgecolor[,,i] <- l_FG[[i]]$signcolor
-      l_factorgraph_order[[i]] <- l_FG[[i]]$order
-      l_factorgraph_nodetype[[i]] <- l_FG[[i]]$nodetype
+      # # Factorgraph
+      # a_factorgraph_graph[,,i] <- l_FG[[i]]$weightedgraph # Fill in from extended Factor graph (see above, DrawFGtv())
+      # a_factorgraph_signs[,,i] <- l_FG[[i]]$signs
+      # a_factorgraph_edgecolor[,,i] <- l_FG[[i]]$signcolor
+      # l_factorgraph_order[[i]] <- l_FG[[i]]$order
+      # l_factorgraph_nodetype[[i]] <- l_FG[[i]]$nodetype
 
       # Factorgraph Raw
-      l_rawfactor_indicator[[i]] <- tvmgmobj$tvmodels[[i]]$rawfactor$indicator
-      l_rawfactor_weights[[i]] <- tvmgmobj$tvmodels[[i]]$rawfactor$weightsAgg
-      l_rawfactor_signs[[i]] <- tvmgmobj$tvmodels[[i]]$rawfactor$signs
+      l_interactions_indicator[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$indicator
+      l_interactions_weights[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$weightsAgg
+      l_interactions_signs[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$signs
 
       # Intercepts
       l_intercepts[[i]] <- tvmgmobj$tvmodels[[i]]$intercepts
@@ -283,15 +247,15 @@ tvmgm <- function(data,         # n x p data matrix
   tvmgmobj$pairwise$signs <- a_pairwise_signs
   tvmgmobj$pairwise$edgecolor <- a_pairwise_edgecolor
 
-  tvmgmobj$factorgraph$graph <- a_factorgraph_graph
-  tvmgmobj$factorgraph$signs <- a_factorgraph_signs
-  tvmgmobj$factorgraph$edgecolor <- a_factorgraph_edgecolor
-  tvmgmobj$factorgraph$order <- l_factorgraph_order
-  tvmgmobj$factorgraph$nodetype <- l_factorgraph_nodetype
+  # tvmgmobj$factorgraph$graph <- a_factorgraph_graph
+  # tvmgmobj$factorgraph$signs <- a_factorgraph_signs
+  # tvmgmobj$factorgraph$edgecolor <- a_factorgraph_edgecolor
+  # tvmgmobj$factorgraph$order <- l_factorgraph_order
+  # tvmgmobj$factorgraph$nodetype <- l_factorgraph_nodetype
 
-  tvmgmobj$rawfactor$indicator <- l_rawfactor_indicator
-  tvmgmobj$rawfactor$weightsAgg <- l_rawfactor_weights
-  tvmgmobj$rawfactor$signs <- l_rawfactor_signs
+  tvmgmobj$interactions$indicator <- l_interactions_indicator
+  tvmgmobj$interactions$weightsAgg <- l_interactions_weights
+  tvmgmobj$interactions$signs <- l_interactions_signs
 
   tvmgmobj$intercepts <- l_intercepts
   
@@ -304,10 +268,9 @@ tvmgm <- function(data,         # n x p data matrix
 
   # -------------------- Output -------------------
 
-  # Save Node Models and extracted raw factors?
+  # Save Node Models 
   if(!args$saveModels) {
     tvmgmobj$nodemodels <- NULL
-    tvmgmobj$rawfactor <- NULL
   }
 
   # intercepts

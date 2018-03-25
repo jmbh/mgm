@@ -190,14 +190,10 @@ mgm <- function(data,         # n x p data matrix
                  'pairwise' = list('wadj' = NULL,
                                    'signs' = NULL,
                                    'edgecolor'= NULL),
-                 'factorgraph' = list('graph' = NULL,
-                                      'signs' = NULL,
-                                      'edgecolor' = NULL,
-                                      'order' = NULL),
-                 'rawfactor' = list('indicator' = NULL,
-                                    'weightsAgg' = NULL,
-                                    'weights' = NULL,
-                                    'signs' = NULL),
+                 'interactions' = list('indicator' = NULL,
+                                       'weightsAgg' = NULL,
+                                       'weights' = NULL,
+                                       'signs' = NULL),
                  'intercepts' = NULL,
                  'nodemodels' = list())
   
@@ -366,15 +362,18 @@ mgm <- function(data,         # n x p data matrix
     ## Scale Gaussian variables after computing design matrix
     # Compute vector that tell us which interactions are purely consisting of continuous variables?
     if(scale) {
-      cn <- colnames(X)
-      l_ints_split <- strsplit(cn, ":")
-      ind_allc <- unlist(lapply(l_ints_split, function(x) {
-        x2 <- sub("V", "", x)
-        vars <- as.numeric(unlist(lapply(strsplit(x2, "[.]"), function(y) y[1] )))
-        all(type[vars] == "g")
-      }))
-      
-      X[, ind_allc] <- apply(X[, ind_allc], 2, scale)
+      # browser()
+      if(any(type == "g")) {
+        cn <- colnames(X)
+        l_ints_split <- strsplit(cn, ":")
+        ind_allc <- unlist(lapply(l_ints_split, function(x) {
+          x2 <- sub("V", "", x)
+          vars <- as.numeric(unlist(lapply(strsplit(x2, "[.]"), function(y) y[1] )))
+          all(type[vars] == "g")
+        }))
+        
+        X[, ind_allc] <- apply(matrix(X[, ind_allc], ncol = sum(ind_allc)), 2, scale)
+      }
     }
     
     # Response 
@@ -934,10 +933,10 @@ mgm <- function(data,         # n x p data matrix
   # browser()
   
   # Save in output
-  mgmobj$rawfactor$indicator <- l_factors_nz
-  mgmobj$rawfactor$weightsAgg <- l_factor_par_nz
-  mgmobj$rawfactor$weights <- l_factor_par_full_nz
-  mgmobj$rawfactor$signs <- l_sign_par_nz
+  mgmobj$interactions$indicator <- l_factors_nz
+  mgmobj$interactions$weightsAgg <- l_factor_par_nz
+  mgmobj$interactions$weights <- l_factor_par_full_nz
+  mgmobj$interactions$signs <- l_sign_par_nz
   
   
   # -------------------- Compute Weighted Adjacency matrix (pairwise Interactions) -------------------
@@ -965,36 +964,12 @@ mgm <- function(data,         # n x p data matrix
   mgmobj$pairwise$edgecolor <- sign_colors
   
   
-  
-  # -------------------- Compute Factor Graph -------------------
-  
-  FG <- DrawFG(list_ind = l_factors_nz,
-               list_weights = l_factor_par_nz,
-               list_signs = l_sign_par_nz,
-               p = p)
-  
-  
-  # Save in output
-  mgmobj$factorgraph$graph <- FG$weightedgraph
-  mgmobj$factorgraph$nodetype <- FG$nodetype
-  mgmobj$factorgraph$order <- FG$order
-  
-  mgmobj$factorgraph$signs <- FG$signs
-  mgmobj$factorgraph$edgecolor <- FG$signcolor
-  
-  
-  
-  # -------------------- Compute Moderator Output -------------------
-  
-  # ....
-  
-  
   # -------------------- Output -------------------
   
   # Save Node Models and extracted raw factors?
   if(!saveModels) {
     mgmobj$nodemodels <- NULL
-    mgmobj$rawfactor <- NULL
+    mgmobj$factors <- NULL
   }
   
   # Save intercepts

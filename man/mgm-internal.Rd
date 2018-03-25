@@ -7,10 +7,10 @@
 \description{Internal mgm functions.}
 
 \usage{
-DrawFG(list_ind, list_weights, list_signs, p)
+DrawFG(object, PairwiseAsEdge = TRUE)
 
-DrawFGtv(list_ind, list_weights, list_signs,
-         list_ind_all, p)
+DrawFGtv(object, PairwiseAsEdge = TRUE,
+         estpoint)
 
 }
 

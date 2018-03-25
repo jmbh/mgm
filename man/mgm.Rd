@@ -135,13 +135,7 @@ Contains all provided input arguments. If \code{saveData = TRUE}, it also contai
 Contains a list with all information about estimated pairwise interactions. \code{wadj} contains the p x p weighted adjacency matrix, if p is the number of variables in the network. \code{signs} has the same dimensions as \code{wadj} and contains the signs for the entries of \code{wadj}: 1 indicates a positive sign, -1 a negative sign and 0 an undefined sign. A sign is undefined if an edge is a function of more than one parameter. This is the case for interactions involving a categorical variable with more than 2 categories. \code{edgecolor} also has the same dimensions as \code{wadj} contains a color for each edge, depending on \code{signs}. It is provided for more convenient plotting. If only pairwise interactions are modeled (\code{d = 1}), \code{wadj} contains all conditional independence relations.
 }
 
-\item{factorgraph}{
-Contains a list with all information about all estimated interactions (factors). \code{graph} contains a weighted adjacency matrix of a (bipartide) factor graph. If p is the number of variables and E the number of interactions (factors) in the model, this matrix has dimensions (p+E) x (p+E). The factor graph is furter specified by the following objects: \code{signs} is a matrix of the same dimensions as \code{graph} that indicates the sign of each interaction, if defined (see \code{pairwise} above). \code{edgecolor} is a matrix with the same dimension as \code{graph} that provides edge colors depending on the sign as above. \code{order} is a (p+E) vector indicating the order of interaction. The first p entries are set to zero.
-
-Note that \code{factorgraph} contains the same information as \code{pairwise} if only pairwise interactions are estimated.
-}
-
-\item{rawfactor}{
+\item{interactions}{
 A list with three entries that relate each interaction in the model to all its parameters. This is different to the output provided in \code{factorgraph}, where one value is assigned to each interaction. \code{indicator} contains a list with k-1 entries, one for each order of modeled interaction, which contain the estimated (nonzero) interactions. \code{weightsAgg} contains a list with k-1 entries, which in turn contain R lists, where R is the number of interactions (and rows in the corresponding list entry in\code{indicator}) that were estimated (nonzero) in the given entry. Each of these entries contains the mean of the absolute values of all parameters involved in this interaction. \code{weights} has the same structure as \code{weightsAgg}, but does contain all parameters involved in the interaction instead of the mean of their absolute values. \code{signs} has the same structure as \code{weightsAgg}/\code{weights} and provides the sign of the interaction, if defined.
 }
 
@@ -191,49 +185,45 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 # 1) Fit Pairwise MGM
 
 # Call mgm()
-fit_d2 <- mgm(data = autism_data$data,
+fit_k2 <- mgm(data = autism_data$data,
               type = autism_data$type,
               level = autism_data$lev,
               k = 2) # ad most pairwise interacitons
 
 # Weighted adjacency matrix
-fit_d2$pairwise$wadj
+fit_k2$pairwise$wadj
 
 # Visualize using qgraph()
 library(qgraph)
-qgraph(fit_d2$pairwise$wadj,
-       edge.color = fit_d2$pairwise$edgecolor,
+qgraph(fit_k2$pairwise$wadj,
+       edge.color = fit_k2$pairwise$edgecolor,
        layout = 'spring',
        labels =  autism_data$colnames)
 
 
 # 2) Fit MGM with pairwise & threeway interactions
-fit_d3 <- mgm(data = autism_data$data,
+fit_k3 <- mgm(data = autism_data$data,
               type = autism_data$type,
               level = autism_data$lev,
               k = 3) # include all interactions up to including order 3
 
 # List of estimated interactions
-fit_d3$rawfactor$indicator
+fit_k3$interactions$indicator
 
-# Compute Label vector
-labels <- c(autism_data$colnames, rep('', sum(fit_d3$factorgraph$nodetype)))
+# 3) Plot Factor Graph 
 
-# Visualize factor graph using qgraph()
-library(RColorBrewer)
-nodeColors <- brewer.pal(3, 'Set1')
+nodeColors <- c("white", "orange", "lightblue")
 
-qgraph(fit_d3$factorgraph$graph,
-       color = nodeColors[fit_d3$factorgraph$order+1],
-       edge.color = fit_d3$factorgraph$edgecolor,
-       layout = 'spring',
-       labels =  labels,
-       shape = c('circle', 'square')[fit_d3$factorgraph$nodetype+1],
-       vsize = c(8, 4)[fit_d3$factorgraph$nodetype+1])
+FactorGraph(object = fit_k3, 
+            PairwiseAsEdge = TRUE, 
+            DoNotPlot = FALSE, 
+            colors = nodeColors, 
+            labels = 1:7, 
+            layout="spring")
 
-# 3) Predict values
+# 4) Predict values
 
-pred_obj <- predict(fit_d3, autism_data$data)
+pred_obj <- predict(fit_k3, autism_data$data)
 
 head(pred_obj$predicted) # predicted values
 
