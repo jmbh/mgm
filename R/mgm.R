@@ -100,7 +100,7 @@ mgm <- function(data,         # n x p data matrix
   if(missing(data)) stop('No data provided.')
   if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
   if(any(is.na(data))) stop('No missing values permitted.')
-  
+  if(!all(moderators %in% 1:p)) stop("Specified moderators are larger than number of variables in the data.")
   
   # ----- Compute Auxilliary Variables II -----
   

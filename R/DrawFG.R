@@ -9,9 +9,9 @@ DrawFG <- function(object,
   
   
   # Take from model object
-  list_ind <- object$factors$indicator
-  list_weights <- object$factors$weightsAgg
-  list_signs <- object$factors$signs
+  list_ind <- object$interactions$indicator
+  list_weights <- object$interactions$weightsAgg
+  list_signs <- object$interactions$signs
   
   p <- length(object$call$type)
   

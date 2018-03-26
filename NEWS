@@ -9,6 +9,7 @@ Changes in Version 1.2-3
   o Add CES-D depression dataset taken from Fried et al. (2015) to example datasets
   o Added function FactorGraph() that computes and plots a factor graph from stationary or time-varying MGMs. The factorgraph output has been removed from the mgm() and tvmgm() functions.
 
+
 Changes in Version 1.2-2
   o Add running time to output of resample() function
   o Added a note and references on the normalizability of MGMs
