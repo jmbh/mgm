@@ -64,6 +64,7 @@ predictCore_stat <- function(object,
         if (call$k == 2){ form <- as.formula(paste(colnames(data)[v],"~ (.)"))
         } else { form <- as.formula(paste(colnames(data)[v],"~ (.)^", call$k - 1)) }
         
+        data_df <- as.data.frame(data_df)
         X <- model.matrix(form, data=data_df)[, -1] # delete intercept (added by glmnet later)
         y <- as.numeric(data[, v])
         
@@ -160,6 +161,9 @@ predictCore_stat <- function(object,
         data_df <- data
         type_aug <- rep(type, n_lags)
         for(j in which(type_aug=='c')) data_df[, j] <- as.factor(data_df[, j])
+
+        data_df <- as.data.frame(data_df)
+        
         X <- model.matrix(form, data = data_df)[, -1] # delete intercept (added by glmnet later)
         
       }
