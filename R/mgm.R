@@ -588,13 +588,16 @@ mgm <- function(data,         # n x p data matrix
       
     } # end if: moderators?
     
+    # Make sure all entries of "v_Pars_ind" are matrices
+    for(j in 1:d) v_Pars_ind[[j]] <- matrix(v_Pars_ind[[j]], ncol=j)
+
     no_interactions <- unlist(lapply(v_Pars_ind, nrow))
     
     # B) Parameter Object: Same structure as (A), but now with a list entry for each matrix row
     v_Pars_values <- vector('list', length = d)
     for(ord in 1:d) v_Pars_values[[ord]] <- vector('list', length = no_interactions[ord])
     
-    
+    # browser()
     
     # ----- Fill (B) with parameter estimates -----
     
@@ -623,6 +626,8 @@ mgm <- function(data,         # n x p data matrix
         model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
         mgmobj$nodemodels[[v]]$tau <- tau # Save tau
         
+        # browser()
+        
         for(ord in 1:d) {
           
           part_ord <- model_obj_i[-1][ord == interaction_order] # parameters for interaction of order = ord+1
@@ -636,7 +641,9 @@ mgm <- function(data,         # n x p data matrix
           for(t in 1:no_interactions[ord]) {
             
             # indicates location of parameters for given interaction
-            for(cc in 1:ncol(v_Pars_ind[[ord]])) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'), int_names_ord,
+            if(ord==2) browser()
+            
+            for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'), int_names_ord,
                                                                                int_names_ord,
                                                                                fixed = TRUE) # not only single chars have to be contained, but exact order)
             select_int <- rowSums(find_int_dummy) == ord # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
@@ -688,11 +695,10 @@ mgm <- function(data,         # n x p data matrix
           
           for(t in 1:no_interactions[ord]) {
             
-            # print(v)
-            # if(v == 7 & ord == 2) browser()
+            # if(ord == 2) browser()
             
             # indicates location of parameters for given interaction
-            for(cc in 1:ncol(v_Pars_ind[[ord]])) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'),
+            for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'),
                                                                                int_names_ord,
                                                                                fixed = TRUE) # not only single chars have to be contained, but exact order
             select_int <- rowSums(find_int_dummy) == (ord) # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
