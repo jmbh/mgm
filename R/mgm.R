@@ -641,7 +641,7 @@ mgm <- function(data,         # n x p data matrix
           for(t in 1:no_interactions[ord]) {
             
             # indicates location of parameters for given interaction
-            if(ord==2) browser()
+            # if(ord==2) browser()
             
             for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'), int_names_ord,
                                                                                int_names_ord,
