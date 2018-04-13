@@ -588,8 +588,10 @@ mgm <- function(data,         # n x p data matrix
       
     } # end if: moderators?
     
+    # browser()
+    
     # Make sure all entries of "v_Pars_ind" are matrices
-    for(j in 1:d) v_Pars_ind[[j]] <- matrix(v_Pars_ind[[j]], ncol=j)
+    for(j in 1:d) v_Pars_ind[[j]] <- matrix(as.matrix(v_Pars_ind[[j]]), ncol=j)
 
     no_interactions <- unlist(lapply(v_Pars_ind, nrow))
     
