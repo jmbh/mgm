@@ -20,7 +20,7 @@ FactorGraph(object, colors, labels, PairwiseAsEdge = TRUE,
 The output object of \code{mgm()} or \code{tvmgm()}.
 }
   \item{colors}{
-A character vector of colors for nodes and factors. The first color is for nodes, the second for 2-way interactions, the third for 3-way interactions, etc.
+A character vector of colors for nodes and factors. The first color is for nodes, the second for 2-way interactions, the third for 3-way interactions, etc. Defaults to \code{colors = c("white", "tomato", "lightgrey")}.
 }
   \item{labels}{
 A character vector of node labels.

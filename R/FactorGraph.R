@@ -46,6 +46,7 @@ FactorGraph <- function(object,
   # --------- Fill in defaults ---------
   
   if(missing(labels)) labels <- 1:p
+  if(missing(colors)) colors <- c("white", "tomato", "lightgrey")
   layout <- "spring"
   cut <- 0
   
