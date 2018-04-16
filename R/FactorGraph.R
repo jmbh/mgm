@@ -14,14 +14,14 @@ FactorGraph <- function(object,
 {
   
   
-
+  
   # --------- Compute Aux Variables ---------
   
   p <- length(object$call$level)
   n_estpoints <- length(object$call$estpoints)
   
   # --------- Input Checks ---------
-
+  
   if(!missing(labels)) if(length(labels) != p) stop("Number of provided labels has to match the number of variables.")
   
   # Checks for time-varying FactorGraph  
@@ -29,7 +29,7 @@ FactorGraph <- function(object,
     if(missing(estpoint)) stop("Specify the estimation point for which the factor graph should be visualized.")
     if(estpoint > n_estpoints) stop(paste0("The provided fit object has only ", n_estpoints, " estimation points."))
   } 
-
+  
   
   # --------- Create FractorGraph object ---------
   
@@ -40,7 +40,8 @@ FactorGraph <- function(object,
                     "nodetype" = NULL,
                     "order" = NULL,
                     "signs" = NULL,
-                    "edgecolor" = NULL)
+                    "edgecolor" = NULL, 
+                    "qgraph" = NULL)
   
   # --------- Fill in defaults ---------
   
@@ -49,14 +50,14 @@ FactorGraph <- function(object,
   
   
   # --------- Compute Factor Graph ----------
-
+  
   # Call different DrawFG() version for stationary/time-varying
   if("tvmgm" %in% class(object)) {
-  
+    
     # Time-varying
     FG <- DrawFGtv(object = object,
-                 PairwiseAsEdge = PairwiseAsEdge, 
-                 estpoint = estpoint)
+                   PairwiseAsEdge = PairwiseAsEdge, 
+                   estpoint = estpoint)
     
   } else {
     
@@ -80,7 +81,7 @@ FactorGraph <- function(object,
   args <- list(...)
   if(!is.null(args$layout)) layout <- args$layout
   if(!is.null(args$edge.color)) edge.color <- args$edge.color
-
+  
   
   # --------- Plot & Return ---------
   
@@ -98,19 +99,21 @@ FactorGraph <- function(object,
     } else {
       labels_ex <- c(labels, rep('', sum(FG_object$nodetype)))
     }
-
+    
     # ----- Call qgraph -----
     
     # browser()
     
-    qgraph(FG_object$graph,
-           color = colors[FG_object$order + 1],
-           edge.color = edge.color,
-           layout = layout,
-           labels =  labels_ex,
-           shape = shapes[FG_object$nodetype + 1],
-           vsize = shapeSizes[FG_object$nodetype + 1], 
-           ...)
+    qgraph_object <- qgraph(FG_object$graph,
+                            color = colors[FG_object$order + 1],
+                            edge.color = edge.color,
+                            layout = layout,
+                            labels =  labels_ex,
+                            shape = shapes[FG_object$nodetype + 1],
+                            vsize = shapeSizes[FG_object$nodetype + 1], 
+                            ...)
+    
+    FG_object$qgraph <- qgraph_object
     
     
     invisible(FG_object) # return output object invisible

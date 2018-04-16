@@ -313,9 +313,6 @@ mgm <- function(data,         # n x p data matrix
       if(n_l_mods > 1) for(i in 1:(n_l_mods - 1)) l_mods[[i]] <- paste0(l_mods[[i]], " + ") # add plus between terms but not in the end
       v_mods <- do.call(paste0, l_mods)
       
-      # if(v == 7) browser()
-      # print(v)
-      
       # Stitch together model formula
       if(length(v_mods) == 0) { # if there is no moderation for that variable (the case if v is the only moderator)
         form <- paste(colnames(data)[v], "~",
@@ -362,7 +359,6 @@ mgm <- function(data,         # n x p data matrix
     ## Scale Gaussian variables after computing design matrix
     # Compute vector that tell us which interactions are purely consisting of continuous variables?
     if(scale) {
-      # browser()
       if(any(type == "g")) {
         cn <- colnames(X)
         l_ints_split <- strsplit(cn, ":")
@@ -588,8 +584,6 @@ mgm <- function(data,         # n x p data matrix
       
     } # end if: moderators?
     
-    # browser()
-    
     # Make sure all entries of "v_Pars_ind" are matrices
     for(j in 1:d) v_Pars_ind[[j]] <- matrix(as.matrix(v_Pars_ind[[j]]), ncol=j)
 
@@ -598,8 +592,6 @@ mgm <- function(data,         # n x p data matrix
     # B) Parameter Object: Same structure as (A), but now with a list entry for each matrix row
     v_Pars_values <- vector('list', length = d)
     for(ord in 1:d) v_Pars_values[[ord]] <- vector('list', length = no_interactions[ord])
-    
-    # browser()
     
     # ----- Fill (B) with parameter estimates -----
     
@@ -628,7 +620,6 @@ mgm <- function(data,         # n x p data matrix
         model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
         mgmobj$nodemodels[[v]]$tau <- tau # Save tau
         
-        # browser()
         
         for(ord in 1:d) {
           
@@ -643,7 +634,6 @@ mgm <- function(data,         # n x p data matrix
           for(t in 1:no_interactions[ord]) {
             
             # indicates location of parameters for given interaction
-            # if(ord==2) browser()
             
             for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'), int_names_ord,
                                                                                int_names_ord,
@@ -697,8 +687,6 @@ mgm <- function(data,         # n x p data matrix
           
           for(t in 1:no_interactions[ord]) {
             
-            # if(ord == 2) browser()
-            
             # indicates location of parameters for given interaction
             for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'),
                                                                                int_names_ord,
@@ -721,8 +709,6 @@ mgm <- function(data,         # n x p data matrix
       } # end for: ord
       
     }
-    
-    # if(v == 7) browser()
     
     Pars_ind[[v]] <- v_Pars_ind
     Pars_values[[v]] <- v_Pars_values
@@ -810,9 +796,7 @@ mgm <- function(data,         # n x p data matrix
   }
   
   
-  # browser()
-  
-  
+
   # Loop over: order of interactions (ord = 1 = pairwise)
   for(ord in 1:d) {
     
@@ -820,17 +804,12 @@ mgm <- function(data,         # n x p data matrix
     set_par_ord <- Pars_values_flip_red[[ord]]
     row.names(set_int_ord) <- NULL
     
-    # browser()
-    
     ids <- FlagSymmetricFast(x = set_int_ord) # BOTTLE NECK, now better with native solution, but still problematic for huge p
     
     # Get set of unique interactions
     unique_set_int_ord <- cbind(set_int_ord, ids)[!duplicated(ids), ]
     unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
     n_unique <- nrow(unique_set_int_ord)
-    
-    # print(v)
-    # browser()
     
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
@@ -877,8 +856,6 @@ mgm <- function(data,         # n x p data matrix
       
       ## Get sign
       l_sign_par[[ord]][i] <- int_sign
-      
-      # if(v == 7 & ord ==1) browser()
       
       # Save indicator
       l_factors[[ord]][i, ] <- l_w_ind[[1]] # just choose first one, doesn't matter
@@ -937,8 +914,6 @@ mgm <- function(data,         # n x p data matrix
     }
     
   }
-  
-  # browser()
   
   # Save in output
   mgmobj$interactions$indicator <- l_factors_nz

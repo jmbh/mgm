@@ -90,7 +90,7 @@ fit_k3 <- mgm(data = autism_data$data,
 
 # List of estimated interactions
 
-fit_k3$factors$indicator
+fit_k3$interactions$indicator
 
 
 # Plot Factor Graph 
