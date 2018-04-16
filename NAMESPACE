@@ -48,4 +48,4 @@ export(tv_var.mgm)
 S3method(predict, mgm)
 S3method(print, mgm)
 S3method(print, resample)
-
+S3method(print, int)
