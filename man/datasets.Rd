@@ -12,6 +12,7 @@
 \alias{PTSD_data}
 \alias{mgm_data}
 \alias{mvar_data}
+\alias{modnw}
 
 \title{Example Datasets in the mgm Package}
 \description{
