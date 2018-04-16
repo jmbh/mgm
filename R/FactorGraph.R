@@ -47,6 +47,7 @@ FactorGraph <- function(object,
   
   if(missing(labels)) labels <- 1:p
   layout <- "spring"
+  cut <- 0
   
   
   # --------- Compute Factor Graph ----------
@@ -79,6 +80,7 @@ FactorGraph <- function(object,
   
   # Allow overwriting ...
   args <- list(...)
+  if(!is.null(args$cut)) cut <- args$cut
   if(!is.null(args$layout)) layout <- args$layout
   if(!is.null(args$edge.color)) edge.color <- args$edge.color
   
@@ -111,6 +113,7 @@ FactorGraph <- function(object,
                             labels =  labels_ex,
                             shape = shapes[FG_object$nodetype + 1],
                             vsize = shapeSizes[FG_object$nodetype + 1], 
+                            cut = cut,
                             ...)
     
     FG_object$qgraph <- qgraph_object
