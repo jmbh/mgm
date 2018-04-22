@@ -9,8 +9,8 @@ Wrapper function around qgraph() that draws factor graphs for (time-varying) MGM
 }
 \usage{
 FactorGraph(object, colors, labels, PairwiseAsEdge = TRUE, 
-            DoNotPlot = FALSE, FactorLabels = TRUE, 
-            shapes = c("circle", "square"), 
+            Nodewise = FALSE, DoNotPlot = FALSE, 
+            FactorLabels = TRUE, shapes = c("circle", "square"), 
             shapeSizes = c(8, 4), estpoint = NULL, ...)
 }
 
@@ -27,6 +27,9 @@ A character vector of node labels.
 }
   \item{PairwiseAsEdge}{
 If \code{TRUE}, pairwise interactions are not displayed as factors but as simple edges between nodes. Defaults to \code{PairwiseAsEdge = FALSE}.
+}
+  \item{Nodewise}{
+If \code{TRUE}, the estimates from the individual nodewise regressions are displayed as a directed edge towards the node on which the respective nodewise regression was performed. This is useful to identify model misspecification (e.g. moderation effects / interaction parameters with largely different values across nodewise regressions). Defaults to \code{Nodewise = FALSE}.
 }
   \item{DoNotPlot}{
 If \code{DoNotPlot = TRUE} no factorgraph is plotted. This way the computed factor graph can be obtained without plotting. Defaults to \code{DoNotPlot = FALSE}.

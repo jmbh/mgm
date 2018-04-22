@@ -7,7 +7,7 @@
 \description{Internal mgm functions.}
 
 \usage{
-DrawFG(object, PairwiseAsEdge = TRUE)
+DrawFG(object, PairwiseAsEdge = TRUE, Nodewise = FALSE)
 
 DrawFGtv(object, PairwiseAsEdge = TRUE,
          estpoint)

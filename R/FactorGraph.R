@@ -4,6 +4,7 @@ FactorGraph <- function(object,
                         colors, 
                         labels,
                         PairwiseAsEdge = TRUE, # box
+                        Nodewise = FALSE,
                         DoNotPlot = FALSE, 
                         FactorLabels = TRUE, 
                         shapes = c('circle', 'square'), 
@@ -41,6 +42,7 @@ FactorGraph <- function(object,
                     "order" = NULL,
                     "signs" = NULL,
                     "edgecolor" = NULL, 
+                    "nonzero" = NULL,
                     "qgraph" = NULL)
   
   # --------- Fill in defaults ---------
@@ -65,10 +67,10 @@ FactorGraph <- function(object,
     
     # Stationary
     FG <- DrawFG(object = object,
-                 PairwiseAsEdge = PairwiseAsEdge)
+                 PairwiseAsEdge = PairwiseAsEdge, 
+                 Nodewise = Nodewise)
     
   }
-  
   
   # Save into FG_object
   FG_object$graph <- FG$weightedgraph
@@ -76,6 +78,7 @@ FactorGraph <- function(object,
   FG_object$order <- FG$order
   FG_object$signs <- FG$signs
   FG_object$edgecolor <- edge.color <- FG$signcolor
+  FG_object$nonzero <- FG$nonzero
   
   
   
@@ -84,6 +87,27 @@ FactorGraph <- function(object,
   if(!is.null(args$cut)) cut <- args$cut
   if(!is.null(args$layout)) layout <- args$layout
   if(!is.null(args$edge.color)) edge.color <- args$edge.color
+  
+  
+  # browser()
+  
+  # Adapt edge labels for zero edges in Nodewise=TRUE
+  if(!is.null(args$edge.labels)) { # if specified, otherwise set to FALSE
+    if(is.logical(args$edge.labels)) { # if specified and logical, then adapt for nonzero or FALSE
+      if(args$edge.labels) {
+        edge.labels <- FG_object$graph
+        edge.labels[FG_object$nonzero == 2] <- 0
+        edge.labels <- round(edge.labels, 2)
+      } else {
+        edge.labels = FALSE
+      }
+    } else {
+      # if not logical, take the input
+      edge.labels <- args$edge.labels
+    }
+  } else {
+    edge.labels = FALSE
+  }
   
   
   # --------- Plot & Return ---------
@@ -110,10 +134,12 @@ FactorGraph <- function(object,
     qgraph_object <- qgraph(FG_object$graph,
                             color = colors[FG_object$order + 1],
                             edge.color = edge.color,
+                            lty = FG_object$nonzero,
                             layout = layout,
                             labels =  labels_ex,
                             shape = shapes[FG_object$nodetype + 1],
                             vsize = shapeSizes[FG_object$nodetype + 1], 
+                            edge.labels = edge.labels,
                             cut = cut,
                             ...)
     

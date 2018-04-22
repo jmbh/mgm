@@ -2,18 +2,22 @@
 # ---------- 1) Standard version for mgm() ----------
 
 DrawFG <- function(object,
-                   PairwiseAsEdge = TRUE)
+                   PairwiseAsEdge = TRUE, 
+                   Nodewise=FALSE)
   
   
 {
   
+  if(Nodewise) PairwiseAsEdge = FALSE # pairwise as edge not possible for nodewise=TRUE
   
   # Take from model object
   list_ind <- object$interactions$indicator
   list_weights <- object$interactions$weightsAgg
+  list_weightsUA <- object$interactions$weights
   list_signs <- object$interactions$signs
   
   p <- length(object$call$type)
+  type <- object$call$type
   
   # Create empty matrix of node entities
   n_factors <- length(list_ind)
@@ -29,62 +33,135 @@ DrawFG <- function(object,
   one_ind <- which(size_factors == 1)
   for(i in one_ind) list_ind[[i]] <- matrix(list_ind[[i]], nrow = 1)
   
-  # Create empty factor graph
-  G <- Gw <- matrix(0, p+pF, p+pF)
-  Gsign <- matrix(NA, p+pF, p+pF)
+  # ----- I: Nodewise = FALSE -----
   
-  counter <- p+1
+  # browser()
   
-  # loop over order of interactions
-  for(or in nz_ind) {
+  if(!Nodewise) {
     
-    # Loop over rows in fixed order
-    Nro <- nrow(list_ind[[or]])  #  now nrow() possible in case there is only 1 interaction, then error because no 2d object
+    # Create empty factor graph
+    Gw <- matrix(0, p+pF, p+pF)
+    Gsign <- matrix(NA, p+pF, p+pF)
     
-    if(length(Nro) > 0) {
+    counter <- p+1
+    
+    # loop over order of interactions
+    for(or in nz_ind) {
       
-      for(r in 1:Nro) {
+      # Loop over rows in fixed order
+      Nro <- nrow(list_ind[[or]])  #  now nrow() possible in case there is only 1 interaction, then error because no 2d object
+      
+      if(length(Nro) > 0) {
         
-        # Loop over k connections of k-order factor
-        for(or2 in 1:(or+1)) {
+        for(r in 1:Nro) {
           
-          G[counter, list_ind[[or]][r, or2]] <- G[list_ind[[or]][r, or2], counter] <- 1
-          Gw[counter, list_ind[[or]][r, or2]] <- Gw[list_ind[[or]][r, or2], counter] <- list_weights[[or]][[r]]
-          Gsign[counter, list_ind[[or]][r, or2]] <- Gsign[list_ind[[or]][r, or2], counter] <- list_signs[[or]][[r]]
+          # Loop over k connections of k-order factor
+          for(or2 in 1:(or+1)) {
+            
+            Gw[counter, list_ind[[or]][r, or2]] <- Gw[list_ind[[or]][r, or2], counter] <- list_weights[[or]][[r]]
+            Gsign[counter, list_ind[[or]][r, or2]] <- Gsign[list_ind[[or]][r, or2], counter] <- list_signs[[or]][[r]]
+            
+          }
+          
+          counter <- counter + 1
           
         }
         
-        counter <- counter + 1
+      }
+    }
+    
+    Gnonzero <- matrix(1, p+pF, p+pF) # just fill 1s in, so this is always defined and we can use the lty argument in FactorGraph.R
+    
+  } # end if: nodewise
+  
+  # ----- II: Nodewise = TRUE -----
+  
+  if(Nodewise) { 
+    
+    counter <- p+1
+    
+    # Create empty factor graph
+    Gw <- matrix(0, p+pF, p+pF)
+    Gsign <- Gnonzero <- matrix(NA, p+pF, p+pF)
+    
+    
+    # loop over order of interactions
+    for(or in nz_ind) {
+      
+      # Loop over rows in fixed order
+      Nro <- nrow(list_ind[[or]])  #  now nrow() possible in case there is only 1 interaction, then error because no 2d object
+      
+      if(length(Nro) > 0) {
+        
+        # Loop over interaction of given order "or"
+        for(r in 1:Nro) {
+          
+          # Loop over k connections of k-order factor
+          for(or2 in 1:(or+1)) {
+            
+            # Compute nodewise aggregate parameter (no aggregation for interactions between continuous variables)
+            nodewise_par <- list_weightsUA[[or]][[r]][[or2]]
+            nodewise_par_agg <- mean(abs(nodewise_par))
+            nonzero <- 1
+            if(nodewise_par_agg == 0) {
+              nonzero <- 0
+              nodewise_par_agg <- .1
+            }
+            
+            # Compute sign of nodewise parameter
+            if(all(type[list_ind[[or]][r, ]] == "g")) {
+              sign <- sign(nodewise_par)
+            } else if(all(type[list_ind[[or]][r, ]] == "g") & object$call$binarySign) {
+              
+              # TODO: sign computation for binary-binary interactions
+              
+            } else {
+              sign <- 0
+            }
+            
+            # Fill in directed graph
+            Gw[counter, list_ind[[or]][r, or2]] <- nodewise_par_agg
+            Gsign[counter, list_ind[[or]][r, or2]] <- sign
+            Gnonzero[counter, list_ind[[or]][r, or2]] <- nonzero
+            
+            # # Fill in directed graph
+            # Gw[counter, list_ind[[or]][r, or2]] <- Gw[list_ind[[or]][r, or2], counter] <- nodewise_par_agg
+            # Gsign[counter, list_ind[[or]][r, or2]] <- Gsign[list_ind[[or]][r, or2], counter] <- sign
+            
+          }
+          
+          counter <- counter + 1
+          
+        }
         
       }
-      
     }
-  }
+    
+    # Create lty-matrix to indicate 
+    Gnonzero[Gnonzero == 0] <- 2 # So i can use it as lty directly for plotting
+    
+  } # end if: nodewise
   
+  # ----- Computations for both I & II ------
   
-  # Define shape
-  nodetype <- c(rep(0, p), rep(1, pF))
-  
-  
-  # Caclulate order indicator
-  n_order <- length(size_factors)
-  l_oi <- list()
-  for(i in 1:n_order) l_oi[[i]] <- rep(i, size_factors[i])
-  
-  order_ind <- c(rep(0,p), unlist(l_oi))
   
   # Calculate Color Matrix
   Gcol <- matrix('darkgrey', p+pF, p+pF)
   Gcol[Gsign == 1] <- 'darkgreen'
   Gcol[Gsign == -1] <- 'red'
   
-
+  # Define shape
+  nodetype <- c(rep(0, p), rep(1, pF))
+  
+  # Caclulate order indicator
+  n_order <- length(size_factors)
+  l_oi <- list()
+  for(i in 1:n_order) l_oi[[i]] <- rep(i, size_factors[i])
+  order_ind <- c(rep(0,p), unlist(l_oi))
   
   
   # Simplify Factor Graph by dropping factors for pairwise (2way) interactions, and putting edges back in  
   if(PairwiseAsEdge) {
-    
-    # browser()
     
     # Edges
     Gw <- Gw[order_ind!=1, order_ind!=1]
@@ -96,16 +173,20 @@ DrawFG <- function(object,
     Gcol <- Gcol[order_ind!=1, order_ind!=1]
     Gcol[1:p, 1:p] <- object$pairwise$edgecolor
     
+    Gnonzero <- Gnonzero[order_ind!=1, order_ind!=1]
+
     nodetype <- nodetype[order_ind != 1]
     order_ind <- order_ind[order_ind != 1]
     
   }
   
+  # browser()
+  
   # Export
-  outlist <- list("graph" = G,
-                  'weightedgraph' = Gw,
+  outlist <- list('weightedgraph' = Gw,
                   'signs' = Gsign,
                   'signcolor' = Gcol,
+                  'nonzero' = Gnonzero,
                   'nodetype' = nodetype,
                   'order' = order_ind)
   
@@ -113,9 +194,6 @@ DrawFG <- function(object,
   return(outlist)
   
 } # eOF
-
-
-
 
 
 
@@ -177,7 +255,7 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   
   # ----------- Loop over Time points ----------
   
-
+  
   # Create empty matrix of node entities
   n_factors <- length(list_ind_all)
   # all factor list
