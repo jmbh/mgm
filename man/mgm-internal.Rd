@@ -10,15 +10,15 @@
 DrawFG(object, PairwiseAsEdge = TRUE, Nodewise = FALSE)
 
 DrawFGtv(object, PairwiseAsEdge = TRUE,
-         estpoint)
+         Nodewise = FALSE, estpoint)
 
 }
 
 \author{Jonas Haslbeck}
 
-\details{These are internal functions.
+\details{
 
-
+These are internal functions.
 
 }
 

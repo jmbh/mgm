@@ -16,6 +16,8 @@ importFrom("stats", "rnorm", "rpois")
 importFrom("graphics", "abline", "axis", "layout", "par", "plot.new",
              "plot.window", "points", "segments", "text")
 
+importFrom("gtools", "permutations")
+
 # Exported functions
 export(mgm)
 export(mvar)

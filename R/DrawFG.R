@@ -118,16 +118,10 @@ DrawFG <- function(object,
               
               if(or == 1) {
                 
-                # Find the binary variables
-                ind_cat <- which(type == 'c')
-                ind_binary <- rep(NA, length(ind_cat))
-                ind_binary <- as.logical(ind_binary)
-                if(length(ind_cat)>0) for(i in 1:length(ind_cat)) ind_binary[i] <- length(unique(data[, ind_cat[i]])) == 2
-                
                 # Define set of continous and binary variables: for interactions between these we can assign a sign
                 # Depends on binarySign
                 if(object$call$binarySign) {
-                  set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
+                  set_signdefined <- c(which(type == 'p'), which(type == 'g'), which(level == 2))
                 } else {
                   set_signdefined <- c(which(type == 'p'), which(type == 'g'))
                 }
@@ -274,6 +268,9 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   
   d <- object$call$k - 1
   p <- length(object$call$type)
+  type <- object$call$type
+  level <- object$call$level
+  
   
   no_estpoints <- length(object$call$estpoints)
   
@@ -427,16 +424,10 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
                 
                 if(or == 1) {
                   
-                  # Find the binary variables
-                  ind_cat <- which(type == 'c')
-                  ind_binary <- rep(NA, length(ind_cat))
-                  ind_binary <- as.logical(ind_binary)
-                  if(length(ind_cat)>0) for(i in 1:length(ind_cat)) ind_binary[i] <- length(unique(data[, ind_cat[i]])) == 2
-                  
                   # Define set of continous and binary variables: for interactions between these we can assign a sign
                   # Depends on binarySign
                   if(object$call$binarySign) {
-                    set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
+                    set_signdefined <- c(which(type == 'p'), which(type == 'g'), which(level == 2))
                   } else {
                     set_signdefined <- c(which(type == 'p'), which(type == 'g'))
                   }
