@@ -18,6 +18,7 @@ DrawFG <- function(object,
   
   p <- length(object$call$type)
   type <- object$call$type
+  level <- object$call$level
   
   # Create empty matrix of node entities
   n_factors <- length(list_ind)
@@ -34,8 +35,6 @@ DrawFG <- function(object,
   for(i in one_ind) list_ind[[i]] <- matrix(list_ind[[i]], nrow = 1)
   
   # ----- I: Nodewise = FALSE -----
-  
-  # browser()
   
   if(!Nodewise) {
     
@@ -74,6 +73,7 @@ DrawFG <- function(object,
     
   } # end if: nodewise
   
+  
   # ----- II: Nodewise = TRUE -----
   
   if(Nodewise) { 
@@ -84,6 +84,7 @@ DrawFG <- function(object,
     Gw <- matrix(0, p+pF, p+pF)
     Gsign <- Gnonzero <- matrix(NA, p+pF, p+pF)
     
+    # browser()
     
     # loop over order of interactions
     for(or in nz_ind) {
@@ -108,12 +109,59 @@ DrawFG <- function(object,
               nodewise_par_agg <- .1
             }
             
+            inter_r <- list_ind[[or]][r, ] # the indicator vector for interaction r of order or
+            
             # Compute sign of nodewise parameter
-            if(all(type[list_ind[[or]][r, ]] == "g")) {
+            if(all(type[inter_r] == "g")) {
               sign <- sign(nodewise_par)
-            } else if(all(type[list_ind[[or]][r, ]] == "g") & object$call$binarySign) {
+            } else if(!all(type[list_ind[[or]][r, ]] == "g") & object$call$binarySign & all(level[inter_r]<3)) {
               
-              # TODO: sign computation for binary-binary interactions
+              if(or == 1) {
+                
+                # Find the binary variables
+                ind_cat <- which(type == 'c')
+                ind_binary <- rep(NA, length(ind_cat))
+                ind_binary <- as.logical(ind_binary)
+                if(length(ind_cat)>0) for(i in 1:length(ind_cat)) ind_binary[i] <- length(unique(data[, ind_cat[i]])) == 2
+                
+                # Define set of continous and binary variables: for interactions between these we can assign a sign
+                # Depends on binarySign
+                if(object$call$binarySign) {
+                  set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
+                } else {
+                  set_signdefined <- c(which(type == 'p'), which(type == 'g'))
+                }
+                
+                # Create input for getSign()
+                
+                # indicator list
+                m_perm <- permutations(n = or+1, 
+                                       r = or+1, 
+                                       v = inter_r)
+                
+                l_w_ind <- list()
+                for(j in 1:nrow(m_perm)) l_w_ind[[j]] <- as.numeric(m_perm[j, ])
+                
+                # unaggregated parameter list
+                which(object$interactions$indicator[[1]] == c(1,2), arr.ind = TRUE)
+                ind_row <- apply(object$interactions$indicator[[or]], 1, function(x) all(x == inter_r))
+                
+                l_w_par <- list()
+                for(j in 1:nrow(m_perm)) l_w_par[[j]] <- object$interactions$weights[[or]][[which(ind_row == TRUE)]][[j]]
+                
+                # Call getSign()
+                sign_object <- getSign(l_w_ind = l_w_ind, 
+                                       l_w_par = l_w_par,
+                                       type = type,
+                                       set_signdefined = set_signdefined,
+                                       overparameterize = object$call$overparameterize,
+                                       ord = or)
+                
+                sign <- sign_object$voteSign
+                
+              } else {
+                sign <- 0 # not defined for k>2, see function in getSign.R
+              }
               
             } else {
               sign <- 0
@@ -123,11 +171,6 @@ DrawFG <- function(object,
             Gw[counter, list_ind[[or]][r, or2]] <- nodewise_par_agg
             Gsign[counter, list_ind[[or]][r, or2]] <- sign
             Gnonzero[counter, list_ind[[or]][r, or2]] <- nonzero
-            
-            # # Fill in directed graph
-            # Gw[counter, list_ind[[or]][r, or2]] <- Gw[list_ind[[or]][r, or2], counter] <- nodewise_par_agg
-            # Gsign[counter, list_ind[[or]][r, or2]] <- Gsign[list_ind[[or]][r, or2], counter] <- sign
-            
           }
           
           counter <- counter + 1
@@ -143,7 +186,6 @@ DrawFG <- function(object,
   } # end if: nodewise
   
   # ----- Computations for both I & II ------
-  
   
   # Calculate Color Matrix
   Gcol <- matrix('darkgrey', p+pF, p+pF)
@@ -174,7 +216,7 @@ DrawFG <- function(object,
     Gcol[1:p, 1:p] <- object$pairwise$edgecolor
     
     Gnonzero <- Gnonzero[order_ind!=1, order_ind!=1]
-
+    
     nodetype <- nodetype[order_ind != 1]
     order_ind <- order_ind[order_ind != 1]
     
@@ -211,6 +253,7 @@ DrawFG <- function(object,
 
 DrawFGtv <- function(object, # list of all interactions that are estimated nonzer at at least one estimation point
                      PairwiseAsEdge = TRUE, 
+                     Nodewise = FALSE,
                      estpoint # number of (initial) variables
                      
 )
@@ -218,11 +261,15 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   
 {
   
+  if(Nodewise) PairwiseAsEdge = FALSE # pairwise as edge not possible for nodewise=TRUE
+  
   
   list_ind <- object$interactions$indicator
   list_weights <- object$interactions$weightsAgg
+  list_weightsUA <- object$interactions$weights
   list_signs <- object$interactions$signs
   
+
   # ----------- Obtain set of all interactions that are present at least once ----------
   
   d <- object$call$k - 1
@@ -248,7 +295,8 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   
   # Select output of selected estpoint:
   list_ind <- object$tvmodels[[estpoint]]$interactions$indicator
-  list_weights <- object$tvmodels[[estpoint]]$interactions$weightsAgg
+  list_weightsAgg <- object$tvmodels[[estpoint]]$interactions$weightsAgg
+  list_weightsUA <- object$tvmodels[[estpoint]]$interactions$weights
   list_signs <- object$tvmodels[[estpoint]]$interactions$signs
   list_ind_all <- l_unique_indicators
   
@@ -274,48 +322,188 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   # Make all list entries matrices to avoid trouble below
   for(i in one_ind) list_ind[[i]] <- matrix(list_ind[[i]], nrow = 1)
   
-  # Create empty factor graph
-  Gw <- matrix(0, p+pF, p+pF)
-  Gsign <- matrix(NA, p+pF, p+pF)
-  
-  counter <- p+1
   
   
+  # ----- I: Nodewise = FALSE -----
   
-  # loop over order of interactions
-  for(or in nz_ind) {
-    # Loop over rows in fixed order
+  if(!Nodewise) {
     
-    Nro <- nrow(list_ind_all[[or]])  #  now nrow() possible in case there is only 1 interaction, then error because no 2d object
+    # Create empty factor graph
+    Gw <- matrix(0, p+pF, p+pF)
+    Gsign <- matrix(NA, p+pF, p+pF)
     
-    if(length(Nro) > 0) {
+    counter <- p+1
+    
+    # loop over order of interactions
+    for(or in nz_ind) {
+      # Loop over rows in fixed order
       
-      for(r in 1:Nro) {
+      Nro <- nrow(list_ind_all[[or]])  #  now nrow() possible in case there is only 1 interaction, then error because no 2d object
+      
+      if(length(Nro) > 0) {
         
-        # is the present row in list_ind_all contained in list_ind?
-        ind_where <- apply(list_ind[[or]], 1, function(x, want) isTRUE(all.equal(x, want)), list_ind_all[[or]][r, ])
-        
-        # if yes:
-        if(any(ind_where)) {
+        for(r in 1:Nro) {
           
-          # Loop over k connections of k-order factor
-          for(or2 in 1:(or+1)) {
+          # is the present row in list_ind_all contained in list_ind?
+          ind_where <- apply(list_ind[[or]], 1, function(x, want) isTRUE(all.equal(x, want)), list_ind_all[[or]][r, ])
+          
+          # if yes:
+          if(any(ind_where)) {
             
-            # browser()
-            Gw[counter, list_ind_all[[or]][r, or2]] <- Gw[list_ind_all[[or]][r, or2], counter] <- list_weights[[or]][[which(ind_where)]]
-            Gsign[counter, list_ind_all[[or]][r, or2]] <- Gsign[list_ind_all[[or]][r, or2], counter] <- list_signs[[or]][[which(ind_where)]]
-          }
+            # Loop over k connections of k-order factor
+            for(or2 in 1:(or+1)) {
+              
+              # browser()
+              Gw[counter, list_ind_all[[or]][r, or2]] <- Gw[list_ind_all[[or]][r, or2], counter] <- list_weightsAgg[[or]][[which(ind_where)]]
+              Gsign[counter, list_ind_all[[or]][r, or2]] <- Gsign[list_ind_all[[or]][r, or2], counter] <- list_signs[[or]][[which(ind_where)]]
+            }
+            
+          } # if no: just leave the zero
           
-        } # if no: just leave the zero
+          counter <- counter + 1
+          
+        }
         
-        counter <- counter + 1
+      } # end if: at least 1 row present?
+      
+    }
+    
+    Gnonzero <- matrix(1, p+pF, p+pF) # just fill 1s in, so this is always defined and we can use the lty argument in FactorGraph.R
+    
+  } # end if: Nodewise=TRUE?
+  
+  
+  
+  
+  # ----- II: Nodewise = TRUE -----
+  
+  if(Nodewise) { 
+    
+    counter <- p+1
+    
+    # Create empty factor graph
+    Gw <- matrix(0, p+pF, p+pF)
+    Gsign <- Gnonzero <- matrix(NA, p+pF, p+pF)
+    
+    # browser()
+    
+    # loop over order of interactions
+    for(or in nz_ind) {
+      
+      # Loop over rows in fixed order
+      Nro <- nrow(list_ind_all[[or]])  #  now nrow() possible in case there is only 1 interaction, then error because no 2d object
+      
+      if(length(Nro) > 0) {
+        
+        # Loop over interaction of given order "or"
+        for(r in 1:Nro) {
+          
+          # is the present row in list_ind_all contained in list_ind?
+          ind_where <- apply(list_ind[[or]], 1, function(x, want) isTRUE(all.equal(x, want)), list_ind_all[[or]][r, ])
+          
+          # if yes:
+          if(any(ind_where)) {
+            
+            # Loop over k connections of k-order factor
+            for(or2 in 1:(or+1)) {
+              
+              # browser()
+              
+              # Compute nodewise aggregate parameter (no aggregation for interactions between continuous variables)
+              nodewise_par <- list_weightsUA[[or]][[r]][[or2]]
+              nodewise_par_agg <- mean(abs(nodewise_par))
+              nonzero <- 1
+              if(nodewise_par_agg == 0) {
+                nonzero <- 0
+                nodewise_par_agg <- .1
+              }
+              
+              inter_r <- list_ind[[or]][which(ind_where), ] # the indicator vector for interaction r of order or
+              
+              # Compute sign of nodewise parameter
+              if(all(type[inter_r] == "g")) {
+                sign <- sign(nodewise_par)
+              } else if(!all(type[list_ind[[or]][r, ]] == "g") & object$call$binarySign & all(level[inter_r]<3)) {
+                
+                if(or == 1) {
+                  
+                  # Find the binary variables
+                  ind_cat <- which(type == 'c')
+                  ind_binary <- rep(NA, length(ind_cat))
+                  ind_binary <- as.logical(ind_binary)
+                  if(length(ind_cat)>0) for(i in 1:length(ind_cat)) ind_binary[i] <- length(unique(data[, ind_cat[i]])) == 2
+                  
+                  # Define set of continous and binary variables: for interactions between these we can assign a sign
+                  # Depends on binarySign
+                  if(object$call$binarySign) {
+                    set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
+                  } else {
+                    set_signdefined <- c(which(type == 'p'), which(type == 'g'))
+                  }
+                  
+                  # Create input for getSign()
+                  # indicator list
+                  m_perm <- permutations(n = or+1, 
+                                         r = or+1, 
+                                         v = inter_r)
+                  
+                  l_w_ind <- list()
+                  for(j in 1:nrow(m_perm)) l_w_ind[[j]] <- as.numeric(m_perm[j, ])
+                  
+                  # unaggregated parameter list
+                  which(list_ind[[1]] == c(1,2), arr.ind = TRUE)
+                  ind_row <- apply(list_ind[[or]], 1, function(x) all(x == inter_r))
+                  
+                  l_w_par <- list()
+                  for(j in 1:nrow(m_perm)) l_w_par[[j]] <- list_weightsUA[[or]][[which(ind_row == TRUE)]][[j]]
+                  
+                  # Call getSign()
+                  sign_object <- getSign(l_w_ind = l_w_ind, 
+                                         l_w_par = l_w_par,
+                                         type = type,
+                                         set_signdefined = set_signdefined,
+                                         overparameterize = object$call$overparameterize,
+                                         ord = or)
+                  
+                  sign <- sign_object$voteSign
+                  
+                } else {
+                  sign <- 0 # not defined for k>2, see function in getSign.R
+                }
+                
+              } else {
+                sign <- 0
+              }
+              
+              # Fill in directed graph
+              Gw[counter, list_ind[[or]][r, or2]] <- nodewise_par_agg
+              Gsign[counter, list_ind[[or]][r, or2]] <- sign
+              Gnonzero[counter, list_ind[[or]][r, or2]] <- nonzero
+            }
+            
+            counter <- counter + 1
+            
+          } # end if: this interaction contained in given estimation point?
+          
+        } 
         
       }
-      
-    } # end if: at least 1 row present?
+    }
     
-  }
+    # Create lty-matrix to indicate 
+    Gnonzero[Gnonzero == 0] <- 2 # So i can use it as lty directly for plotting
+    
+  } # end if: nodewise
   
+  
+  
+  # ----- Computations for both I & II ------
+  
+  
+  # Calculate Color Matrix
+  Gcol <- matrix('darkgrey', p+pF, p+pF)
+  Gcol[Gsign == 1] <- 'darkgreen'
+  Gcol[Gsign == -1] <- 'red'
   
   # Define shape
   nodetype <- c(rep(0, p), rep(1, pF))
@@ -324,15 +512,8 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   n_order <- length(size_factors)
   l_oi <- list()
   for(i in 1:n_order) l_oi[[i]] <- rep(i, size_factors[i])
-  
   order_ind <- c(rep(0,p), unlist(l_oi))
   
-  # Calculate Color Matrix
-  Gcol <- matrix('darkgrey', p+pF, p+pF)
-  Gcol[Gsign == 1] <- 'darkgreen'
-  Gcol[Gsign == -1] <- 'red'
-  
-  # browser()
   
   # Simplify Factor Graph by dropping factors for pairwise (2way) interactions, and putting edges back in  
   if(PairwiseAsEdge) {

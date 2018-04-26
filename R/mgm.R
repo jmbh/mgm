@@ -838,13 +838,15 @@ mgm <- function(data,         # n x p data matrix
         
         if(sum(!(pair %in% set_signdefined)) == 0) { # check of all involved varibales are g, p, or binary
           
-          # computes combined sign (if defined) over k terms for same interaction
-          int_sign <- getSign(l_w_ind, 
-                              l_w_par,
-                              type,
-                              set_signdefined,
-                              overparameterize,
-                              ord)
+          # Computes combined sign (if defined) over k terms for same interaction
+          sign_object <- getSign(l_w_ind, 
+                                 l_w_par,
+                                 type,
+                                 set_signdefined,
+                                 overparameterize,
+                                 ord)
+          
+          int_sign <- sign_object$voteSign
           
           
         } else {

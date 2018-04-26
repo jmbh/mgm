@@ -213,7 +213,7 @@ tvmgm <- function(data,         # n x p data matrix
   # Create Storage
   a_pairwise_wadj <- a_pairwise_signs <- a_pairwise_edgecolor <- array(dim = c(p, p, no_estpoints))
   # a_factorgraph_graph <- a_factorgraph_signs <- a_factorgraph_edgecolor <-array(dim = c(col_factorgraph, col_factorgraph, no_estpoints))
-  l_factorgraph_order <- l_factorgraph_nodetype <- l_interactions_indicator <- l_interactions_weights <- l_interactions_signs <- l_intercepts <- list()
+  l_factorgraph_order <- l_factorgraph_nodetype <- l_interactions_indicator <- l_interactions_weights <- l_interactions_weightsAgg <- l_interactions_signs <- l_intercepts <- list()
 
   # Loop over timepoints and restructure
     for(i in 1:no_estpoints) {
@@ -223,16 +223,10 @@ tvmgm <- function(data,         # n x p data matrix
       a_pairwise_signs[,,i] <- tvmgmobj$tvmodels[[i]]$pairwise$signs
       a_pairwise_edgecolor[,,i] <- tvmgmobj$tvmodels[[i]]$pairwise$edgecolor
 
-      # # Factorgraph
-      # a_factorgraph_graph[,,i] <- l_FG[[i]]$weightedgraph # Fill in from extended Factor graph (see above, DrawFGtv())
-      # a_factorgraph_signs[,,i] <- l_FG[[i]]$signs
-      # a_factorgraph_edgecolor[,,i] <- l_FG[[i]]$signcolor
-      # l_factorgraph_order[[i]] <- l_FG[[i]]$order
-      # l_factorgraph_nodetype[[i]] <- l_FG[[i]]$nodetype
-
       # Factorgraph Raw
       l_interactions_indicator[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$indicator
-      l_interactions_weights[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$weightsAgg
+      l_interactions_weightsAgg[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$weightsAgg
+      l_interactions_weights[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$weights
       l_interactions_signs[[i]] <- tvmgmobj$tvmodels[[i]]$interactions$signs
 
       # Intercepts
@@ -242,21 +236,13 @@ tvmgm <- function(data,         # n x p data matrix
 
 
   # Fill into output list
-
   tvmgmobj$pairwise$wadj <- a_pairwise_wadj
   tvmgmobj$pairwise$signs <- a_pairwise_signs
   tvmgmobj$pairwise$edgecolor <- a_pairwise_edgecolor
-
-  # tvmgmobj$factorgraph$graph <- a_factorgraph_graph
-  # tvmgmobj$factorgraph$signs <- a_factorgraph_signs
-  # tvmgmobj$factorgraph$edgecolor <- a_factorgraph_edgecolor
-  # tvmgmobj$factorgraph$order <- l_factorgraph_order
-  # tvmgmobj$factorgraph$nodetype <- l_factorgraph_nodetype
-
   tvmgmobj$interactions$indicator <- l_interactions_indicator
-  tvmgmobj$interactions$weightsAgg <- l_interactions_weights
+  tvmgmobj$interactions$weights <- l_interactions_weights
+  tvmgmobj$interactions$weightsAgg <- l_interactions_weightsAgg
   tvmgmobj$interactions$signs <- l_interactions_signs
-
   tvmgmobj$intercepts <- l_intercepts
   
   

@@ -14,8 +14,6 @@ FactorGraph <- function(object,
   
 {
   
-  
-  
   # --------- Compute Aux Variables ---------
   
   p <- length(object$call$level)
@@ -61,6 +59,7 @@ FactorGraph <- function(object,
     # Time-varying
     FG <- DrawFGtv(object = object,
                    PairwiseAsEdge = PairwiseAsEdge, 
+                   Nodewise = Nodewise,
                    estpoint = estpoint)
     
   } else {
@@ -116,20 +115,27 @@ FactorGraph <- function(object,
     
     # ----- Compute stuff necessary for plotting -----
     
+    # browser()
+    
     # Create labels for factors (label = order of factor/interaction)
     ifelse(PairwiseAsEdge, ek <- 1, ek <- 0)
     if(FactorLabels) {
       tb <- table(FG_object$order)[-1]
-      l_lf <- list()
-      for(k in 1:length(tb)) l_lf[[k]] <- rep(k+1+ek, tb[k])
-      labels_ex <- c(labels, unlist(l_lf))
+      
+      if(length(tb)==0) { # For the case PairwiseAsEdge=FALSE and no 3-way interactions
+        FL <- NULL
+      } else {
+        l_lf <- list()
+        for(k in 1:length(tb)) l_lf[[k]] <- rep(k+1+ek, tb[k])
+        FL <- unlist(l_lf)
+      }
+      
+      labels_ex <- c(labels, FL)
     } else {
       labels_ex <- c(labels, rep('', sum(FG_object$nodetype)))
     }
     
     # ----- Call qgraph -----
-    
-    # browser()
     
     qgraph_object <- qgraph(FG_object$graph,
                             color = colors[FG_object$order + 1],
