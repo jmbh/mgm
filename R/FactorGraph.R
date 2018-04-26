@@ -16,6 +16,8 @@ FactorGraph <- function(object,
   
   # --------- Compute Aux Variables ---------
   
+  if(Nodewise) PairwiseAsEdge <- FALSE
+  
   p <- length(object$call$level)
   n_estpoints <- length(object$call$estpoints)
   
@@ -114,8 +116,6 @@ FactorGraph <- function(object,
   if(!DoNotPlot){
     
     # ----- Compute stuff necessary for plotting -----
-    
-    # browser()
     
     # Create labels for factors (label = order of factor/interaction)
     ifelse(PairwiseAsEdge, ek <- 1, ek <- 0)
