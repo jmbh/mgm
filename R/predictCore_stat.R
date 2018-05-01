@@ -37,7 +37,7 @@ predictCore_stat <- function(object,
   for(sc2 in which(type=='c')) data_df[,sc2] <- as.factor(data_df[,sc2]) # categoricals as factors
   
   nodeModels <- object$nodemodels
-  
+  d <- object$call$k
   
   # ----- A.1) mgm -----
   
@@ -47,28 +47,29 @@ predictCore_stat <- function(object,
       
       # -- Define model matrix --
       
-      if(call$overparameterize) {
+      # ----- Construct Design Matrix -----
+      
+      X_standard <- X <- ModelMatrix_standard(data = data,
+                                              d = d, 
+                                              v = v, 
+                                              moderators = object$call$moderators)
+      
+      if(object$call$overparameterize) {
         
-        # Construct over-parameterized design matrix
-        X <- ModelMatrix(data = data[, -v],
-                         type = type[-v],
-                         level = level[-v],
-                         labels = colnames(data)[-v],
-                         d = k - 1)
+        X_over <- ModelMatrix(data = data, # fix that input, that's stupid
+                              type = type,
+                              level = level,
+                              labels = colnames(data),
+                              d = d, 
+                              moderators = object$call$moderators,
+                              v = v)
         
-        y <- as.numeric(data[, v])
+        X <- X_over
         
-        
-      } else {
-        
-        if (call$k == 2){ form <- as.formula(paste(colnames(data)[v],"~ (.)"))
-        } else { form <- as.formula(paste(colnames(data)[v],"~ (.)^", call$k - 1)) }
-        
-        data_df <- as.data.frame(data_df)
-        X <- model.matrix(form, data=data_df)[, -1] # delete intercept (added by glmnet later)
-        y <- as.numeric(data[, v])
-        
-      }
+      } # end if: overparameterize?
+      
+      data_df <- as.data.frame(data_df)
+      y <- as.numeric(data[, v])
       
       
       if(type[v]=='c') {

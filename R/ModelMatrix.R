@@ -1,12 +1,11 @@
-
-
+# jonashaslbeck@gmail.com; May 2018
 
 
 ModelMatrix <- function(data,  # matrix
                         type,  # type vector (I think not needed, level should be sufficient)
                         level, # level vector
                         labels,
-                        d      , # largest neighborhood size
+                        d, # largest neighborhood size
                         moderators = NULL,
                         v,
                         allCats = FALSE # if true, the model matrix does not use all unique categories, but the categories specified in level, this exists because I use this function within the sampling function
@@ -14,6 +13,13 @@ ModelMatrix <- function(data,  # matrix
   
   
 {
+  
+  
+  # Delete variable v
+  data <- data[, -v]
+  type <- type[-v]
+  level <- level[-v]
+  labels <- labels[-v]
   
   
   # ---------- Calculate Auxilliary variables ----------

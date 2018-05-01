@@ -224,9 +224,7 @@ predict.mgm <- function(object, # One of the four mgm objects
     return(nCC)
   }
   
-  
-  
-  
+
   # Create list for loss functions
   
   # Continuous

@@ -2,17 +2,9 @@
 \title{Internal mgm functions}
 \alias{DrawFG, DrawFGtv, FlagSymmetric, autism_data,
        bwSelPredict, calcLL, calcNeighbors, glmnetRequirements,
-       lagData, nodeEst}
+       lagData, nodeEst, ModelMatrix, ModelMatrix_standard}
 
 \description{Internal mgm functions.}
-
-\usage{
-DrawFG(object, PairwiseAsEdge = TRUE, Nodewise = FALSE)
-
-DrawFGtv(object, PairwiseAsEdge = TRUE,
-         Nodewise = FALSE, estpoint)
-
-}
 
 \author{Jonas Haslbeck}
 

@@ -30,10 +30,11 @@ mgm <- function(data,         # n x p data matrix
                 ...
 )
 
-
 {
   
-  # -------------------- Input Checks -------------------
+  # --------------------------------------------------------------------------------------------
+  # -------------------- Input Checks ----------------------------------------------------------
+  # --------------------------------------------------------------------------------------------
   
   # ----- Compute Auxilliary Variables I -----
   
@@ -100,7 +101,12 @@ mgm <- function(data,         # n x p data matrix
   if(missing(data)) stop('No data provided.')
   if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
   if(any(is.na(data))) stop('No missing values permitted.')
-  if(!all(moderators %in% 1:p)) stop("Specified moderators are larger than number of variables in the data.")
+  
+  # Checks on moderators
+  if(!is.null(moderators)) {
+    if(!is.integer(moderators)) stop("Moderators have to be specified as integers mapping to the column numbers of variables in the data set.")
+    if(!all(moderators %in% 1:p)) stop("Specified moderators are larger than number of variables in the data.")
+  }
   
   # ----- Compute Auxilliary Variables II -----
   
@@ -184,6 +190,12 @@ mgm <- function(data,         # n x p data matrix
     }
   }
   
+  
+  # --------------------------------------------------------------------------------------------
+  # -------------------- Create Output Objects -------------------------------------------------
+  # --------------------------------------------------------------------------------------------
+  
+  
   # ----- Storage: Create empty mgm object -----
   
   mgmobj <- list('call' = NULL,
@@ -241,7 +253,10 @@ mgm <- function(data,         # n x p data matrix
   for(i in which(type=='c')) data[, i] <- as.factor(data[, i])
   
   
-  # -------------------- Estimation -------------------
+  # --------------------------------------------------------------------------------------------
+  # -------------------- Nodewise Estimation ---------------------------------------------------
+  # --------------------------------------------------------------------------------------------
+  
   
   # Progress bar
   if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=p, initial=0, char="-", style = 3)
@@ -254,109 +269,30 @@ mgm <- function(data,         # n x p data matrix
     
     # ----- Construct Design Matrix -----
     
-    # Case I: No Moderation
+    X_standard <- X <- ModelMatrix_standard(data = data,
+                                            d = d, 
+                                            v = v, 
+                                            moderators = moderators)
     
-    if(is.null(moderators)) {
-      
-      # Case I.a: Standard parameterization
-      if(d > (p - 1)) {
-        stop("Order of interactions cannot be larger than the number of predictors.")
-      } else if (d == 1){ form <- as.formula(paste(colnames(data)[v],"~ (.)"))
-      } else { form <- as.formula(paste(colnames(data)[v],"~ (.)^",d)) }
-      
-      # Construct standard design matrix (to get number of parameters for tau threshold)
-      X_standard <- model.matrix(form, data = data)[, -1] # delete intercept (added by glmnet later)
-      npar_standard[v] <- ncol(X_standard)
-      
-      # Case I.b: Overparameterization (no intercept, all categories in design matrix)
-      if(overparameterize) {
-        
-        # Construct over-parameterized design matrix
-        X_over <- ModelMatrix(data = data[, -v],
-                              type = type[-v],
-                              level = level[-v],
-                              labels = colnames(data)[-v],
-                              d = d, 
-                              moderators = NULL,
-                              v = v)
-        
-        X <- X_over
-      } else {
-        X <- X_standard
-      }
-      
-      
-      # Case II: Moderation
-    } else {
-      
-      # Case II.a: Standard parameterization
-      
-      # Simple predictors
-      pred_simple <- paste(colnames(data)[-v], collapse = " + ")
-      
-      # Moderation terms
-      l_mods <- list()
-      n_mods <- length(moderators)
-      n_l_mods <- 0
-      
-      
-      if(v %in% moderators) {
-        other_comb_pairw <- t(combn((1:p)[-v], 2))
-        l_mods[[1]] <- paste0("V", other_comb_pairw[, 1], ".",  " * ", "V", other_comb_pairw[, 2], ".", collapse = " + ")
-      } else {      
-        for(i in 1:n_mods) {  # loop over moderators
-          l_mods[[i]] <- paste0(colnames(data)[-c(v, moderators[i])], "*", "V", moderators[i], ".", collapse = " + ")
-          n_l_mods <- n_l_mods + 1
-        }
-      } # end if: v = moderator?
-      
-      if(n_l_mods > 1) for(i in 1:(n_l_mods - 1)) l_mods[[i]] <- paste0(l_mods[[i]], " + ") # add plus between terms but not in the end
-      v_mods <- do.call(paste0, l_mods)
-      
-      # Stitch together model formula
-      if(length(v_mods) == 0) { # if there is no moderation for that variable (the case if v is the only moderator)
-        form <- paste(colnames(data)[v], "~",
-                      pred_simple)
-        
-      } else {
-        form <- paste(colnames(data)[v], "~",
-                      pred_simple,
-                      " + ",
-                      v_mods)
-      }
-      
-      form <- as.formula(form)
-      
-      # Create design matrix
-      X_standard <- model.matrix(form, data = data)[, -1] # delete intercept (added by glmnet later)
-      npar_standard[v] <- ncol(X_standard)
-      
-      # Case II.b: Overparameterization (all category-configuration in design matrix)
-      
-      if(overparameterize) {
-        
-        X_over <- ModelMatrix(data = data[, -v],
-                              type = type[-v],
-                              level = level[-v],
-                              labels = colnames(data)[-v],
-                              d = d,
-                              moderators = moderators, 
-                              v = v)
-        
-        X <- X_over
-        
-      } else {
-        
-        X <- X_standard
-        
-        
-      } # end if: overparameterize
-      
-      
-    } # end if: Moderation
+    npar_standard[v] <- ncol(X_standard)
     
     
-    ## Scale Gaussian variables after computing design matrix
+    if(overparameterize) {
+      
+      X_over <- ModelMatrix(data = data, # fix that input, that's stupid
+                            type = type,
+                            level = level,
+                            labels = colnames(data),
+                            d = d, 
+                            moderators = moderators,
+                            v = v)
+      
+      X <- X_over
+      
+    } # end if: overparameterize?
+    
+
+    ## Scale Gaussian variables AFTER computing design matrix
     # Compute vector that tell us which interactions are purely consisting of continuous variables?
     if(scale) {
       if(any(type == "g")) {
@@ -586,7 +522,7 @@ mgm <- function(data,         # n x p data matrix
     
     # Make sure all entries of "v_Pars_ind" are matrices
     for(j in 1:d) v_Pars_ind[[j]] <- matrix(as.matrix(v_Pars_ind[[j]]), ncol=j)
-
+    
     no_interactions <- unlist(lapply(v_Pars_ind, nrow))
     
     # B) Parameter Object: Same structure as (A), but now with a list entry for each matrix row
@@ -636,8 +572,8 @@ mgm <- function(data,         # n x p data matrix
             # indicates location of parameters for given interaction
             
             for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'), int_names_ord,
-                                                                               int_names_ord,
-                                                                               fixed = TRUE) # not only single chars have to be contained, but exact order)
+                                                           int_names_ord,
+                                                           fixed = TRUE) # not only single chars have to be contained, but exact order)
             select_int <- rowSums(find_int_dummy) == ord # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
             
             # fill in paramters + rownames into list
@@ -689,8 +625,8 @@ mgm <- function(data,         # n x p data matrix
             
             # indicates location of parameters for given interaction
             for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'),
-                                                                               int_names_ord,
-                                                                               fixed = TRUE) # not only single chars have to be contained, but exact order
+                                                           int_names_ord,
+                                                           fixed = TRUE) # not only single chars have to be contained, but exact order
             select_int <- rowSums(find_int_dummy) == (ord) # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
             
             # fill in paramters + rownames into list
@@ -716,6 +652,10 @@ mgm <- function(data,         # n x p data matrix
   } # end for: v
   
   
+  
+  # --------------------------------------------------------------------------------------------
+  # -------------------- Postprocess Regression Estimates into (Factor) Graph Structure --------
+  # --------------------------------------------------------------------------------------------
   
   
   # ----- Reduce to 1 parameter per Factor, apply AND rule and get sign -----
@@ -796,7 +736,7 @@ mgm <- function(data,         # n x p data matrix
   }
   
   
-
+  
   # Loop over: order of interactions (ord = 1 = pairwise)
   for(ord in 1:d) {
     
@@ -949,7 +889,10 @@ mgm <- function(data,         # n x p data matrix
   mgmobj$pairwise$edgecolor <- sign_colors
   
   
-  # -------------------- Output -------------------
+  # --------------------------------------------------------------------------------------------
+  # -------------------- Output ----------------------------------------------------------------
+  # --------------------------------------------------------------------------------------------
+  
   
   # Save Node Models and extracted raw factors?
   if(!saveModels) {
