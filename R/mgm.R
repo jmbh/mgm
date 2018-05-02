@@ -104,7 +104,7 @@ mgm <- function(data,         # n x p data matrix
   
   # Checks on moderators
   if(!is.null(moderators)) {
-    if(!is.integer(moderators)) stop("Moderators have to be specified as integers mapping to the column numbers of variables in the data set.")
+    if(!all(moderators == round(moderators))) stop("Moderators have to be specified as integers mapping to the column numbers of variables in the data set.")
     if(!all(moderators %in% 1:p)) stop("Specified moderators are larger than number of variables in the data.")
   }
   
