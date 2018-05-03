@@ -201,7 +201,10 @@ mgm <- function(data,         # n x p data matrix
   mgmobj <- list('call' = NULL,
                  'pairwise' = list('wadj' = NULL,
                                    'signs' = NULL,
-                                   'edgecolor'= NULL),
+                                   'edgecolor'= NULL, 
+                                   "wadjNodewise" = NULL,
+                                   "signsNodewise" = NULL,
+                                   "edgecolorNodewise" = NULL),
                  'interactions' = list('indicator' = NULL,
                                        'weightsAgg' = NULL,
                                        'weights' = NULL,
@@ -726,7 +729,7 @@ mgm <- function(data,         # n x p data matrix
   l_sign_par <- list() # saves sign (if defined) of all unique interactions
   for(ord in 1:d) l_sign_par[[ord]] <- rep(NA, n_terms_d[ord])
   
-  l_factor_par_full <- l_factor_par # for un-aggregated parameter esimates
+  l_factor_par_full <- l_factor_par_AggNodewise <- l_factor_par_SignNodewise <- l_factor_par # for un-aggregated parameter esimates
   
   # Define set of continous and binary variables: for interactions between these we can assign a sign
   # Depends on binarySign
@@ -765,8 +768,14 @@ mgm <- function(data,         # n x p data matrix
         l_w_par[[j]] <- set_par_ord[[ind_inter[j]]]
       }
       
+      # if(i == 2) browser()
+      
       # Mapping: Regression parameters -> Edge parameter (mean of absolute values of parameters)
       m_par_seq <- unlist(lapply(l_w_par, function(x) mean(abs(unlist(x)))))
+      m_sign_seq <- unlist(lapply(l_w_par, function(x) {
+        x <- unlist(x)
+        if(length(x)>1) 0 else sign(x)
+      } ))
       
       # Apply AND / OR rule
       if(ruleReg == 'AND') parcompr <- mean(m_par_seq) * !(0 %in% m_par_seq)
@@ -775,7 +784,7 @@ mgm <- function(data,         # n x p data matrix
       # Compute Sign if defined
       if(mean(m_par_seq) != 0) { # only relevant for nonzero parameters
         
-        pair <- l_w_ind[[1]] # order doesn't matter, could take any but first entry is always filled independent of "ord", so first
+        pair <- l_w_ind[[1]] # order doesn't matter, could take any but the first entry is always filled independent of "ord", so first
         
         if(sum(!(pair %in% set_signdefined)) == 0) { # check of all involved varibales are g, p, or binary
           
@@ -804,25 +813,26 @@ mgm <- function(data,         # n x p data matrix
       l_factors[[ord]][i, ] <- l_w_ind[[1]] # just choose first one, doesn't matter
       
       # Save edge weight
+      
+      for(i_ord in 1:(ord+1)) {
+        l_factor_par_AggNodewise[[ord]][[i]][[i_ord]] <- m_par_seq[i_ord]
+        l_factor_par_SignNodewise[[ord]][[i]][[i_ord]] <- m_sign_seq[i_ord]
+      }
+      
       l_factor_par[[ord]][[i]] <- parcompr
       l_factor_par_full[[ord]][[i]] <- l_w_par
-      
-      
-      
+
     } # end for: i (unique interactions)
     
   } # end for: ord
   
   
+  # browser()
   
   
-  
-  
-  
-  # ----- Compute (weighted) adjacency matrix -----
+  # -------------------- Compute Weighted Adjacency matrix (pairwise Interactions) -------------------
   
   # We copy the objects from above, and delete rows in l_factors if l_factor_par is zero
-  
   l_factors_nz <- l_factors
   l_factor_par_nz <- l_factor_par
   l_factor_par_full_nz <- l_factor_par_full
@@ -864,8 +874,10 @@ mgm <- function(data,         # n x p data matrix
   mgmobj$interactions$weights <- l_factor_par_full_nz
   mgmobj$interactions$signs <- l_sign_par_nz
   
+  # browser()
   
-  # -------------------- Compute Weighted Adjacency matrix (pairwise Interactions) -------------------
+
+  # ---------- Fill into p x p Matrix ---------
   
   m_signs <- matrix(NA, p, p)
   wadj <-  matrix(0, p, p)
@@ -889,7 +901,37 @@ mgm <- function(data,         # n x p data matrix
   mgmobj$pairwise$signs <- m_signs
   mgmobj$pairwise$edgecolor <- sign_colors
   
+  # browser()
   
+  # ---------- Fill into p x p Nodewise Matrix ---------
+
+  unique_set_int_ord
+  
+  m_wadj <-  m_signs <- matrix(0, p, p)
+  
+  n_edges <- nrow(unique_set_int_ord)
+  ED <- unique_set_int_ord
+  
+    for(i in 1:n_edges) {
+      m_wadj[ED[i,1], ED[i,2]] <- l_factor_par_AggNodewise[[1]][[i]][[2]]
+      m_wadj[ED[i,2], ED[i,1]] <- l_factor_par_AggNodewise[[1]][[i]][[1]]
+      
+      m_signs[ED[i,1], ED[i,2]] <- l_factor_par_SignNodewise[[1]][[i]][[2]]
+      m_signs[ED[i,2], ED[i,1]] <- l_factor_par_SignNodewise[[1]][[i]][[1]]
+    }
+  
+  
+  # Create sign color matrix
+  sign_colors <- matrix('darkgrey', p, p)
+  sign_colors[m_signs == 1] <- 'darkgreen'
+  sign_colors[m_signs == -1] <- 'red'
+  
+  # Save in output
+  mgmobj$pairwise$wadjNodewise <- m_wadj
+  mgmobj$pairwise$signsNodewise <- m_signs
+  mgmobj$pairwise$edgecolorNodewise <- sign_colors
+  
+
   # --------------------------------------------------------------------------------------------
   # -------------------- Output ----------------------------------------------------------------
   # --------------------------------------------------------------------------------------------
