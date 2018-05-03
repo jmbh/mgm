@@ -270,6 +270,7 @@ mgm <- function(data,         # n x p data matrix
     # ----- Construct Design Matrix -----
     
     X_standard <- X <- ModelMatrix_standard(data = data,
+                                            type = type,
                                             d = d, 
                                             v = v, 
                                             moderators = moderators)

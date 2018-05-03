@@ -37,7 +37,7 @@ predictCore_stat <- function(object,
   for(sc2 in which(type=='c')) data_df[,sc2] <- as.factor(data_df[,sc2]) # categoricals as factors
   
   nodeModels <- object$nodemodels
-  d <- object$call$k
+  d <- object$call$k - 1
   
   # ----- A.1) mgm -----
   
@@ -50,6 +50,7 @@ predictCore_stat <- function(object,
       # ----- Construct Design Matrix -----
       
       X_standard <- X <- ModelMatrix_standard(data = data,
+                                              type = type,
                                               d = d, 
                                               v = v, 
                                               moderators = object$call$moderators)

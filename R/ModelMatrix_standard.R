@@ -1,6 +1,7 @@
 # jonashaslbeck@gmail.com; May 2018
 
 ModelMatrix_standard <- function(data, 
+                                 type,
                                  d, # maximum neighborhood size in model = k-1
                                  v, # node on which current nodewise regression is performed
                                  moderators # moderators, if specified
@@ -17,17 +18,18 @@ ModelMatrix_standard <- function(data,
   # -------- Case I: No Moderation --------
   
   p <- ncol(data)
+  for(i in 1:p) if(type[i] == "c") data[, i] <- as.factor(data[, i])
   
   if(is.null(moderators)) {
     
     if(d > (p - 1)) {
       stop("Order of interactions cannot be larger than the number of predictors.")
     } else if (d == 1){ form <- as.formula(paste(colnames(data)[v],"~ (.)"))
-    } else { form <- as.formula(paste(colnames(data)[v],"~ (.)^",d)) }
+    } else { form <- as.formula(paste(colnames(data)[v],"~ (.)^", d)) }
     
     # Construct standard design matrix (to get number of parameters for tau threshold)
     X_standard <- model.matrix(form, data = data)[, -1] # delete intercept (added by glmnet later)
-    
+
   } else {
     
     
