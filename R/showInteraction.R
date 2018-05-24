@@ -48,10 +48,9 @@ showInteraction <- function(object,
                     "sign" = NULL,
                     "parameters" = list())
     
-    # browser()
-    
-    # Get row of interaction
-    int_row <- which(apply(object$interactions$indicator[[n_order-1]], 1, function(x) all(x %in% int))) # get row of interaction in "int" in interaction list
+  
+    # Get row of specified interaction
+    int_row <- which(apply(matrix(object$interactions$indicator[[n_order-1]], ncol=n_order), 1, function(x) all(x %in% int))) # get row of interaction in "int" in interaction list
     
     outlist$edgeweight <- object$interactions$weightsAgg[[n_order-1]][[int_row]]
     outlist$sign <- object$interactions$sign[[n_order-1]][int_row]
@@ -63,10 +62,7 @@ showInteraction <- function(object,
       
     } else {
       
-      
       # ------- Collect & label parameter estimates -------
-      
-      int_row <- which(apply(object$interactions$indicator[[n_order-1]], 1, function(x) all(x %in% int))) # get row of interaction in "int" in interaction list
       
       if(length(int_row) == 0) stop("The specified interaction has been estimated to be absent.")
       
