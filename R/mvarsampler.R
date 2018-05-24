@@ -72,7 +72,13 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
       if(type[v] != 'c') {
 
         # Get design matrix
-        design_mat <- ModelMatrix(data, type, level, labels, d=1, allCats=TRUE)
+        design_mat <- ModelMatrix(data, 
+                                  type, 
+                                  level, 
+                                  labels, 
+                                  d = 1, 
+                                  v = v,
+                                  allCats = TRUE)
 
         potential_lag <- list()
         for(lag in 1:n_lags) {
@@ -101,7 +107,13 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
       if(type[v] == 'c') {
 
         # Get design matrix
-        design_mat <- ModelMatrix(data, type, level, labels, d=1, allCats=TRUE)
+        design_mat <- ModelMatrix(data, 
+                                  type, 
+                                  level, 
+                                  labels, 
+                                  d = 1, 
+                                  v = v,
+                                  allCats = TRUE)
 
         # Loop over categories
         l_potentials <- list()

@@ -137,10 +137,11 @@ tvmvar <- function(data,         # n x p data matrix
   tvmvar_object$call$estpointsNorm <- estpoints_norm
   no_estpoints <- length(estpoints_norm)
   
-  # Compute weights foe each
+  # Compute weights for each estimation point
   l_weights <- list()
   for(i in 1:no_estpoints) {
     l_weights[[i]] <- dnorm(timevec, mean = estpoints_norm[i], sd = bandwidth)
+    
     # Normalize to [x,1]
     l_weights[[i]] <- l_weights[[i]] / max(l_weights[[i]])
     
@@ -151,10 +152,17 @@ tvmvar <- function(data,         # n x p data matrix
       # Set to zero
       l_weights[[i]] <- l_weights[[i]] * args$zero_weights
     }
+    
+    # Add zero weights (necessary since I changed $included in lagData() s.t. it is defined over the entire input data matrix)
+    l_weights[[i]] <- c(rep(0, max(lags)), 
+                        l_weights[[i]])
+    
   } # end for:i (estpoints)
   
-  # browser()
   
+
+  
+
   
   # -------------------- Loop over Estpoints -------------------
   

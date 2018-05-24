@@ -112,6 +112,8 @@ predictCore_stat <- function(object,
   
   if(cobj == 'mvar') {
     
+    # browser()
+    
     # Prepare Data (already cuts max(lags) first observations to compute design matrix)
     data_lagged <- lagData(data = data, 
                            lags = object$call$lags, 
@@ -124,11 +126,8 @@ predictCore_stat <- function(object,
     l_data_lags <- data_lagged$l_data_lags
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
     
-    # if consec is used, then reduce dataset to usable observations
-    ind_included_wo_begin <- data_lagged$included[-c(1:max_lags)] 
-    
-    data_response <- data_response[ind_included_wo_begin, ]
-    l_data_lags <- lapply(l_data_lags, function(z) z <- z[ind_included_wo_begin, ])
+    data_response <- data_response[predCoreObj$included, ]
+    l_data_lags <- lapply(l_data_lags, function(z) z <- z[predCoreObj$included, ])
     
     # browser()
     
@@ -136,39 +135,79 @@ predictCore_stat <- function(object,
     
     for(v in 1:nNodes) {
       
-      # ---- Create design matrix -----
+      
+      # ----- Create VAR Design Matrix -----
       
       # append response with predictors
-      y <- data_response[,v] # response variable v
-      data_v <- cbind(y, do.call(cbind, l_data_lags)) # combine
-      data <- data_v[, -1]
+      y <- data_response[, v] # response variable v
+      data_input_MM <- do.call(cbind, l_data_lags)
+      data_input_MM <- as.data.frame(data_input_MM)
       
-      if(call$overparameterize) {
+      # turn categoricals into factors for model.matrix()
+      for(i in which(type=='c')) data_input_MM[, i] <- as.factor(data_input_MM[, i])  
+      
+      # need to have response and predictors in one dataframe for model.matrix()
+      data_v <- cbind(y, data_input_MM) 
+      
+      # Dummy coding
+      form <- as.formula('y ~ (.)')
+      
+      # Construct standard design matrix (to get number of parameters for tau threshold)
+      X_standard <- model.matrix(form, data = data_v)[, -1] # delete intercept (added by glmnet later)
+      
+      if(object$call$overparameterize) {
         
         # Compute augmented type and level vectors
         type_aug <- rep(type, n_lags)
         level_aug <- rep(level, n_lags)
         
         # Construct over-parameterized design matrix
-        X <- ModelMatrix(data = data,
-                         type = type_aug,
-                         level = level_aug,
-                         labels = colnames(data),
-                         d = 1)
+        X_over <- ModelMatrix(data = data_input_MM,
+                              type = type_aug,
+                              level = level_aug,
+                              labels = colnames(data_input_MM),
+                              d = 1)
+        X <- X_over
         
       } else {
         
-        # Construct standard design matrix
-        form <- as.formula('y ~ (.)')
-        data_df <- data
-        type_aug <- rep(type, n_lags)
-        for(j in which(type_aug=='c')) data_df[, j] <- as.factor(data_df[, j])
-
-        data_df <- as.data.frame(data_df)
-        
-        X <- model.matrix(form, data = data_df)[, -1] # delete intercept (added by glmnet later)
+        X <- X_standard
         
       }
+      
+      # # ---- Create design matrix -----
+      # 
+      # # append response with predictors
+      # y <- data_response[,v] # response variable v
+      # data_v <- cbind(y, do.call(cbind, l_data_lags)) # combine
+      # data <- data_v[, -1]
+      # 
+      # if(call$overparameterize) {
+      #   
+      #   # Compute augmented type and level vectors
+      #   type_aug <- rep(type, n_lags)
+      #   level_aug <- rep(level, n_lags)
+      #   
+      #   # Construct over-parameterized design matrix
+      #   X <- ModelMatrix(data = data,
+      #                    type = type_aug,
+      #                    level = level_aug,
+      #                    labels = colnames(data),
+      #                    d = 1)
+      #   
+      # } else {
+      #   
+      #   # Construct standard design matrix
+      #   form <- as.formula('y ~ (.)')
+      #   data_df <- data
+      #   type_aug <- rep(type, n_lags)
+      #   for(j in which(type_aug=='c')) data_df[, j] <- as.factor(data_df[, j])
+      # 
+      #   data_df <- as.data.frame(data_df)
+      #   
+      #   X <- model.matrix(form, data = data_df)[, -1] # delete intercept (added by glmnet later)
+      #   
+      # }
       
       
       # ---- Prediction -----

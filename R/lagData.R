@@ -16,67 +16,62 @@ lagData <- function(data,
   n_var <- nrow(data) - max(lags)
   n_lags <- length(lags_ext)
 
-  data_response <- data[-c(1:max_lag), ]
+  data_response <- data #[-c(1:max_lag), ]
 
-  # browser()
-
-  if(!is.null(consec)) m_consec <- matrix(NA, nrow = n_var, ncol = n_lags)
+  if(!is.null(consec)) m_consec <- matrix(NA, 
+                                          nrow = n, 
+                                          ncol = n_lags)
 
   # ---------- Lag Variables ----------
 
-  lag_pos <- 1 # to make sure that the list is filled successively, if not a full sequence (e.g. lags = c(1,5)); otherwise this leads to problems later in the code
-
+  # Storage
   l_data_lags <- list()
+
+  # Loop through lags
+  lag_pos <- 1 # to make sure that the list is filled successively, if not a full sequence (e.g. lags = c(1,5)); otherwise this leads to problems later in the code  
   for(lag in lags) {
-
-    front <- max_lag - lag
-    end <- max_lag - front
-
-    if(lag == max_lag) {
-
-      l_data_lags[[lag_pos]] <- data[-((n-end+1):n), ]
-      l_data_lags[[lag_pos]] <- matrix(l_data_lags[[lag_pos]], ncol = p, nrow = n_var) # enforce 2 dimensions to ensure that the function also works for 1 variable only
-      colnames(l_data_lags[[lag_pos]]) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
-
-    } else {
-
-      l_data_lags[[lag_pos]] <- data[-c((1:front),((n-end+1):n)), ]
-      l_data_lags[[lag_pos]] <- matrix(l_data_lags[[lag_pos]], ncol = p, nrow = n_var)
-      colnames(l_data_lags[[lag_pos]]) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
-
-    }
+    
+    lagged_data <- matrix(NA, nrow = n, ncol=p)
+    lagged_data[(lag+1):n, ] <- data[-((n-lag+1) : n), ]
+    lagged_data <- matrix(lagged_data, 
+                          ncol = p, 
+                          nrow = n) 
+    colnames(lagged_data) <- paste("V", 1:p, '.lag', lag, '.', sep = "")
+    
+    l_data_lags[[lag_pos]] <- lagged_data
 
     lag_pos <- lag_pos + 1
   }
 
-
   # ---------- Knock Out if not consecutive ----------
 
+  
+  # browser()
+  
   if(!is.null(consec)) {
 
-    for(lag in lags_ext) {
+    for(lag in lags_ext)  m_consec[(lag+1):n, lag] <- consec[-((n-lag+1) : n)]
 
-      front <- max_lag - lag
-      end <- max_lag - front
-
-      if(lag == max_lag) {
-        m_consec[,lag] <- consec[-((n-end+1):n)]
-      } else {
-        m_consec[,lag] <- consec[-c((1:front),((n-end+1):n))]
-      }
-    }
-
-    # calculate which cases to knock out
-    m_consec_check <- cbind(consec[-c(1:max_lag)], m_consec)
-
+    # Calculate which cases to knock out
+    m_consec_check <- cbind(consec, m_consec)
+    
     v_check <- apply(m_consec_check, 1, function(x) {
-
-      check_row <- x[1] - x[-1] == 1:length(x[-1]) # check for extended lags 1:max(lags)
-      check_row_relevant <- check_row[lags_ext %in% lags] # but then compute check only over the lags that are actually specified
-      if(any(check_row_relevant == FALSE)) FALSE else TRUE # and return test result: any required previous measurement missing? => FALSE
+      
+      if(any(is.na(x))) {
+        FALSE
+      } else {
+        check_row <- x[1] - x[-1] == 1:length(x[-1]) # check for extended lags 1:max(lags)
+        check_row_relevant <- check_row[lags_ext %in% lags] # but then compute check only over the lags that are actually specified
+        if(any(check_row_relevant == FALSE)) FALSE else TRUE # and return test result: any required previous measurement missing? => FALSE
+      }
 
     })
 
+  } else {
+    
+    v_check <- rep(TRUE, n)
+    v_check[1:n_lags] <- FALSE
+    
   }
 
 
@@ -85,13 +80,7 @@ lagData <- function(data,
   outlist <- list()
   outlist$data_response <- data_response
   outlist$l_data_lags <- l_data_lags
-
-  if(!is.null(consec)) {
-    outlist$included <- v_check
-  } else {
-    outlist$included <- rep(TRUE, n)
-    outlist$included[lags_ext] <- FALSE
-  }
+  outlist$included <- v_check
 
 
   return(outlist)

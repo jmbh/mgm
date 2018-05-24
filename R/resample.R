@@ -231,7 +231,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     data_lagged <- lagData(data = data,
                            lags = o_call$lags,
                            consec = o_call$consec)
-
+    
     n_design <- nrow(data_lagged$data_response) # data_response has the first 1:max_lag already excluded; this is not great and should be put into $included at some point
     ind_valid_rows <-  (1:n_design)[data_lagged$included]
 

@@ -65,7 +65,7 @@ mvar <- function(data,         # n x p data matrix
   if(missing(beepvar)) beepvar <- NULL
   if(missing(dayvar)) dayvar <- NULL
   # no AND rule necessary
-  if(missing(weights)) weights <- rep(1, n-max(lags))
+  if(missing(weights)) weights <- rep(1, n)
   if(missing(threshold)) threshold <- 'LW'
   if(missing(method)) method <- 'glm'
   
@@ -162,7 +162,7 @@ mvar <- function(data,         # n x p data matrix
   if(sum(!(type %in% c('g', 'c', 'p')))>0) stop("Only Gaussian 'g', Poisson 'p' or categorical 'c' variables permitted.")
   if(ncol(data) != length(type)) stop('Number of variables is not equal to length of type vector.')
   if(!missing(level)) if(ncol(data) != length(level)) stop('Number of variables is not equal to length of level vector.')
-  if((nrow(data)-max(lags)) != length(weights)) stop('Weights vector has to be equal to the number of observations n - max(lags)')
+  if((nrow(data)) != length(weights)) stop('Weights vector has to be equal to the number of observations')
   
   # Are Poisson variables integers?
   if('p' %in% type) {
@@ -212,17 +212,13 @@ mvar <- function(data,         # n x p data matrix
   
   data_response <- data_lagged$data_response
   l_data_lags <- data_lagged$l_data_lags
-  
   n_design <- nrow(data_response)
   
-  # make indicator(included) vector smaller, because the first max(nlags) time steps are already excluded from the data
-  ind_included_wo_begin <- data_lagged$included[-c(1:max_lags)] 
-  
-  data_response <- data_response[ind_included_wo_begin, ]
-  l_data_lags <- lapply(l_data_lags, function(x) x[ind_included_wo_begin, ])
-  
-  # weights <- weights[ind_included_wo_begin]
-  weights_design <- weights[ind_included_wo_begin] # to length of design matrix
+  # delete rows that cannot be predicted
+  data_response <- data_response[data_lagged$included, ]
+  l_data_lags <- lapply(l_data_lags, function(x) x[data_lagged$included, ])
+
+  weights_design <- weights[data_lagged$included] # to length of design matrix
   nadj <- sum(weights_design)
   
   
@@ -240,7 +236,7 @@ mvar <- function(data,         # n x p data matrix
       l_data_lags <- data_lagged$l_data_lags
       
       # overwrite data with bootstrap sample, passed on from resample()
-      data_response <- data_response[args$boot_ind, ]
+      data_response <- data_response[args$boot_ind, ] # args$boot_ind is defined such that it only selects valid rows
       l_data_lags <- lapply(l_data_lags, function(x) x[args$boot_ind, ])
       
       # overwrite weights
@@ -249,6 +245,7 @@ mvar <- function(data,         # n x p data matrix
     }
   }
   
+  # browser()
   
   # -------------------- Input Checks Local (for each set of predictors) -------------------
   
@@ -265,7 +262,7 @@ mvar <- function(data,         # n x p data matrix
     
   }
   
-  
+  # browser()
   
   # ----- Storage: Create empty mgm object -----
   
@@ -334,7 +331,7 @@ mvar <- function(data,         # n x p data matrix
   
   for(v in 1:p) {
     
-    
+
     # ----- Create VAR Design Matrix -----
     
     # append response with predictors
@@ -376,6 +373,7 @@ mvar <- function(data,         # n x p data matrix
     }
     
     
+    # browser()
     
     
     # ----- Fit each neighborhood using the same procedure as in mgm -----

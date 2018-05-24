@@ -21,6 +21,8 @@ nodeEst <- function(y,
 
 {
 
+  # browser()
+  
 # if(v == 1) browser()
   
   # ---------- Calc Aux Variables ----------
@@ -159,6 +161,8 @@ nodeEst <- function(y,
   if(lambdaSel == 'CV') {
 
     # ----- Fit Model -----
+    
+    # browser()
     
     # browser()
 
