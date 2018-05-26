@@ -10,7 +10,7 @@ glmnetRequirements <- function(data,
   # 1) Nonzero variance
   var_check <- apply(data, 2, var)
   ind_zero_var <- which(var_check == 0)
-  if(length(ind_zero_var) > 0) stop(paste0('Please only provide variables with nonzero variance. Variable(s) with zero variance: ',paste(var_names[ind_zero_var], collapse = ', ')))
+  if(length(ind_zero_var) > 0) stop(paste0('Please only provide variables with nonzero variance. Variable(s) with zero variance: ', paste(var_names[ind_zero_var], collapse = ', ')))
   
   
   # 2) >1 events per category
