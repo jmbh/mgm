@@ -903,11 +903,18 @@ mgm <- function(data,         # n x p data matrix
   
   # browser()
   
+  
   # ---------- Fill into p x p Nodewise Matrix ---------
 
-  unique_set_int_ord
-  
   m_wadj <-  m_signs <- matrix(0, p, p)
+  
+  # get table of unique pairwise interactions (copied from above)
+  ord <- 1
+  set_int_ord <- Pars_ind_flip_red[[ord]]
+  row.names(set_int_ord) <- NULL
+  ids <- FlagSymmetricFast(x = set_int_ord) # BOTTLE NECK, now better with native solution, but still problematic for huge p
+  unique_set_int_ord <- cbind(set_int_ord, ids)[!duplicated(ids), ]
+  unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
   
   n_edges <- nrow(unique_set_int_ord)
   ED <- unique_set_int_ord
