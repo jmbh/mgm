@@ -8,7 +8,7 @@ Plot summary of resampled sampling distributions
 Plots a summary of sampling distributions resampled with the resample() function
 }
 \usage{
-plotRes(object, qtl, labels = NULL, decreasing = TRUE, 
+plotRes(object, quantiles, labels = NULL, decreasing = TRUE, 
         cut = NULL, cex.label = 0.75, lwd.qtl = 2, 
         cex.mean = 0.5, cex.bg = 3.5, 
         axis.ticks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1))
@@ -18,7 +18,7 @@ plotRes(object, qtl, labels = NULL, decreasing = TRUE,
   \item{object}{
 An output object from the \code{resample()} function.
 }
-  \item{qtl}{
+  \item{quantiles}{
 A numerical vector of length two specifying the desired lower/upper quantile, e.g. \code{c(.05, .95)}.
 }
   \item{labels}{

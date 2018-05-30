@@ -1,7 +1,7 @@
 
 
 plotRes <- function(object,
-                    qtl,
+                    quantiles,
                     labels = NULL,
                     decreasing = TRUE, 
                     cut = NULL,
@@ -36,7 +36,7 @@ plotRes <- function(object,
         tar_mat[counter, 2] <- col
         
         # Quantiles
-        qtls <- quantile(object$bootParameters[row, col, ], probs = qtl)
+        qtls <- quantile(object$bootParameters[row, col, ], probs = quantiles)
         tar_mat[counter, 3] <- mean(object$bootParameters[row, col, ])
         tar_mat[counter, 4] <- qtls[1]
         tar_mat[counter, 5] <- qtls[2]
