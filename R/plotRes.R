@@ -103,10 +103,10 @@ plotRes <- function(object,
   plot.window(xlim = xlim, ylim = ylim)
   if(is.null(axis.ticks)) axis.ticks <- round(seq(xlim[1], xlim[2], length = 5), 2)
   axis(3, axis.ticks, lwd=0)
-  
-  abline(v = 0, lty=2, col = "black") # zero line
+
   abline(h = plot_y, col = "grey")
-  
+  if(0 %in% axis.ticks) abline(v = 0, lty=2, col = "black") # zero line
+
   # Plot quantiles
   segments(x0 = TM[, 4], 
            y0 = plot_y, 
