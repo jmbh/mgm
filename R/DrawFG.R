@@ -102,7 +102,8 @@ DrawFG <- function(object,
             
             # Compute nodewise aggregate parameter (no aggregation for interactions between continuous variables)
             nodewise_par <- list_weightsUA[[or]][[r]][[or2]]
-            nodewise_par_agg <- mean(abs(nodewise_par))
+            
+            nodewise_par_agg <- mean(abs(unlist(nodewise_par)))
             nonzero <- 1
             if(nodewise_par_agg == 0) {
               nonzero <- 0
@@ -408,7 +409,7 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
               
               # Compute nodewise aggregate parameter (no aggregation for interactions between continuous variables)
               nodewise_par <- list_weightsUA[[or]][[r]][[or2]]
-              nodewise_par_agg <- mean(abs(nodewise_par))
+              nodewise_par_agg <- mean(abs(unlist(nodewise_par)))
               nonzero <- 1
               if(nodewise_par_agg == 0) {
                 nonzero <- 0
