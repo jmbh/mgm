@@ -71,7 +71,7 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
 
       if(type[v] != 'c') {
 
-        # Get design matrix
+        # Get design matrix (always use overparamterized version)
         design_mat <- ModelMatrix(data, 
                                   type, 
                                   level, 
@@ -85,9 +85,11 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
 
           # Get parameters in order
           l_parms <- list()
-          for(par in 1:p) l_parms[[par]] <- coefarray[v, par, 1:level[v], 1:level[par], lag]
+          for(par in (1:p)[-v]) l_parms[[par]] <- coefarray[v, par, 1:level[v], 1:level[par], lag]
           v_parms <- unlist(l_parms)
 
+          # browser()
+          
           # Compute part of potential for given lag
           potential_lag[[lag]] <- design_mat[r - lags[lag], ] * v_parms
 
@@ -124,7 +126,7 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
 
             # Get parameters in order
             l_parms <- list()
-            for(par in 1:p) l_parms[[par]] <- coefarray[v, par, (1:level[v])[cat], 1:level[par], lag]
+            for(par in (1:p)[-v]) l_parms[[par]] <- coefarray[v, par, (1:level[v])[cat], 1:level[par], lag]
             v_parms <- unlist(l_parms)
 
             # Compute part of potential for given lag
