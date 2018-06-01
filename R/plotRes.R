@@ -16,6 +16,8 @@ plotRes <- function(object,
   
   # ---------- Preprocessing ----------
   
+  if(!("core" %in% class(object))) stop("plotRes() currently only supports resampled mgm() objects.")
+  
   # Get basic info
   dims <- dim(object$bootParameters)
   p <- dims[1]
@@ -34,7 +36,7 @@ plotRes <- function(object,
         # Variable ids
         tar_mat[counter, 1] <- row
         tar_mat[counter, 2] <- col
-        
+
         # Quantiles
         qtls <- quantile(object$bootParameters[row, col, ], probs = quantiles)
         tar_mat[counter, 3] <- mean(object$bootParameters[row, col, ])

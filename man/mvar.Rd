@@ -10,10 +10,10 @@ Estimates Mixed Vector Autoregressive Model (mVAR) via elastic-net regularized G
 }
 \usage{
 mvar(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
-lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, lags,
-consec, beepvar, dayvar, weights, threshold, method, binarySign, 
-scale, verbatim, pbar, warnings, saveModels, saveData, 
-overparameterize, thresholdCat, signInfo, ...)
+     lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, lags,
+     consec, beepvar, dayvar, weights, threshold, method, binarySign, 
+     scale, verbatim, pbar, warnings, saveModels, saveData, 
+     overparameterize, thresholdCat, signInfo, ...)
 }
 
 \arguments{

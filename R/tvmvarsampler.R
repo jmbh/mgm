@@ -90,6 +90,7 @@ tvmvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array x N
                                   level = level, 
                                   labels = labels, 
                                   d = 1, 
+                                  v=v,
                                   allCats=TRUE)
 
         potential_lag <- list()
@@ -122,6 +123,7 @@ tvmvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array x N
                                   level = level, 
                                   labels = labels, 
                                   d = 1, 
+                                  v=v,
                                   allCats=TRUE)
 
         # Loop over categories
