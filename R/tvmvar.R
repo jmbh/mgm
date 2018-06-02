@@ -4,7 +4,7 @@ tvmvar <- function(data,         # n x p data matrix
                    type,         # p vector indicating the type of each variable
                    level,        # p vector indivating the levels of each variable
                    timepoints,
-                   estpoints,    # vector of points, where model should be estimated, on the scale [0:(n-max(lag))], do not need to be integers
+                   estpoints,    # vector of estimation points in [0,1]
                    bandwidth,    # choice of bandwidth
                    ...           # arguments passed to mvar
 )
@@ -110,8 +110,7 @@ tvmvar <- function(data,         # n x p data matrix
   p <- ncol(data)
   n_var <- n - max(lags) # this is how many rows there are after transforming the data
   
-  if(any(estpoints < 0)) stop('Estimation have to be positive')
-  if(any(estpoints>n_var)) stop('Estimation points have to be on scale [0, n - max(lags)]')
+  if(any(estpoints < 0 | estpoints > 1)) stop('Estimation points have to be specified on the unit interval [0,1].')
   if(bandwidth <= 0) stop('The bandwidth parameter has to be strictly positive')
   
   
@@ -133,7 +132,7 @@ tvmvar <- function(data,         # n x p data matrix
   
   
   # Normalize time estimation points to interval [0,1]
-  estpoints_norm <- estpoints / n_var
+  estpoints_norm <- estpoints
   tvmvar_object$call$estpointsNorm <- estpoints_norm
   no_estpoints <- length(estpoints_norm)
   

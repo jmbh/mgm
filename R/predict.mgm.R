@@ -61,6 +61,8 @@ predict.mgm <- function(object, # One of the four mgm objects
                         errorCat, # specifying error or providing function for categorical variables
                         tvMethod, # 'weighted' vs. 'closestModel'
                         consec,
+                        beepvar, 
+                        dayvar,
                         ...)
   
   
@@ -70,6 +72,23 @@ predict.mgm <- function(object, # One of the four mgm objects
   # ----- Fill in defaults ----- 
   
   if(missing(consec)) consec <- NULL
+  
+  # ----- Compute consec argument (copied from mvar() ) -----
+  
+  # Input checks (can only specify consec OR beepvar and dayvar)
+  
+  if(!is.null(consec) & !is.null(beepvar)) stop("Please specify the consecutiveness of measurements either via consec, or via dayvar and beepvar")
+  if(!is.null(consec) & !is.null(dayvar)) stop("Please specify the consecutiveness of measurements either via consec, or via dayvar and beepvar")
+  
+  if(!is.null(dayvar)) if(is.null(beepvar)) stop("Argument beepvar not specified.")
+  if(!is.null(beepvar)) if(is.null(dayvar)) stop("Argument dayvar not specified.")
+  
+  if(!is.null(beepvar) & !is.null(dayvar)) {
+    
+    consec <- beepday2consec(beepvar = beepvar,
+                             dayvar = dayvar)
+    
+  } # if: specification of consecutiveness via beepvar and dayvar
   
   
   # ----- Compute Aux Variables -----

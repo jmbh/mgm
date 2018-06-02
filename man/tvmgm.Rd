@@ -29,7 +29,7 @@ p vector indicating the number of categories of each variable. For continuous va
 A strictly increasing numeric vector of length \code{nrow(data)} indicating time points for the measurements in \code{data}. If \code{timepoints} is not specified, it is assumed that the time points are equally spaced. For details, see Haslbeck and Waldorp (2016).
 }
   \item{estpoints}{
-Vector indicating estimation points on interval [0, n].
+Vector indicating estimation points on the unit interval [0, 1] (the real time scale is normalized interally to [0,1]).
 }
   \item{bandwidth}{
 We use a gaussian density on the unit time-interval [0,1] to determine the weights for each observation at each estimated time point. The bandwidth specifies the standard deviation the Gaussian density. To get some intuition, which bandwidth results in the combination of how many data close in time one can plot Gaussians on [0,1] for different bandwidths. The bandwidth can also be selected in a data driven way using the function (see \code{bwSelect}).
@@ -172,7 +172,7 @@ mgm_c_cv <- tvmgm(data = data,
                   type = type,
                   level = level,
                   k = 3,
-                  estpoints = seq(0, 1000, length=10),
+                  estpoints = seq(0, 1, length=10),
                   bandwidth = .1,
                   lambdaSel = 'CV',
                   ruleReg = 'AND',

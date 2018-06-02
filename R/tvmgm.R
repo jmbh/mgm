@@ -123,8 +123,7 @@ tvmgm <- function(data,         # n x p data matrix
 
   # ----- Checks on timepoints, estpoints and bandwidth -----
 
-  if(any(estpoints < 0)) stop('Estimation have to bepositive')
-  if(any(estpoints>n)) stop('Estimation points have to be on scale [0, n]')
+  if(any(estpoints < 0 | estpoints > 1)) stop('Estimation points have to be specified on the unit interval [0,1].')
   if(bandwidth <= 0) stop('The bandwidth parameter has to be strictly positive')
 
 
@@ -132,9 +131,7 @@ tvmgm <- function(data,         # n x p data matrix
   # Note: slightly different from tvmvar: time points don't have to be equally spaced
   # time measurements can be entered via 'timepoints' argument
 
-
-  # Normalize time estimation points to interval [0,1]
-  estpoints_norm <- estpoints / n # cannot be normalized, because we don't know the end point
+  estpoints_norm <- estpoints 
   tvmgmobj$call$estpointsNorm <- estpoints_norm
 
 
