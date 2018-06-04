@@ -13,15 +13,32 @@ print.mgm <- function(x,
                      'Time-varying mixed Vector Autoregressive (tv-mVAR) model')
 
 
+  # browser()
+  
   # ---------- print for fit objects ----------
 
   if(!('predicted' %in% class(x)) & !('bwSelect' %in% class(x))) {
 
     if('core' %in% class(x)) {
-      cat('mgm fit-object',
-          '\n\nModel class: ', model_classes[1],
-          '\nOrder: ' , x$call$k,
-          '\nNodes: ' , length(x$call$type))
+      
+      if(!is.null(x$call$moderators)) {
+        
+        x$call$k <- 3
+        cat('mgm fit-object',
+            '\n\nModel class: ', model_classes[1],
+            '\nOrder: ' , x$call$k,
+            '\nNodes: ' , length(x$call$type),
+            '\nModerators: Variable ' , x$call$moderators)
+        
+      } else {
+        
+        cat('mgm fit-object',
+            '\n\nModel class: ', model_classes[1],
+            '\nOrder: ' , x$call$k,
+            '\nNodes: ' , length(x$call$type))
+        
+      }
+      
     }
 
 
@@ -43,11 +60,30 @@ print.mgm <- function(x,
 
 
     if('tvmgm' %in% class(x)) {
-      cat('mgm fit-object',
-          '\n\nModel class: ', model_classes[3],
-          '\nOrder: ' , x$call$k,
-          '\nNodes: ' , length(x$call$type),
-          '\nEstimation points: ' , length(x$call$estpoints))
+      
+      if(!is.null(x$call$moderators)) {
+        
+        x$call$k <- 3
+
+        cat('mgm fit-object',
+            '\n\nModel class: ', model_classes[3],
+            '\nOrder: ' , x$call$k,
+            '\nNodes: ' , length(x$call$type),
+            '\nModerators: Variable ' , x$call$moderators,
+            '\nEstimation points: ' , length(x$call$estpoints))
+        
+      } else {
+        
+        cat('mgm fit-object',
+            '\n\nModel class: ', model_classes[3],
+            '\nOrder: ' , x$call$k,
+            '\nNodes: ' , length(x$call$type),
+            '\nEstimation points: ' , length(x$call$estpoints))
+        
+      }
+      
+      
+    
     }
 
 

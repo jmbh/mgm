@@ -1,3 +1,5 @@
+
+
 showInteraction <- function(object, 
                             int) {
   
@@ -55,7 +57,6 @@ showInteraction <- function(object,
     outlist$edgeweight <- object$interactions$weightsAgg[[n_order-1]][[int_row]]
     outlist$sign <- object$interactions$sign[[n_order-1]][int_row]
     
-    
     if(n_order > 2) {
       
       outlist$parameters = NULL
@@ -77,8 +78,10 @@ showInteraction <- function(object,
         # Fill array
         if(type_int[i] == "c") { # if response = categorical
           
-          if(type_int[-i] == "c") { # if predictor = categorical
-            for(i_resp in 1:length(int_i)) par_mat[i_resp, -1] <- int_i[[i_resp]]
+          if(type_int[-i] == "c") { # if predictor = categorical (only works for k=2 order MGMs ..)
+            for(i_resp in 1:length(int_i)) {
+              if(object$call$overparameterize) par_mat[i_resp, ] <- int_i[[i_resp]] else par_mat[i_resp, -1] <- int_i[[i_resp]]
+            } 
           } else {
             par_mat[, 1] <- int_i
           }
@@ -106,8 +109,6 @@ showInteraction <- function(object,
     
     
   } # end if: core?
-  
-  
   
   
   # ------------------------------------------------------------------------------------------------
