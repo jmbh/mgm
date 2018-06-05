@@ -3,7 +3,7 @@
 FactorGraph <- function(object, 
                         colors, 
                         labels,
-                        PairwiseAsEdge = TRUE, # box
+                        PairwiseAsEdge = FALSE, 
                         Nodewise = FALSE,
                         DoNotPlot = FALSE, 
                         FactorLabels = TRUE, 

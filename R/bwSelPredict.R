@@ -5,6 +5,7 @@ bwSelPredict <- function(data,
                          obj,
                          test,
                          modeltype,
+                         # consec = NULL,
                          ...) # is lags passed on?
 
 
@@ -20,6 +21,7 @@ bwSelPredict <- function(data,
 
   args$d <- args$k - 1
   n_test <- length(test)
+  consec <- args$consec
 
   # Scale Gaussians
   ind_Gauss <- which(type == 'g')
@@ -39,11 +41,20 @@ bwSelPredict <- function(data,
 
     n_lags <- length(args$lags)
 
-    data_lagged <- lagData(data_df, args$lags)
-
+    # Prepare Data (already cuts max(lags) first observations to compute design matrix)
+    data_lagged <- lagData(data = data, 
+                           lags = args$lags, 
+                           consec = consec)
+    
+    # out of list
     data_response <- data_lagged$data_response
     l_data_lags <- data_lagged$l_data_lags
-
+    data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
+    
+    # Detele cases
+    data_response <- data_response[data_lagged$included, ]
+    l_data_lags <- lapply(l_data_lags, function(z) z <- z[data_lagged$included, ])
+    
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
 
   }
@@ -60,9 +71,8 @@ bwSelPredict <- function(data,
 
       # append response with predictors
       y <- data_response[,v] # response variable v
-      data_v <- cbind(y, do.call(cbind, l_data_lags)) # combine
+      data_v <- cbind(do.call(cbind, l_data_lags)) # combine
       data_v <- as.data.frame(data_v) # because model.matrix() below requries a data.frame
-      data <- data_v[, -1]
       
       # Dummy coding
       form <- as.formula('y ~ (.)')
@@ -72,16 +82,17 @@ bwSelPredict <- function(data,
 
       if(args$overparameterize) {
 
-        # Compute augmented type and level vectors
+        # # Compute augmented type and level vectors
         type_aug <- rep(type, n_lags)
         level_aug <- rep(level, n_lags)
 
         # Construct over-parameterized design matrix
-        X_over <- ModelMatrix(data = data,
+        X_over <- ModelMatrix(data = data_v,
                               type = type_aug,
                               level = level_aug,
-                              labels = colnames(data),
-                              d = 1)
+                              labels = colnames(data_v),
+                              d = 1, 
+                              v = NULL)
         X <- X_over
 
       } else {
@@ -107,11 +118,12 @@ bwSelPredict <- function(data,
       if(args$overparameterize) {
 
         # Construct over-parameterized design matrix
-        X_over <- ModelMatrix(data = data[, -v],
-                              type = type[-v],
-                              level = level[-v],
-                              labels = colnames(data)[-v],
-                              d = args$d)  # defined above from  k
+        X_over <- ModelMatrix(data = data,
+                              type = type,
+                              level = level,
+                              labels = colnames(data),
+                              d = args$d, 
+                              v = v)  # defined above from  k
         X <- X_over
       } else {
         X <- X_standard
@@ -166,8 +178,6 @@ bwSelPredict <- function(data,
 
   m_error <- matrix(NA, nrow = n_test, ncol = p)
 
-  # browser()
-  
   # 0/1 loss for categorical, RMSE for continuous (which here is just absolute error, because 1 element)
   for(i in 1:p) {
     if(type[v] == 'c') {

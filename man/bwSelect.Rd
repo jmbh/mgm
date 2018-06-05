@@ -20,7 +20,7 @@ bwSelect(data, type, level, bwSeq, bwFolds,
 A n x p data matrix.
 }
   \item{type}{
-p vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' for categorical.
+p vector indicating the type of variable for each column in \code{data}. "g" for Gaussian, "p" for Poisson, "c" for categorical.
 }
   \item{level}{
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
@@ -35,11 +35,11 @@ The number of folds (see details below).
 The size of each fold (see details below).
 }
   \item{modeltype}{
-If \code{modeltype = 'mvar'} model, the optimal bandwidth parameter for a \code{tvmvar()} model is selected. If \code{modeltype = 'mgm'} model, the optimal bandwidth parameter for a \code{tvmgm()} model is selected. Additional arguments to \code{tvmvar()} or \code{tvmgm()} can be passed via the \code{\dots} argument.
+If \code{modeltype = "mvar"} model, the optimal bandwidth parameter for a \code{tvmvar()} model is selected. If \code{modeltype = "mgm"} model, the optimal bandwidth parameter for a \code{tvmgm()} model is selected. Additional arguments to \code{tvmvar()} or \code{tvmgm()} can be passed via the \code{\dots} argument.
 }
 
   \item{pbar}{
-If TRUE a progress bar is shown. Defaults to \code{pbar = 'TRUE'}.
+If TRUE a progress bar is shown. Defaults to \code{pbar = "TRUE"}.
 }
 
   \item{\dots}{
@@ -121,7 +121,7 @@ n <- 100
 data_n <- matrix(rnorm(p*n), nrow=100)
 head(data_n)
 
-type <- c('c', 'c', rep('g', 3))
+type <- c("c", "c", rep("g", 3))
 level <- c(2, 2, 1, 1, 1)
 x1 <- data_n[,1]
 x2 <- data_n[,2]
@@ -140,7 +140,7 @@ bwobj_mgm <- bwSelect(data = data_n,
                       bwSeq = seq(0.05, 1, length=3),
                       bwFolds = 1,
                       bwFoldsize = 3,
-                      modeltype = 'mgm',
+                      modeltype = "mgm",
                       k = 3,
                       pbar = TRUE,
                       overparameterize = TRUE)
@@ -159,7 +159,7 @@ n <- 100
 data_n <- matrix(rnorm(p*n), nrow=100)
 head(data_n)
 
-type <- c('c', 'c', rep('g', 3))
+type <- c("c", "c", rep("g", 3))
 level <- c(2, 2, 1, 1, 1)
 x1 <- data_n[,1]
 x2 <- data_n[,2]
@@ -178,7 +178,7 @@ bwobj_mvar <- bwSelect(data = data_n,
                        bwSeq = seq(0.05, 1, length=3),
                        bwFolds = 1,
                        bwFoldsize = 3,
-                       modeltype = 'mvar',
+                       modeltype = "mvar",
                        lags = 1:3,
                        pbar = TRUE,
                        overparameterize = TRUE)
@@ -186,7 +186,7 @@ bwobj_mvar <- bwSelect(data = data_n,
 
 print.mgm(bwobj_mvar)
 
-
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 
 }

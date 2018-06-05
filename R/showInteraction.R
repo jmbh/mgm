@@ -19,6 +19,11 @@ showInteraction <- function(object,
   if(class_obj %in% c("core", "tvmgm")) if(object$call$k > 2) stop("showInteraction() currently only supports pairwise interactions.")
   if(class_obj %in% c("tvmgm", "mvar", "tvmvar")) stop("showInteraction() currently only supports mgm() objects.")
   
+  if(length(unique(int)) != length(int)) stop("A k-order interaction have to be specified by k distinct variables.")
+  p <- length(object$call$level)
+  if(any(int > p)) stop("Please specify variables in {1, 2, ..., p}.")
+  
+  
   # ----- Compute Aux variables -----
   
   int <- sort(int) # sort, because interactions are saved sorted 1:p in "object$interactions$weights[[n_order-1]][[int_row]]"
@@ -26,7 +31,7 @@ showInteraction <- function(object,
   levelNames[[1]] <- object$call$levelNames[[int[1]]]
   levelNames[[2]] <- object$call$levelNames[[int[2]]]
   
-
+  
   # ------------------------------------------------------------------------------------------------
   # ---------- a) mgm-objects ----------------------------------------------------------------------
   # ------------------------------------------------------------------------------------------------
@@ -50,63 +55,69 @@ showInteraction <- function(object,
                     "sign" = NULL,
                     "parameters" = list())
     
-  
+    
     # Get row of specified interaction
     int_row <- which(apply(matrix(object$interactions$indicator[[n_order-1]], ncol=n_order), 1, function(x) all(x %in% int))) # get row of interaction in "int" in interaction list
     
-    outlist$edgeweight <- object$interactions$weightsAgg[[n_order-1]][[int_row]]
-    outlist$sign <- object$interactions$sign[[n_order-1]][int_row]
-    
-    if(n_order > 2) {
+    if(length(int_row) == 0) {
       
-      outlist$parameters = NULL
+      outlist$edgeweight <- 0
+      outlist$sign <- 0
       
     } else {
       
-      # ------- Collect & label parameter estimates -------
+      outlist$edgeweight <- object$interactions$weightsAgg[[n_order-1]][[int_row]]
+      outlist$sign <- object$interactions$sign[[n_order-1]][int_row]
       
-      if(length(int_row) == 0) stop("The specified interaction has been estimated to be absent.")
-      
-      for(i in 1:n_order) {
+      if(n_order > 2) {
         
-        # Get parameters of regression on i
-        int_i  <- object$interactions$weights[[n_order-1]][[int_row]][[i]]
+        outlist$parameters = NULL
         
-        # Create empty array with correct dimensions
-        par_mat <- matrix(NA, level_int[i], level_int[-i])
+      } else {
         
-        # Fill array
-        if(type_int[i] == "c") { # if response = categorical
+        # ------- Collect & label parameter estimates -------
+        
+        for(i in 1:n_order) {
           
-          if(type_int[-i] == "c") { # if predictor = categorical (only works for k=2 order MGMs ..)
-            for(i_resp in 1:length(int_i)) {
-              if(object$call$overparameterize) par_mat[i_resp, ] <- int_i[[i_resp]] else par_mat[i_resp, -1] <- int_i[[i_resp]]
-            } 
-          } else {
-            par_mat[, 1] <- int_i
+          # Get parameters of regression on i
+          int_i  <- object$interactions$weights[[n_order-1]][[int_row]][[i]]
+          
+          # Create empty array with correct dimensions
+          par_mat <- matrix(NA, level_int[i], level_int[-i])
+          
+          # Fill array
+          if(type_int[i] == "c") { # if response = categorical
+            
+            if(type_int[-i] == "c") { # if predictor = categorical (only works for k=2 order MGMs ..)
+              for(i_resp in 1:length(int_i)) {
+                if(object$call$overparameterize) par_mat[i_resp, ] <- int_i[[i_resp]] else par_mat[i_resp, -1] <- int_i[[i_resp]]
+              } 
+            } else {
+              par_mat[, 1] <- int_i
+            }
+            
+          } else { # if response = continuous
+            
+            if(type_int[-i] == "c") { # if predictor = categorical
+              par_mat[1, -1] <- int_i
+            } else {
+              par_mat[1, 1] <- int_i
+            }
           }
           
-        } else { # if response = continuous
+          # browser()
+          # Set dimension names in array
+          if(type_int[i] == "c") row.names(par_mat) <- paste0(int[i], ".", levelNames[[i]]) else row.names(par_mat) <- int[i]
+          if(type_int[-i] == "c") colnames(par_mat) <- paste0(int[-i], ".", levelNames[[abs(i-3)]]) else colnames(par_mat) <- int[-i]
           
-          if(type_int[-i] == "c") { # if predictor = categorical
-            par_mat[1, -1] <- int_i
-          } else {
-            par_mat[1, 1] <- int_i
-          }
-        }
+          # Save array in output list
+          outlist$parameters[[paste0("Predict_", int[i])]] <- par_mat
+          
+        } # end for: n_order
         
-        # browser()
-        # Set dimension names in array
-        if(type_int[i] == "c") row.names(par_mat) <- paste0(int[i], ".", levelNames[[i]]) else row.names(par_mat) <- int[i]
-        if(type_int[-i] == "c") colnames(par_mat) <- paste0(int[-i], ".", levelNames[[abs(i-3)]]) else colnames(par_mat) <- int[-i]
-        
-        # Save array in output list
-        outlist$parameters[[paste0("Predict_", int[i])]] <- par_mat
-        
-      } # end for: n_order
+      } # if: order == 2
       
-    } # if: order == 2
-    
+    } # end if: estimated to zero?
     
   } # end if: core?
   
@@ -115,17 +126,17 @@ showInteraction <- function(object,
   # ---------- b) tvmgm-objects ----------------------------------------------------------------------
   # ------------------------------------------------------------------------------------------------
   
-
+  
   # ------------------------------------------------------------------------------------------------
   # ---------- c) mvar-objects ----------------------------------------------------------------------
   # ------------------------------------------------------------------------------------------------
-
+  
   
   # ------------------------------------------------------------------------------------------------
   # ---------- d) tvmvar-objects ----------------------------------------------------------------------
   # ------------------------------------------------------------------------------------------------
-
-
+  
+  
   # ----- Return -----
   
   class(outlist) <- "int"

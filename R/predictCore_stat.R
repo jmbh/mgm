@@ -121,7 +121,6 @@ predictCore_stat <- function(object,
     
     predCoreObj$included <- data_lagged$included # this specifies additionally, whether measurements are successive after the max(lags) measurement
 
-    
     data_response <- data_lagged$data_response
     l_data_lags <- data_lagged$l_data_lags
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
@@ -166,7 +165,8 @@ predictCore_stat <- function(object,
                               type = type_aug,
                               level = level_aug,
                               labels = colnames(data_input_MM),
-                              d = 1)
+                              d = 1, 
+                              v = NULL)
         X <- X_over
         
       } else {

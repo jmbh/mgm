@@ -26,7 +26,7 @@ A list with p entries for p variables, each of which contains a N x m matrix. Th
 N x p matrix indicating the standard deviations of Gaussians specified in \code{type} for \{1, ..., N\} time points. Entries not referring to Gaussians are ignored.
 }
   \item{type}{
-p character vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' of each variable.
+p character vector indicating the type of variable for each column in \code{data}. "g" for Gaussian, "p" for Poisson, "c" of each variable.
 }
   \item{level}{
 p integer vector indicating the number of categories of each variable. For continuous variables set to 1.
@@ -64,8 +64,7 @@ The N x p data matrix of sampled values
 }
 
 \references{
-
-Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure Estimation for time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
+Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
 Yang, E., Baker, Y., Ravikumar, P., Allen, G. I., & Liu, Z. (2014, April). Mixed Graphical Models via Exponential Families. In AISTATS (Vol. 2012, pp. 1042-1050).
 
@@ -80,13 +79,12 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 
 \dontrun{
 
-
 # --------- Example 1: p = 4 dimensional Gaussian ---------
 
 # ----- 1) Specify Model -----
 
 # a) General Graph Info
-type = c('g', 'g', 'g', 'g') # Four Gaussians
+type = c("g", "g", "g", "g") # Four Gaussians
 level = c(1, 1, 1, 1)
 n_timepoints = 500 #  Number of time points
 
@@ -98,14 +96,14 @@ factors[[1]][2, 1:2] <- c(1,2)
 
 # Two parameters, one linearly increasing from 0 to 0.8, another one lin decreasing from 0.8 to 0
 interactions <- list()
-interactions[[1]] <- vector('list', length = 2)
+interactions[[1]] <- vector("list", length = 2)
 interactions[[1]][[1]] <- array(0, dim = c(level[1], level[2], n_timepoints))
 interactions[[1]][[1]][1,1, ] <- seq(.8, 0, length = n_timepoints)
 interactions[[1]][[2]] <- array(0, dim = c(level[1], level[2], n_timepoints))
 interactions[[1]][[2]][1,1, ] <- seq(0, .8, length = n_timepoints)
 
 # c) Define Thresholds
-thresholds <- vector('list', length = 4)
+thresholds <- vector("list", length = 4)
 thresholds <- lapply(thresholds, function(x) matrix(0, ncol = level[1], nrow = n_timepoints))
 
 # d) Define Standard deviations
@@ -131,26 +129,25 @@ set.seed(1)
 tvmgm_obj <- tvmgm(data = dlist$data,
                    type = type,
                    level = level,
-                   estpoints = seq(1, n_timepoints, length = 15),
+                   estpoints = seq(0, 1, length = 15),
                    bandwidth = .2,
-                   d = 2,
-                   lambdaSel = 'CV',
-                   ruleReg = 'AND')
+                   k = 2,
+                   lambdaSel = "CV",
+                   ruleReg = "AND")
 
 # How well did we recover those two time-varying parameters?
-plot(tvmgm_obj$pairwise$wadj[3,4,], type='l', ylim=c(0,.8))
-lines(tvmgm_obj$pairwise$wadj[1,2,], type='l', col='red')
+plot(tvmgm_obj$pairwise$wadj[3,4,], type="l", ylim=c(0,.8))
+lines(tvmgm_obj$pairwise$wadj[1,2,], type="l", col="red")
 # Looks quite good
 
 
 # --------- Example 2: p = 5 binary; one 3-way interaction ---------
 
-
 # ----- 1) Specify Model -----
 
 # a) General Graph Info
 p <- 5 # number of variables
-type = rep('c', p) # all categorical
+type = rep("c", p) # all categorical
 level = rep(2, p) # all binary
 n_timepoints <- 1000
 
@@ -162,7 +159,7 @@ factors[[2]][1, 1:3] <- c(1, 2, 3)
 
 interactions <- list()
 interactions[[1]] <- NULL # no pairwise interactions
-interactions[[2]] <- vector('list', length = 1)  # one 3-way interaction
+interactions[[2]] <- vector("list", length = 1)  # one 3-way interaction
 # 3-way interaction no1
 interactions[[2]][[1]] <- array(0, dim = c(level[1], level[2], level[3], n_timepoints))
 theta <- 2
@@ -177,12 +174,12 @@ for(i in 1:p) thresholds[[i]] <- matrix(0, nrow = n_timepoints, ncol = level[i])
 
 set.seed(1)
 dlist <- tvmgmsampler(factors = factors,
-                    interactions = interactions,
-                    thresholds = thresholds,
-                    type = type,
-                    level = level,
-                    nIter = 150,
-                    pbar = TRUE)
+                      interactions = interactions,
+                      thresholds = thresholds,
+                      type = type,
+                      level = level,
+                      nIter = 150,
+                      pbar = TRUE)
 
 
 # ----- 3) Check Marginals -----
@@ -203,19 +200,18 @@ set.seed(1)
 tvmgm_obj <- tvmgm(data = dlist$data,
                    type = type,
                    level = level,
-                   estpoints = seq(1, n_timepoints, length = 15),
+                   estpoints = seq(0, 1, length = 15),
                    bandwidth = .2,
-                   d = 2,
-                   lambdaSel = 'CV',
-                   ruleReg = 'AND')
+                   k = 3,
+                   lambdaSel = "CV",
+                   ruleReg = "AND")
 
-tvmgm_obj$rawfactor$indicator
+tvmgm_obj$interactions$indicator
 # Seems very difficult to recover this time-varying 3-way binary interaction
-# See also the corresponding stationary problems in the examples of ?mgmsampler
+# See also the corresponding problems in the examples of ?mgmsampler
 
 
-
-
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 
 }

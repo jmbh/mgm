@@ -72,6 +72,8 @@ predict.mgm <- function(object, # One of the four mgm objects
   # ----- Fill in defaults ----- 
   
   if(missing(consec)) consec <- NULL
+  if(missing(beepvar)) beepvar <- NULL
+  if(missing(dayvar)) dayvar <- NULL
   
   # ----- Compute consec argument (copied from mvar() ) -----
   

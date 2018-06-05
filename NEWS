@@ -9,6 +9,7 @@ Changes in Version 1.2-3
   o Add CES-D depression dataset taken from Fried et al. (2015) to example datasets
   o Added function FactorGraph() that computes and plots a factor graph from stationary or time-varying MGMs. The factorgraph output has been removed from the mgm() and tvmgm() functions.
   o Added support of showInteraction() to continuous 3-way interactions
+  o For all time-varying models the estimation points are now specified on the unit interval [0,1]; for tvmvar() models, 0 is associated with the first data point that is not trivially excluded due to the maximum lag
 
 
 Changes in Version 1.2-2

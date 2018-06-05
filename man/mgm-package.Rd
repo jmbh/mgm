@@ -26,7 +26,7 @@ Maintainer: <jonashaslbeck@gmail.com>
 
 \references{
 
-Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure estimation for time-varying mixed graphical models in high-dimensional data. arXiv preprint http://arxiv.org/abs/1510.06871v2.
+Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying mixed graphical models in high-dimensional data. arXiv preprint http://arxiv.org/abs/1510.06871v2.
 
 Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.05677.
 

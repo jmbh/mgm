@@ -17,16 +17,16 @@ tvmvar(data, type, level, timepoints, estpoints, bandwidth, ...)
 
 \arguments{
   \item{data}{
-A n x p data matrix.
+n x p data matrix.
 }
   \item{type}{
-p vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' for categorical.
+p vector indicating the type of variable for each column in \code{data}: "g" for Gaussian, "p" for Poisson, "c" for categorical.
 }
   \item{level}{
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
 }
   \item{timepoints}{
-A strictly increasing numeric vector of length \code{nrow(data)} indicating time points for the measurements in \code{data}. If \code{timepoints} is not specified, it is assumed that the time points are equally spaced. For details, see Haslbeck and Waldorp (2016).
+A strictly increasing numeric vector of length \code{nrow(data)} indicating time points for the measurements in \code{data}. If \code{timepoints} is not specified, it is assumed that the time points are equally spaced. For details, see Haslbeck and Waldorp (2018).
 }
   \item{estpoints}{
 Vector indicating estimation points on interval [0, 1]. Note that we define this unit interval on the entire time series. This also includes measurements that are excluded because not enough previous measurements are available to fit the model. This ensures that the a model estimated at, for example, estimation point 0.15 is actually estimated on data close to data points around this time point. See Haslbeck and Waldorp (2018) Section 2.5 and 3.4 for a detailed description.
@@ -42,7 +42,7 @@ Arguments passed to \code{mvar}, specifying how each single model should be esti
 
 
 \details{
-Estimates a sequence of mVAR models at the time points specified at the locations specified via \code{estpoints}. \code{tvmvar()} is a wrapper around \code{mvar()} and estimates a series of MGM with different weightings which are defined by the estimation locations in \code{estpoints} and the banwdith parameter specified in \code{bandwidth}. For details see Haslbeck and Waldorp (2016)
+Estimates a sequence of mVAR models at the time points specified at the locations specified via \code{estpoints}. \code{tvmvar()} is a wrapper around \code{mvar()} and estimates a series of MGM with different weightings which are defined by the estimation locations in \code{estpoints} and the banwdith parameter specified in \code{bandwidth}. For details see Haslbeck and Waldorp (2018)
 
 
 }
@@ -56,7 +56,7 @@ Contains all provided input arguments. If \code{saveData = TRUE}, it also contai
 
 
 \item{wadj}{
-A p x p x n_lags x N array, where n_lags is the number of specified lags in \code{lags} (see \code{?mvar}) and N is the number of estimation points specified in \code{estpoints}. For instance, wadj[1, 2, 1, 10] is the cross-lagged predicting variable 1 at time point t by variable 2 at time point t - z, where z is specified by the first lag specified in \code{lags} (see \code{?mvar}), in the model estimated at estimation point 10.}
+A p x p x n_lags x S array, where n_lags is the number of specified lags in \code{lags} (see \code{?mvar}) and S is the number of estimation points specified in \code{estpoints}. For instance, wadj[1, 2, 1, 10] is the cross-lagged predicting variable 1 at time point t by variable 2 at time point t - z, where z is specified by the first lag specified in \code{lags} (see \code{?mvar}), in the model estimated at estimation point 10.}
 
 \item{signs}{ Has the same structure as \code{wadj} and specifies the signs corresponding to the parameters in \code{wadj}, if defined. 1/-1 indicate positive and negative relationships, respectively. 0 indicates that no sign is defined, which is the case for interactions that involve a categorical variable where an interaction can have more than one parameter. If \code{binarySign = TRUE}, a sign is calculated for interactions between binary variables and binary and continuous variables, where the interaction is still defined by one parameter and hence a sign can be specified. \code{NA} indicates that the corresponding parameter in \code{wadj} is zero. See also \code{?mvar}.
 }
@@ -95,11 +95,10 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 ## specify one time-varying parameter, and try to recover it with
 ## tvmvar()
 
-
 # a) Specify time-varying VAR model
 
 p <- 6 # Six variables
-type <- c('c', 'c', 'c', 'c', 'g', 'g') # 4 categorical, 2 gaussians
+type <- c("c", "c", "c", "c", "g", "g") # 4 categorical, 2 gaussians
 level <- c(2, 2, 4, 4, 1, 1) # 2 categoricals with 2 categories, 2 with 5
 max_level <- max(level)
 n_timepoints <- 4000
@@ -144,20 +143,19 @@ dlist <- tvmvarsampler(coefarray = coefarray,
                        level = level,
                        pbar = TRUE)
 
-
 # c.1) Recover: stationary
 set.seed(1)
 mvar_obj <- mvar(data = dlist$data,
                  type = type,
                  level = level,
-                 lambdaSel = 'CV',
+                 lambdaSel = "CV",
                  lags = c(1, 3, 9),
                  signInfo = FALSE)
 
 # Did we recover the true parameters?
-mvar_obj$wadj[5, 6, 2] # cross-lagged effect of 6 on 2 over lag lags[2]
-mvar_obj$wadj[1, 3, 1] # cross-lagged effect of 3 on 1 over lag lags[1]
-mvar_obj$wadj[1, 5, 3] # cross-lagged effect of 1 on 5 over lag lags[3]
+mvar_obj$wadj[5, 6, 2] # cross-lagged effect of 6 on 5 over lag lags[2] (lag 3)
+mvar_obj$wadj[1, 3, 1] # cross-lagged effect of 3 on 1 over lag lags[1] (lag 1)
+mvar_obj$wadj[1, 5, 3] # cross-lagged effect of 1 on 5 over lag lags[3] (lag 9)
 
 
 # c.2) Recover: time-varying
@@ -165,37 +163,36 @@ set.seed(1)
 mvar_obj <- tvmvar(data = dlist$data,
                    type = type,
                    level = level,
-                   estpoints = seq(0, n_timepoints-9, length=10),
+                   estpoints = seq(0, 1, length=10),
                    bandwidth = .15,
-                   lambdaSel = 'CV',
+                   lambdaSel = "CV",
                    lags = c(1, 3, 9),
                    signInfo = FALSE)
 
-
 # Did we recover the true parameters?
-mvar_obj$wadj[5, 6, 2, ] # true increase nicely recovered
+mvar_obj$wadj[5, 6, 2, ] # true sort of recovered
 mvar_obj$wadj[1, 3, 1, ] # yes
 mvar_obj$wadj[1, 5, 3, ] # yes
 
 # Plotting parameter estimates over time
 plot(mvar_obj$wadj[5, 6, 2, ], 
-     type='l', ylim=c(-.2,.7), 
-     lwd=2, ylab='Parameter value', xlab='Estimation points')
-lines(mvar_obj$wadj[1, 3, 1, ], col='red', lwd=2)
-lines(mvar_obj$wadj[1, 5, 3, ], col='blue', lwd=2)
-legend('bottomright', c('5 <-- 6', '1 <-- 3', '1 <-- 5'), 
-       lwd = c(2,2,2), col=c('black', 'red', 'blue'))
-       
-       
+     type="l", ylim=c(-.2,.7), 
+     lwd=2, ylab="Parameter value", xlab="Estimation points")
+lines(mvar_obj$wadj[1, 3, 1, ], col="red", lwd=2)
+lines(mvar_obj$wadj[1, 5, 3, ], col="blue", lwd=2)
+legend("bottomright", c("5 <-- 6", "1 <-- 3", "1 <-- 5"), 
+       lwd = c(2,2,2), col=c("black", "red", "blue"))
+
+
 # d) Predict values / compute nodewise error
 
 mvar_pred_w <- predict.mgm(object=mvar_obj,
-                         data=dlist$data,
-                         tvMethod = 'weighted')
+                           data=dlist$data,
+                           tvMethod = "weighted")
 
 mvar_pred_cM <- predict.mgm(object=mvar_obj,
-                         data=dlist$data,
-                         tvMethod = 'closestModel')
+                            data=dlist$data,
+                            tvMethod = "closestModel")
 
 mvar_pred_w$errors
 mvar_pred_cM$errors

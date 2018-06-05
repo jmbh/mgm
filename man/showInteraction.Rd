@@ -64,11 +64,10 @@ fit_d2 <- mgm(data = autism_data$data,
 fit_d2$pairwise$wadj # for instance, we see there is an interaction 1-2
 
 # 2) Look at details of interaction 1-2
-
 showInteraction(object = fit_d2, 
-                     int = c(1, 2))
+                int = c(1, 2))
 
-
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 }
 

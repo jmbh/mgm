@@ -19,13 +19,13 @@ plotRes(object, quantiles, labels = NULL, decreasing = TRUE,
 An output object from the \code{resample()} function.
 }
   \item{quantiles}{
-A numerical vector of length two specifying the desired lower/upper quantile, e.g. \code{c(.05, .95)}.
+A numerical vector of length two, specifying the desired lower/upper quantiles, for example \code{c(.05, .95)}.
 }
   \item{labels}{
-A character vector of length p containing the label of each variable, where p is the number of variables.
+A character vector of length p, containing the label of each variable, where p is the number of variables.
 }
   \item{decreasing}{
-If \code{TRUE} (default), the edges are displayed by the mean of the sampling distribution in decreasing order. If \code{FALSE} they are ordered in increasing order.
+If \code{TRUE} (default), the edges are ordered by the arithmetic mean of the sampling distribution in decreasing order. If \code{FALSE} they are ordered in increasing order.
 }
   \item{cut}{
 A sequence of integers, specifying which edges are represented. For instance, if \code{decreasing = TRUE} and \code{cut = 1:10}, summaries for the 10 edges with the largest parameter estimate are displayed.
@@ -72,19 +72,19 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 
 # Fit initial model
 fit_aut <- mgm(data = as.matrix(autism_data$data),
-              type = autism_data$type,
-              level = autism_data$lev,
-              k = 2)
+               type = autism_data$type,
+               level = autism_data$lev,
+               k = 2)
 
 
 # Fit bootstrapped models
 res_aut <- resample(object = fit_aut, 
                     data = as.matrix(autism_data$data), 
-                    nB = 10)
+                    nB = 10) # should be more in real applications 
 
 # Plot Summary
 plotRes(object = res_aut,
-        qtl = c(.05, .95), 
+        quantiles = c(.05, .95), 
         labels = NULL, 
         axis.ticks = c(-.25, 0, .25, .5, .75))
 

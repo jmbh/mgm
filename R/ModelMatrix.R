@@ -7,7 +7,7 @@ ModelMatrix <- function(data,  # matrix
                         labels,
                         d, # largest neighborhood size
                         moderators = NULL,
-                        v,
+                        v = NULL,
                         allCats = FALSE # if true, the model matrix does not use all unique categories, but the categories specified in level, this exists because I use this function within the sampling function
 )
   
@@ -15,11 +15,13 @@ ModelMatrix <- function(data,  # matrix
 {
   
   
-  # Delete variable v
-  data <- data[, -v]
-  type <- type[-v]
-  level <- level[-v]
-  labels <- labels[-v]
+  # Delete variable v: only for MGMs!
+  if(!is.null(v)) {
+    data <- data[, -v]
+    type <- type[-v]
+    level <- level[-v]
+    labels <- labels[-v]
+  }
   
   
   # ---------- Calculate Auxilliary variables ----------
@@ -96,17 +98,17 @@ ModelMatrix <- function(data,  # matrix
     if(is.null(moderators)) {
       for(ord in 1:d) l_interactions[[ord]] <- combn((1:p), ord, simplify = FALSE) # note that the numbers here refer to the all variables minus variable v
     } else {
-
+      
       l_interactions[[1]] <- list()
       for(i in 1:p) l_interactions[[1]][[i]] <- i
       
       # Case II: No Moderation
-    # if(v == 2)  browser()
+      # if(v == 2)  browser()
       
       if(v %in% moderators) {
         
         l_interactions[[2]] <- combn(1:p, 2, simplify = FALSE) # all combinations of the remaining (here denoted by 1:p) variables
-
+        
       } else {
         
         ind_mod_MM <- (1:(p+1) %in% moderators)[-v] # indicator(moderator?) for 1:p predictors
@@ -124,9 +126,9 @@ ModelMatrix <- function(data,  # matrix
         l_interactions[[2]] <- l_mods_combn
         
       } # end: v = moderator?
-
+      
     } # end if: moderators?
-     
+    
     
     
     # storage for all interactions of all orders

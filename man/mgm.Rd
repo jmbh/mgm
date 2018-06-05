@@ -6,7 +6,7 @@
 Estimating Mixed Graphical Models
 }
 \description{
-Function to estimate k-degree Mixed Graphical Models via neighborhood regression.
+Function to estimate k-degree Mixed Graphical Models via nodewise regression.
 }
 \usage{
 mgm(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
@@ -21,34 +21,34 @@ mgm(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
 n x p data matrix
 }
   \item{type}{
-p vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' for categorical.
+p vector indicating the type of variable for each column in \code{data}. "g" for Gaussian, "p" for Poisson, "c" for categorical.
 }
   \item{level}{
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
 }
   \item{lambdaSeq}{
-A sequence of lambdas that should be searched (see also \code{lambdaSel}). Defaults to \code{NULL}, which lets \code{glmnet} select a reasonable lambda sequence (recommended).
+A sequence of lambdas that should be searched (see also \code{lambdaSel}). Defaults to \code{NULL}, which uses the  \code{glmnet} default to select a lambda candidate sequence (recommended). See \code{?glmnet} for details.
 }
   \item{lambdaSel}{
-Procedure to select the tuning parameter controlling the Lq-penalization. The two options are cross validation 'CV' and the Extended Bayesian Information Criterion (EBIC) 'EBIC'. The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{lambdaSel = 'CV'}.
+Specifies the procedure for selecting the tuning parameter controlling the Lq-penalization. The two options are cross validation "CV" and the Extended Bayesian Information Criterion (EBIC) "EBIC". The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{lambdaSel = "CV"}.
 }
   \item{lambdaFolds}{
-Number of folds in cross validation if \code{lambdaSel = 'CV'}
+Number of folds in cross validation if \code{lambdaSel = "CV"}.
 }
   \item{lambdaGam}{
-Hyperparameter gamma in the EBIC if \code{lambdaSel = 'EBIC'}. Defaults to \code{lambdaGam = .25}.
+Hyperparameter gamma in the EBIC if \code{lambdaSel = "EBIC"}. Defaults to \code{lambdaGam = .25}.
 }
   \item{alphaSeq}{
-A sequence of alpha parameters for the elastic net penality in [0,1] that should be searched (see also \code{alphaSel}). Defaults to \code{alphaSeq = 1}, which means that the lasso is being used. \code{alphaSeq = 0} corresponds to an L2-penalty (Ridge regresion). For details see Friedman, Hastie and Tibshirani (2010).
+A sequence of alpha parameters for the elastic net penality in [0,1] that should be searched (see also \code{alphaSel}). Defaults to \code{alphaSeq = 1}, which means that the lasso is being used. \code{alphaSeq = 0} corresponds to an L2-penalty (Ridge regression). For details see Friedman, Hastie and Tibshirani (2010).
 }
   \item{alphaSel}{
-Procedure to select the alpha parameter in the elastic net penalty. The two options are cross validation 'CV' and the Extended Bayesian Information Criterion (EBIC) 'EBIC'. The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{alphaSel = 'CV'}.
+Specifies the procedure for selecting the alpha parameter in the elastic net penalty. The two options are cross validation "CV" and the Extended Bayesian Information Criterion (EBIC) "EBIC". The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{alphaSel = "CV"}.
 }
   \item{alphaFolds}{
-Number of folds in cross validation if \code{alphaSel = 'CV'}
+Number of folds in cross validation if \code{alphaSel = "CV"}.
 }
   \item{alphaGam}{
-Hyperparameter gamma in the EBIC if \code{alphaSel = 'EBIC'}. Defaults to \code{alphaGam = .25}.
+Hyperparameter gamma in the EBIC if \code{alphaSel = "EBIC"}. Defaults to \code{alphaGam = .25}.
 }
   \item{k}{
 Order up until including which interactions are included in the model. \code{k = 2} means that all pairwise interactions are included, \code{k = 3} means that all pairwise and all three-way interactions are included, etc. In previous versions of mgm the order of interactions was specified by the parameter d, the largest size or a neighborhood. Note that k = d + 1.
@@ -59,35 +59,35 @@ Integer vector with elements in \code{1:p}, specifying moderation effects to be 
 }
 
   \item{ruleReg}{
-Rule to combine estimates from neighborhood regression. E.g. for pairwise interactions, two estimates (one from regressing A on B and one from B on A) have to combined in one edge parameter. \code{ruleReg = 'AND'} requires all estiamtes to be nonzero in order to set the edge to be present. \code{ruleReg = 'OR'} requires at least one estiamte to be nonzero in order to set the edge to be present. For higher order interactions, \code{k} estiamtes have to be combined with this rule.
+Rule used to combine estimates from neighborhood regression. E.g. for pairwise interactions, two estimates (one from regressing A on B and one from B on A) have to combined in one edge parameter. \code{ruleReg = "AND"} requires all estimates to be nonzero in order to set the edge to be present. \code{ruleReg = "OR"} requires at least one estiamte to be nonzero in order to set the edge to be present. For higher order interactions, \code{k} estimate have to be combined with this rule.
 }
   \item{weights}{
 A n vector with weights for observations.
 }
   \item{threshold}{
-  A threshold below which edge-weights are put to zero. This is done in order to guarantee a constant false-positive rate. \code{threshold = 'LW'} refers to the threshold in Loh and Wainwright (2013), which was used in all previous versions of mgm. \code{threshold = 'HW'} refers to the threshold in Haslbeck and Waldorp (2016). If \code{threshold = 'none'} no thresholding is applied. Defaults to \code{threshold = 'LW'}.
-  }
+  A threshold below which edge-weights are put to zero. This is done in order to guarantee a lower bound on the false-positive rate. \code{threshold = "LW"} refers to the threshold in Loh and Wainwright (2013), which was used in all previous versions of mgm. \code{threshold = "HW"} refers to the threshold in Haslbeck and Waldorp (2016). If \code{threshold = "none"} no thresholding is applied.  Defaults to \code{threshold = "LW"}.
+}
 
   \item{method}{
-Estimation method, currently only \code{method = 'glm'}.
+Estimation method, currently only \code{method = "glm"}.
 }
   \item{binarySign}{
-If \code{binarySign = TRUE} a sign for the interaction within binary nodes and between binary and continuous nodes is provided in the output. Note that in this case the two categories of the binary variables have to be coded in {0,1}. This is to ensure that the interpretation of the sign is unambigous: a positive sign of a parameter means that increasing the associated predictor results in a higher probability for category 1.
+If \code{binarySign = TRUE}, a sign for the interaction within binary nodes and between binary and continuous nodes is provided in the output. Note that in this case the two categories of the binary variables have to be coded in {0,1}. This is to ensure that the interpretation of the sign is unambigous: a positive sign of a parameter means that increasing the associated predictor results in a higher probability for category 1.
 }
 
   \item{scale}{
-If \code{scale = TRUE}, all Gaussian nodes (specified by \code{'g'} in \code{type}) are centered and divided by their standard deviation. Scaling is recommended, because otherwise the penalization of a parameter depends on the variance of the associated predictor.
+If \code{scale = TRUE}, all Gaussian nodes (specified by \code{"g"} in \code{type}) are centered and divided by their standard deviation. Scaling is recommended, because otherwise the penalization of a parameter depends on the variance of the associated predictor.
 }
 
   \item{verbatim}{
-If \code{verbatim = TRUE} no warnings and no progress bar is shown. Defaults to \code{verbatim = FALSE}.
+If \code{verbatim = TRUE}, no warnings and no progress bar is shown. Defaults to \code{verbatim = FALSE}.
 }
 
   \item{pbar}{
-If \code{pbar = TRUE} a progress bar is shown. Defaults to \code{pbar = TRUE}.
+If \code{pbar = TRUE}, a progress bar is shown. Defaults to \code{pbar = TRUE}.
 }
   \item{warnings}{
-If \code{warnings = TRUE} no warnigns are returned. Defaults to \code{warnings = FALSE}.
+If \code{warnings = TRUE}, no warnigns are returned. Defaults to \code{warnings = FALSE}.
 }
   \item{saveModels}{
 If \code{saveModels = FALSE}, only information about the weighted adjacency matrix, and if k > 2 about the factor graph is provided in the output list. If \code{saveModels = TRUE}, all fitted parameters are additionally returned.
@@ -106,7 +106,6 @@ If \code{thresholdCat = FALSE}, the thresholds of categorical variables are set 
   \item{signInfo}{
 If \code{signInfo = TRUE}, a message is shown in the console, indicating that the sign of estimates is stored separately. Defaults to \code{signInfo = TRUE}.
 }
-
 
   \item{...}{
 Additional arguments.
@@ -197,11 +196,11 @@ fit_k2$pairwise$wadj
 library(qgraph)
 qgraph(fit_k2$pairwise$wadj,
        edge.color = fit_k2$pairwise$edgecolor,
-       layout = 'spring',
+       layout = "spring",
        labels =  autism_data$colnames)
 
 
-# 2) Fit MGM with pairwise & threeway interactions
+# 2) Fit MGM with pairwise & three-way interactions
 fit_k3 <- mgm(data = autism_data$data,
               type = autism_data$type,
               level = autism_data$lev,
@@ -211,24 +210,15 @@ fit_k3 <- mgm(data = autism_data$data,
 fit_k3$interactions$indicator
 
 # 3) Plot Factor Graph 
-
-nodeColors <- c("white", "orange", "lightblue")
-
 FactorGraph(object = fit_k3, 
-            PairwiseAsEdge = TRUE, 
-            DoNotPlot = FALSE, 
-            colors = nodeColors, 
-            labels = 1:7, 
-            layout="spring")
+            PairwiseAsEdge = FALSE, 
+            labels = autism_data$colnames)
 
 # 4) Predict values
-
 pred_obj <- predict(fit_k3, autism_data$data)
 
-head(pred_obj$predicted) # predicted values
-
+head(pred_obj$predicted) # first six rows of predicted values
 pred_obj$errors # Nodewise errors
-
 
 
 ## Here we illustrate why we need to overparameterize the design matrix to 
@@ -237,7 +227,7 @@ pred_obj$errors # Nodewise errors
 # 1) Define Graph (one 3-way interaction between 3 binary variables)
 
 # a) General Graph Info
-type = c('c', 'c', 'c')
+type = c("c", "c", "c")
 level = c(2, 2, 2)
 # b) Define Interaction
 factors <- list()
@@ -245,7 +235,7 @@ factors[[1]] <- NULL # no pairwise interactions
 factors[[2]] <- matrix(c(1,2,3), ncol=3, byrow = T) # one 3-way interaction
 interactions <- list()
 interactions[[1]] <- NULL
-interactions[[2]] <- vector('list', length = 1)
+interactions[[2]] <- vector("list", length = 1)
 # threeway interaction no1
 interactions[[2]][[1]] <- array(0, dim = c(level[1], level[2], level[3]))
 theta <- .7
@@ -258,7 +248,6 @@ thresholds[[3]] <- c(0, 0)
 
 
 # 2) Sample from Graph
-
 iter <- 1
 set.seed(iter)
 N <- 2000
@@ -273,13 +262,12 @@ d_iter <- mgmsampler(factors = factors,
 
 
 # 3.1) Estimate order 3 MGM usind standard parameterization
-
 d_est_stand <- mgm(data = d_iter$data,
                    type = type,
                    level = level,
                    k = 3,
-                   lambdaSel = 'CV',
-                   ruleReg = 'AND',
+                   lambdaSel = "CV",
+                   ruleReg = "AND",
                    pbar = TRUE, 
                    overparameterize = FALSE, 
                    signInfo = FALSE)
@@ -287,18 +275,17 @@ d_est_stand <- mgm(data = d_iter$data,
 # We look at the nodewise regression for node 1 (same for all)
 coefs_stand <- d_est_stand$nodemodels[[1]]$model
 coefs_stand 
-# we see that nonzero-zero pattern of parameter vector does not allow us to infer whether 
+# We see that nonzero-zero pattern of parameter vector does not allow us to infer whether 
 # interactions are present or not
 
 
 # 3.2) Estimate order 3 MGM usind overparameterization
-
 d_est_over <- mgm(data = d_iter$data,
                   type = type,
                   level = level,
                   k = 3,
-                  lambdaSel = 'CV',
-                  ruleReg = 'AND',
+                  lambdaSel = "CV",
+                  ruleReg = "AND",
                   pbar = TRUE, 
                   overparameterize = TRUE, 
                   signInfo = FALSE)
@@ -309,6 +296,7 @@ coefs_over # recovers exactly the 3-way interaction
 
 
 # For more examples see https://github.com/jmbh/mgmDocumentation
+
 
 
 }

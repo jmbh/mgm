@@ -8,10 +8,10 @@ Sampling from a mixed VAR model
 Function to sample from a mixed VAR (mVAR) model
 }
 \usage{
-mvarsampler(coefarray, lags, thresholds, sds,
-            type, level, N, pbar)
+mvarsampler(coefarray, lags, thresholds, 
+            sds, type, level, N, pbar)
 }
-%- maybe also 'usage' for other objects documented here.
+%- maybe also "usage" for other objects documented here.
 \arguments{
   \item{coefarray}{
 A p x p x max(level) x max(level) x n_lags array, where p are the number of variables, level is the input argument \code{level} and n_lags is the number of specified lags in \code{lags}, so n_lags = length(n_lags). The first four dimensions specify the parameters involved in the cross-lagged effects of the lag specified in the 5th dimension. I.e. coefarray[5, 6, 1, 1, 3] indicates the cross-lagged effect of variable 6 on variable 5 (if both are continuous), for the third lag specified in \code{lags}. If variable 1 and 3 are categorical with m = 2 and  = 4 categories, respectively, then coefarray[1, 3, 1:2, 1:4, 1] indicates the m*s=8 parameters specifying this interaction for the first lag specified in \code{lags}. See the examples below for an illustration.
@@ -26,7 +26,7 @@ A list with p entries, each consisting of a vector indicating a threshold for ea
 A vector of length p indicating the standard deviations of the included Gaussian nodes. If non-Gaussian variables are included in the mVAR model, the corresponding entries are ignored.
 }
   \item{type}{
-p vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' for categorical.
+p vector indicating the type of variable for each column in \code{data}. "g" for Gaussian, "p" for Poisson, "c" for categorical.
 }
   \item{level}{
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
@@ -69,7 +69,7 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 # 1) Define mVAR model
 
 p <- 6 # Six variables
-type <- c('c', 'c', 'c', 'c', 'g', 'g') # 4 categorical, 2 gaussians
+type <- c("c", "c", "c", "c", "g", "g") # 4 categorical, 2 gaussians
 level <- c(2, 2, 4, 4, 1, 1) # 2 categoricals with m=2, 2 categoricals with m=4, two continuous
 max_level <- max(level)
 
@@ -119,15 +119,18 @@ set.seed(1)
 mvar_obj <- mvar(data = dlist$data,
                  type = type,
                  level = level,
-                 lambdaSel = 'CV',
+                 lambdaSel = "CV",
                  lags = c(1, 3, 9),
                  signInfo = FALSE,
                  overparameterize = F)
 
 # Did we recover the true parameters?
-mvar_obj$wadj[5, 6, 2] # cross-lagged effect of 6 on 2 over lag lags[2]
+mvar_obj$wadj[5, 6, 2] # cross-lagged effect of 6 on 5 over lag lags[2]
 mvar_obj$wadj[1, 3, 1] # cross-lagged effect of 3 on 1 over lag lags[1]
 mvar_obj$wadj[1, 5, 3] # cross-lagged effect of 1 on 5 over lag lags[3]
+
+
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 
 }

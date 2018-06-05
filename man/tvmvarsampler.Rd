@@ -26,7 +26,7 @@ A list with p entries, each consisting of a matrix indicating a threshold for ea
 A N x p matrix specifying the standard deviation of Gaussian variables (columns) at each time point (rows)If non-Gaussian variables are included in the mVAR model, the corresponding columns are ignored.
 }
   \item{type}{
-p vector indicating the type of variable for each column in \code{data}. 'g' for Gaussian, 'p' for Poisson, 'c' for categorical.
+p vector indicating the type of variable for each column in \code{data}. "g" for Gaussian, "p" for Poisson, "c" for categorical.
 }
   \item{level}{
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
@@ -62,12 +62,12 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 
 \dontrun{
 
-
+## We specify a tvmvar model, sample from it and recover it
 
 # a) Set up time-varying mvar model
 
 p <- 6 # Six variables
-type <- c('c', 'c', 'c', 'c', 'g', 'g') # 4 categorical, 2 gaussians
+type <- c("c", "c", "c", "c", "g", "g") # 4 categorical, 2 gaussians
 level <- c(2, 2, 4, 4, 1, 1) # 2 categoricals with 2 categories, 2 with 5
 max_level <- max(level)
 
@@ -101,42 +101,38 @@ coefarray[1, 3, 1:level[2], 1:level[4], 1, ] <- m1
 # a.3) interaction between 1<-5, lag=9
 coefarray[1, 5, 1:level[1], 1:level[5], 3, ] <- c(0, 1)
 
-
 dim(coefarray)
+
 
 # b) Sample
 set.seed(1)
 dlist <- tvmvarsampler(coefarray = coefarray,
-                     lags = lags,
-                     thresholds = thresholds,
-                     sds = sds,
-                     type = type,
-                     level = level,
-                     pbar = TRUE)
+                       lags = lags,
+                       thresholds = thresholds,
+                       sds = sds,
+                       type = type,
+                       level = level,
+                       pbar = TRUE)
 
 
 # c) Recover: time-varying mVAR model
 set.seed(1)
 tvmvar_obj <- tvmvar(data = dlist$data,
-                 type = type,
-                 level = level,
-                 lambdaSel = 'CV',
-                 lags = c(1, 3, 9),
-                 estpoints = seq(0, N-9, length=10),
-                 bandwidth = .05)
+                     type = type,
+                     level = level,
+                     lambdaSel = "CV",
+                     lags = c(1, 3, 9),
+                     estpoints = seq(0, 1, length=10),
+                     bandwidth = .05)
 
 tvmvar_obj$wadj[5, 6, 2, ] # parameter goes down, as specified
 tvmvar_obj$wadj[1, 3, 1, ]
 tvmvar_obj$wadj[1, 5, 3, ]
 
-
-
-
+# For more examples see https://github.com/jmbh/mgmDocumentation
 
 }
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+

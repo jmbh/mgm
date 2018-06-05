@@ -319,6 +319,9 @@ mvar <- function(data,         # n x p data matrix
     mvarobj$call$data_lagged$data_response <- NULL
   }
   
+  # Save computed consec (if provided by dayvar/beepvar); will be used in prediction functions
+  mvarobj$call$consec <- consec
+  
   
   # -------------------- Estimate -------------------
   
@@ -363,7 +366,8 @@ mvar <- function(data,         # n x p data matrix
                             type = type_aug,
                             level = level_aug,
                             labels = colnames(data_input_MM),
-                            d = 1)
+                            d = 1, 
+                            v = NULL)
       X <- X_over
       
     } else {

@@ -6,7 +6,7 @@
 Estimating mixed Vector Autoregressive Model (mVAR)
 }
 \description{
-Estimates Mixed Vector Autoregressive Model (mVAR) via elastic-net regularized Generalized Linear Models
+Estimates mixed Vector Autoregressive Model (mVAR) via elastic-net regularized Generalized Linear Models
 }
 \usage{
 mvar(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
@@ -27,22 +27,22 @@ p vector indicating the type of variable for each column in \code{data}. "g" for
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
 }
   \item{lambdaSeq}{
-A sequence of lambdas that should be searched (see also \code{lambdaSel}). Defaults to \code{NULL}, which lets \code{glmnet} select a reasonable lambda sequence (recommended).
+A sequence of lambdas that should be searched (see also \code{lambdaSel}). Defaults to \code{NULL}, which uses the  \code{glmnet} default to select a lambda candidate sequence (recommended). See \code{?glmnet} for details.
 }
   \item{lambdaSel}{
-Procedure to select the tuning parameter controlling the Lq-penalization. The two options are cross validation "CV" and the Extended Bayesian Information Criterion (EBIC) "EBIC". The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{lambdaSel = "CV"}.
+Specifies the procedure for selecting the tuning parameter controlling the Lq-penalization. The two options are cross validation "CV" and the Extended Bayesian Information Criterion (EBIC) "EBIC". The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{lambdaSel = "CV"}.
 }
   \item{lambdaFolds}{
-Number of folds in cross validation if \code{lambdaSel = "CV"}
+Number of folds in cross validation if \code{lambdaSel = "CV"}.
 }
   \item{lambdaGam}{
 Hyperparameter gamma in the EBIC if \code{lambdaSel = "EBIC"}. Defaults to \code{lambdaGam = .25}.
 }
   \item{alphaSeq}{
-A sequence of alpha parameters for the elastic net penality in [0,1] that should be searched (see also \code{alphaSel}). Defaults to \code{alphaSeq = 1}, which means that the lasso is being used. \code{alphaSeq = 0} corresponds to an L2-penalty (Ridge regresion). For details see Friedman, Hastie and Tibshirani (2010).
+A sequence of alpha parameters for the elastic net penality in [0,1] that should be searched (see also \code{alphaSel}). Defaults to \code{alphaSeq = 1}, which means that the lasso is being used. \code{alphaSeq = 0} corresponds to an L2-penalty (Ridge regression). For details see Friedman, Hastie and Tibshirani (2010).
 }
   \item{alphaSel}{
-Procedure to select the alpha parameter in the elastic net penalty. The two options are cross validation "CV" and the Extended Bayesian Information Criterion (EBIC) "EBIC". The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{alphaSel = "CV"}.
+Specifies the procedure for selecting the alpha parameter in the elastic net penalty. The two options are cross validation "CV" and the Extended Bayesian Information Criterion (EBIC) "EBIC". The EBIC performs well in selecting sparse graphs (see Barber and Drton, 2010 and Foygel and Drton, 2014). Note that when also searching the alpha parameter in the elastic net penalty, cross validation should be preferred, as the parameter vector will not necessarily be sparse anymore. The EBIC tends to be a bit more conservative than CV (see Haslbeck and Waldorp, 2016). CV can sometimes not be performed with categorical variables, because \code{glmnet} requires at least 2 events of each category of each categorical variable in each training-fold. Defaults to \code{alphaSel = "CV"}.
 
 }
   \item{alphaFolds}{
@@ -55,40 +55,38 @@ Hyperparameter gamma in the EBIC if \code{alphaSel = "EBIC"}. Defaults to \code{
 Vector of positive integers indicating the lags included in the mVAR model (e.g. 1:3 or c(1,3,5))
 }
   \item{consec}{
-An integer vector of length n, indicating the consecutiveness of measurement points of the rows in \code{data}. This means that rows for which the necessary (defined by the specified VAR model) measurements at previous time points are not available are excluded from the analysis. For instance for a VAR model with lag 1 a consec vector of \code{consec = c(1,2,3,5)} would mean that the fourth row is excluded from the analysis, since no measurement 5-1=4 is available. This is useful in many applications where some time points are completely missing, or gaps in the time series have structural reasons (respondents only respond during the hours they are awake). The "trimmed" dataset is returned in \code{call$data_lagged} if \code{saveData = TRUE}. Defaults to \code{consec = NULL}, which assumes that all measurements are consecutive, i.e. \code{consec = 1:n}. In this case only the first \code{max(lags)} lags are excluded to obtain the VAR design matrix.
+An integer vector of length n, indicating the consecutiveness of measurement points of the rows in \code{data}. This means that rows for which the necessary (defined by the specified VAR model) measurements at previous time points are not available are excluded from the analysis. For instance, for a VAR model with lag 1 a consec vector of \code{consec = c(1,2,3,5)} would mean that the fourth row is excluded from the analysis, since no measurement 5-1=4 is available (next to the first row, for which also no previous measurement can be available). This is useful in many applications in which measurements are missing randomly or due to the design of the data collection (for example, respondents only respond during the hours they are awake). The "trimmed" dataset is returned in \code{call$data_lagged} if \code{saveData = TRUE}. Defaults to \code{consec = NULL}, which assumes that all measurements are consecutive, i.e. \code{consec = 1:n}. In this case only the first \code{max(lags)} lags are excluded to obtain the VAR design matrix.
 }
 
-\item{beepvar}{Together with the argument \code{dayvar}, this argument is an alternative to the \code{consec} argument (see above) to specify the consecutiveness of measurements. This is tailored to ecological momentary assessment (EMA) studies, where the consectutiveness is defined by the number of notification on a given day (\code{beepvar}) and the given day (\code{dayvar}).
+\item{beepvar}{Together with the argument \code{dayvar}, this argument is an alternative to the \code{consec} argument (see above) to specify the consecutiveness of measurements. This is tailored to experience sampling method (ESM) studies, where the consectutiveness is defined by the number of notification on a given day (\code{beepvar}) and the given day (\code{dayvar}).
 }
 
 \item{dayvar}{See \code{beepvar}.}
-
   \item{weights}{
 A vector with n - max(lags) entries, indicating the weight for each observation. The mVAR design matrix has with n - max(lags) rows, because the first row must be predictable by the highest lag. The weights have to be on the scale [0, n - max(lags) ].
 }
   \item{threshold}{
-  A threshold below which edge-weights are put to zero. This is done in order to guarantee a constant false-positive rate. \code{threshold = "LW"} refers to the threshold in Loh and Wainwright (2013), which was used in all previous versions of mgm. \code{threshold = "HW"} refers to the threshold in Haslbeck and Waldorp (2016). If \code{threshold = "none"} no thresholding is applied.  Defaults to \code{threshold = "LW"}.
-
+  A threshold below which edge-weights are put to zero. This is done in order to guarantee a lower bound on the false-positive rate. \code{threshold = "LW"} refers to the threshold in Loh and Wainwright (2013), which was used in all previous versions of mgm. \code{threshold = "HW"} refers to the threshold in Haslbeck and Waldorp (2016). If \code{threshold = "none"} no thresholding is applied.  Defaults to \code{threshold = "LW"}.
 }
   \item{method}{
 Estimation method, currently only \code{method = "glm"}.
 }
   \item{binarySign}{
-If \code{binarySign = TRUE} a sign for the interaction within binary nodes and between binary and continuous nodes is provided in the output. Note that in this case the two categories of the binary variables have to be coded in {0,1}. This is to ensure that the interpretation of the sign is unambigous: a positive sign of a parameter means that increasing the associated predictor results in a higher probability for category 1.
+If \code{binarySign = TRUE}, a sign for the interaction within binary nodes and between binary and continuous nodes is provided in the output. Note that in this case the two categories of the binary variables have to be coded in {0,1}. This is to ensure that the interpretation of the sign is unambigous: a positive sign of a parameter means that increasing the associated predictor results in a higher probability for category 1.
 }
 
   \item{scale}{
-If \code{scale = TRUE}, all Gaussian nodes (specified by \code{"g"} in \code{type}) are centered and divided by their standard deviation. Scaling is recommended, because otherwise the penalization of a parameter depends on the variance of the associated predictor.
+If \code{scale = TRUE}, all Gaussian nodes (specified by \code{"g"} in the \code{type} argument) are centered and divided by their standard deviation. Scaling is recommended, because otherwise the penalization of a parameter depends on the variance of the associated predictor.
 }
 
   \item{verbatim}{
-If \code{verbatim = TRUE} no warnings and no progress bar is shown. Defaults to \code{verbatim = FALSE}.
+If \code{verbatim = TRUE}, no warnings and no progress bar is shown. Defaults to \code{verbatim = FALSE}.
 }
   \item{pbar}{
-If \code{pbar = TRUE} a progress bar is shown. Defaults to \code{pbar = TRUE}.
+If \code{pbar = TRUE}, a progress bar is shown. Defaults to \code{pbar = TRUE}.
 }
   \item{warnings}{
-If \code{warnings = TRUE} no warnigns are returned. Defaults to \code{warnings = FALSE}.
+If \code{warnings = TRUE}, no warnigns are returned. Defaults to \code{warnings = FALSE}.
 }
   \item{saveModels}{
 If \code{saveModels = FALSE}, only information about the weighted adjacency matrix, and if d > 1 about the factor graph is provided in the output list. If \code{saveModels = TRUE}, all fitted parameters are additionally returned.
@@ -116,7 +114,7 @@ Additional arguments.
 }
 
 \details{
-See Haslbeck and Waldorp (2016) for details about how the mixed VAR model is estimated.
+See Haslbeck and Waldorp (2018) for details about how the mixed VAR model is estimated.
 }
 
 \value{
@@ -145,7 +143,7 @@ List with entries equal to the number of specified lags in \code{lags}. Each ent
 }
 
 \item{intercepts}{
-A list with p entries, which contain the intercept/thresholds for each node in the network. In case a given node is categorical with m categories, there are m thresholds for this variable.
+A list with p entries, which contain the intercept/thresholds for each node. In case a given node is categorical with m categories, there are m thresholds for this variable.
 }
 
 \item{nodemodels}{
@@ -156,10 +154,7 @@ A list with p \code{glmnet()} models, from which all above output is computed. A
 }
 
 
-
-
 \references{
-
 
 Foygel, R., & Drton, M. (2010). Extended Bayesian information criteria for Gaussian graphical models. In Advances in neural information processing systems (pp. 604-612).
 
@@ -167,7 +162,7 @@ Barber, R. F., & Drton, M. (2015). High-dimensional Ising model selection with B
 
 Friedman, J., Hastie, T., & Tibshirani, R. (2010). Regularization paths for generalized linear models via coordinate descent. Journal of statistical software, 33(1), 1.
 
-Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.05677.
+Haslbeck, J., & Waldorp, L. J. (2018). Estimating time-Varying Mixed Graphical Models in high-dimensional data. arXiv preprint arXiv:1510.05677.
 
 Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure Estimation for time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
@@ -194,7 +189,6 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 ## We generate data from a mixed VAR model and then recover the model using mvar()
 
 # 1) Define mVAR model
-
 p <- 6 # Six variables
 type <- c("c", "c", "c", "c", "g", "g") # 4 categorical, 2 gaussians
 level <- c(2, 2, 4, 4, 1, 1) # 2 categoricals with m=2, 2 categoricals with m=4, two continuous
@@ -241,9 +235,7 @@ dlist <- mvarsampler(coefarray = coefarray,
                      N = 200,
                      pbar = TRUE)
 
-
 # 3) Recover
-
 set.seed(1)
 mvar_obj <- mvar(data = dlist$data,
                  type = type,
@@ -262,14 +254,10 @@ mvar_obj$wadj[1, 5, 3] # cross-lagged effect of 1 on 5 over lag lags[3]
 # Example: the full parameters for the crossed-lagged interaction of 2 on 1 over lag lags[1]
 mvar_obj$rawlags[[1]][[1]][[2]] 
 
-
-
 # 4) Predict / Compute nodewise Error
-
 pred_mvar <- predict.mgm(mvar_obj, dlist$data)
 
-head(pred_mvar$predicted) # predicted values
-
+head(pred_mvar$predicted) # first 6 rows of predicted values
 pred_mvar$errors # Nodewise errors
 
 # For more examples see https://github.com/jmbh/mgmDocumentation

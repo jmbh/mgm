@@ -5,10 +5,11 @@
 Resampling scheme for mgm objects
 }
 \description{
-Fits mgm model types (mgm, mvar, tvmgm, tvmvar) to a specified number of bootstrap samples
+Fits mgm model types (mgm, mvar, tvmgm, tvmvar) to a specified number of bootstrap samples.
 }
 \usage{
-resample(object, data, nB, seeds, blocks, quantiles, pbar, verbatim, ...)
+resample(object, data, nB, seeds, blocks, 
+         quantiles, pbar, verbatim, ...)
 }
 
 \arguments{
@@ -29,14 +30,14 @@ The number of blocks for the block bootstrap used for time-varying models.
 }
 
   \item{quantiles}{
-A vector with values in [0, 1], specifying quantiles computed on the bootstrapped sampling distributions. Defaults to \code{quantiles = c(.05, .95)}
+A vector with two values in [0, 1], specifying quantiles computed on the bootstrapped sampling distributions. Defaults to \code{quantiles = c(.05, .95)}
 }
 
-
-  \item{pbar}{
+\item{pbar}{
 If \code{TRUE}, a progress bar is shown. Defaults to \code{pbar = TRUE}.
 }
-  \item{verbatim}{
+
+\item{verbatim}{
 If \code{TRUE}, the seed of the current bootstrap sample is printed in the console. Useful to exclude zero-variance bootstrap samples in datasets with low variance.
 }
   \item{\dots}{
@@ -76,7 +77,7 @@ The output consists of a list with the entries
 
 \references{
 
-Haslbeck, J., & Waldorp, L. J. (2017). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
+Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
 }
 \author{
@@ -90,7 +91,6 @@ Jonas Haslbeck <jonashaslbeck@gmail.com>
 
 
 # 1) Fit mgm to example dataset (true edges: 1-4, 2-3, 1-2)
-
 mgm_obj <- mgm(data = mgm_data$data, 
                type = c('g', 'c', 'c', 'g'),
                level = c(1, 2, 4, 1),
@@ -98,19 +98,23 @@ mgm_obj <- mgm(data = mgm_data$data,
                lambdaSel = 'CV', 
                threshold = 'none')
 
-
 # 2) Take 50 bootstrap samples using resample()
-
 res_obj <- resample(object = mgm_obj, 
                     data = mgm_data$data,
                     nB = 50)
 
-
 # 3) Plot histogram of bootstrapped sampling distribution of edge 1-4
-
 hist(res_obj$bootParameters[1, 4, ], 
      main = "", 
      xlab = "Parameter Estimate")
+
+# 4) Plot summary of all sampling distributions
+plotRes(object = res_obj, 
+        quantiles = c(0.05, .95))
+
+
+# For more examples see https://github.com/jmbh/mgmDocumentation
+
 
 
 }

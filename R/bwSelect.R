@@ -172,8 +172,6 @@ bwSelect <- function(data,
     l_performance <- list()
     l_bw_models <- list()
     
-    
-
     for(i in 1:n_bw) {
 
       # Cross validation scheme
@@ -186,7 +184,7 @@ bwSelect <- function(data,
         l_foldModels[[fold]] <- tvmvar(data = data, # full data, test cases are deleted via setting weights to zero
                                        type = type,
                                        level = level,
-                                       estpoints = l_testsets[[fold]],
+                                       estpoints = l_testsets[[fold]] / n_var, # since we use [0,1] interval since mgm 1.2-3
                                        bandwidth = bwSeq[i],
                                        pbar = FALSE, # switch off progress bar in tvmvar
                                        zero_weights = l_zero_weights[[fold]], # vector indicating zero weights for test cases
@@ -194,6 +192,7 @@ bwSelect <- function(data,
                                        signInfo = FALSE,
                                        ...)
         
+
         # Make Predictions at test-locations
         l_foldPerform[[fold]] <- bwSelPredict(data = data,
                                               type = type,
@@ -203,6 +202,7 @@ bwSelect <- function(data,
                                               lags = args$lags,
                                               modeltype = modeltype,
                                               overparameterize = args$overparameterize,
+                                              consec = l_foldModels[[fold]]$call$consec,
                                               ...)
         
         # browser()
@@ -233,11 +233,10 @@ bwSelect <- function(data,
     l_testsets <- list()
     l_zero_weights <- list()
     for(fold in 1:bwFolds) {
-      l_testsets[[fold]] <- round(seq(fold, n - bwFolds + fold, length = bwFoldsize)) # nice!
+      l_testsets[[fold]] <- round(seq(fold, n - bwFolds + fold, length = bwFoldsize)) # now normalized
       l_zero_weights[[fold]] <- rep(1, n)
       l_zero_weights[[fold]] [l_testsets[[fold]]] <- 0
     }
-
 
     # Storage
     l_performance <- list()
@@ -255,7 +254,7 @@ bwSelect <- function(data,
         l_foldModels[[fold]] <- tvmgm(data = data, # full data, test cases are deleted via setting weights to zero
                                     type = type,
                                     level = level,
-                                    estpoints = l_testsets[[fold]],
+                                    estpoints = l_testsets[[fold]] / n, # since we use [0,1] interval since mgm 1.2-3
                                     bandwidth = bwSeq[i],
                                     pbar = FALSE, # switch off progress bar in tvmvar
                                     zero_weights = l_zero_weights[[fold]], # vector indicating zero weights for test cases
@@ -282,7 +281,6 @@ bwSelect <- function(data,
       # Compute mean performance per Fold on maximal level: time x nodes
       # Fill in Performance
       l_performance[[i]] <- l_foldPerform
-
 
       # Update Progress Bar
       if(pbar==TRUE) setTxtProgressBar(pb_bw, i)

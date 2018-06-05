@@ -15,6 +15,7 @@
 \alias{modnw}
 \alias{B5MS}
 
+
 \title{Example Datasets in the mgm Package}
 \description{
 The autism dataset (and its short version) are taken from Deserno et al. (2016).

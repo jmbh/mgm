@@ -11,6 +11,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   
 {
   
+  
   # ----- Fill in defaults -----
   
   if(missing(pbar)) pbar <- TRUE
@@ -551,7 +552,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   # ----- Return outlist -----
   
   outlist$totalTime <- sum(outlist$Times)
-  class(outlist) <- 'resample'
+  class(outlist) <- c('resample', class(object)[2])
   
   return(outlist)
   
