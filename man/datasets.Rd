@@ -14,6 +14,8 @@
 \alias{mvar_data}
 \alias{modnw}
 \alias{B5MS}
+\alias{msq_p5}
+\alias{msq_p3}
 
 
 \title{Example Datasets in the mgm Package}
