@@ -1,14 +1,14 @@
 Package: mgm
 Type: Package
 Title: Estimating Time-Varying k-Order Mixed Graphical Models
-Version: 1.2-3
-Date: 2018-06-06
+Version: 1.2-4
+Date: 2018-07-07
 Author: Jonas Haslbeck
 Maintainer: Jonas Haslbeck  <jonashaslbeck@gmail.com>
 Description: Estimation of k-Order time-varying Mixed Graphical Models and mixed VAR(p) models via elastic-net regularized neighborhood regression. For details see linked paper.
-URL: http://arxiv.org/abs/1510.06871v2
+URL: https://arxiv.org/abs/1510.06871
 BugReports: https://github.com/jmbh/mgm/issues
 License: GPL (>= 2)
 Imports: matrixcalc, glmnet, stringr, Hmisc, qgraph, gtools
 LazyData: true
-Packaged: 2018-06-06 00:00:01 CET; jo
+Packaged: 2018-07-07 00:00:01 CET; jo

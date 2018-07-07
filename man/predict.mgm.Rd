@@ -93,6 +93,7 @@ If \code{tvMethod = "weighted"}, this list entry contains a list with errors of 
 \references{
 
 Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
+
 }
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>

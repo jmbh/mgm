@@ -97,7 +97,7 @@ Foygel, R., & Drton, M. (2010). Extended Bayesian information criteria for Gauss
 
 Barber, R. F., & Drton, M. (2015). High-dimensional Ising model selection with Bayesian information criteria. Electronic Journal of Statistics, 9(1), 567-607.
 
-Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure Estimation for time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
+Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating for time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
 
 }

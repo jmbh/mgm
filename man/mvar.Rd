@@ -162,7 +162,7 @@ Barber, R. F., & Drton, M. (2015). High-dimensional Ising model selection with B
 
 Friedman, J., Hastie, T., & Tibshirani, R. (2010). Regularization paths for generalized linear models via coordinate descent. Journal of statistical software, 33(1), 1.
 
-Haslbeck, J., & Waldorp, L. J. (2018). Estimating time-Varying Mixed Graphical Models in high-dimensional data. arXiv preprint arXiv:1510.05677.
+Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 
 Haslbeck, J., & Waldorp, L. J. (2016). mgm: Structure Estimation for time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 

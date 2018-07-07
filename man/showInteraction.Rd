@@ -34,7 +34,7 @@ Currently the function only returns details of pairwise interactions from output
 
 }
 \references{
-Haslbeck, J., & Waldorp, L. J. (2017). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
+Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. arXiv preprint arXiv:1510.06871.
 }
 \author{
 Jonas Haslbeck <jonashaslbeck@gmail.com>
