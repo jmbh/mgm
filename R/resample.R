@@ -51,6 +51,8 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   
   if(!is.null(object$call$k)) if(object$call$k > 2) stop("Currently resampling is only implemented for pairwise mgms/tvmgms.")
   
+  if(!any(c("core", "mvar", "tvmvar", "tvmgm") %in% class(object))) stop("Please provide an mgm object as input.")
+  
   
   # -------------------- Resampling for mgm-objects -------------------------------------------------------------------------------- 
   
@@ -423,6 +425,9 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   # ----------------------------------------------------------------------------------------
   
   # Compute Aux variables
+  
+  browser()
+  
   model_obj <- object
   obj_class <- class(model_obj)[2]
   
