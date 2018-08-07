@@ -14,8 +14,10 @@ mgmsampler <- function(factors,
   
 {
   
-  
   # ---------- Input Checks ----------
+  
+  if(any(level[type!="c"] != 1)) stop("The levels of all non-categorical variable has to be specified as c(1).")
+
   
   # ----- Compute aux vars -----
   
@@ -68,7 +70,7 @@ mgmsampler <- function(factors,
   # 5) Other basics
   if(length(type) != length(level)) stop('Length of type does not match length of level.')
   if(length(thresholds) != length(type)) stop('Length of threshold list does notmatch length of type vector')
-  if(!all.equal(unlist(lapply(thresholds, length)), level)) stop('Specified thresholds do not match the number of categoreis in level')
+  if(!all.equal(unlist(lapply(thresholds, length)), level)) stop('Specified thresholds do not match the number of categories in level')
   
   
   # Transforms all entries in factors and interactions into matrices to avoid trouble with nrow()
