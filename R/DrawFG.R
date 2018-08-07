@@ -71,7 +71,7 @@ DrawFG <- function(object,
     
     Gnonzero <- matrix(1, p+pF, p+pF) # just fill 1s in, so this is always defined and we can use the lty argument in FactorGraph.R
     
-  } # end if: nodewise
+  } # end if: !nodewise
   
   
   # ----- II: Nodewise = TRUE -----
@@ -110,10 +110,10 @@ DrawFG <- function(object,
               nodewise_par_agg <- .1
             }
             
-            inter_r <- list_ind[[or]][r, ] # the indicator vector for interaction r of order or
+            inter_r <- list_ind[[or]][r, ] # the indicator vector for interaction r of order "or"
             
             # Compute sign of nodewise parameter
-            if(all(type[inter_r] == "g")) {
+            if(all(type[inter_r] != "c")) {
               sign <- sign(nodewise_par)
             } else if(!all(type[list_ind[[or]][r, ]] == "g") & object$call$binarySign & all(level[inter_r]<3)) {
               
@@ -162,6 +162,7 @@ DrawFG <- function(object,
               sign <- 0
             }
             
+            
             # Fill in directed graph
             Gw[counter, list_ind[[or]][r, or2]] <- nodewise_par_agg
             Gsign[counter, list_ind[[or]][r, or2]] <- sign
@@ -174,6 +175,8 @@ DrawFG <- function(object,
         
       }
     }
+    
+    # browser()
     
     # Create lty-matrix to indicate 
     Gnonzero[Gnonzero == 0] <- 2 # So i can use it as lty directly for plotting
@@ -264,7 +267,7 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
   list_weightsUA <- object$interactions$weights
   list_signs <- object$interactions$signs
   
-
+  
   # ----------- Obtain set of all interactions that are present at least once ----------
   
   d <- object$call$k - 1
@@ -419,7 +422,7 @@ DrawFGtv <- function(object, # list of all interactions that are estimated nonze
               inter_r <- list_ind[[or]][which(ind_where), ] # the indicator vector for interaction r of order or
               
               # Compute sign of nodewise parameter
-              if(all(type[inter_r] == "g")) {
+              if(all(type[inter_r] != "c")) {
                 sign <- sign(nodewise_par)
               } else if(!all(type[list_ind[[or]][r, ]] == "g") & object$call$binarySign & all(level[inter_r]<3)) {
                 

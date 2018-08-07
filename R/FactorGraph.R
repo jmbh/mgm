@@ -10,6 +10,7 @@ FactorGraph <- function(object,
                         shapes = c('circle', 'square'), 
                         shapeSizes = c(8, 4), 
                         estpoint = NULL,
+                        negDashed = FALSE,
                         ...)
   
 {
@@ -44,6 +45,7 @@ FactorGraph <- function(object,
                     "edgecolor" = NULL, 
                     "nonzero" = NULL,
                     "qgraph" = NULL)
+  
   
   # --------- Fill in defaults ---------
   
@@ -111,6 +113,10 @@ FactorGraph <- function(object,
   }
   
   
+  # Edge lty: allow negative edges to be dashed for greyscale images
+  edge_lty <- FG_object$nonzero
+  if(negDashed) edge_lty[edge.color == "red"] <- 2
+
   # --------- Plot & Return ---------
   
   if(!DoNotPlot){
@@ -137,10 +143,12 @@ FactorGraph <- function(object,
     
     # ----- Call qgraph -----
     
+    # browser()
+    
     qgraph_object <- qgraph(FG_object$graph,
                             color = colors[FG_object$order + 1],
                             edge.color = edge.color,
-                            lty = FG_object$nonzero,
+                            lty = edge_lty,
                             layout = layout,
                             labels =  labels_ex,
                             shape = shapes[FG_object$nodetype + 1],
