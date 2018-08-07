@@ -11,7 +11,8 @@ Wrapper function around qgraph() that draws factor graphs for (time-varying) MGM
 FactorGraph(object, colors, labels, PairwiseAsEdge = FALSE, 
             Nodewise = FALSE, DoNotPlot = FALSE, 
             FactorLabels = TRUE, shapes = c("circle", "square"), 
-            shapeSizes = c(8, 4), estpoint = NULL, ...)
+            shapeSizes = c(8, 4), estpoint = NULL, 
+            negDashed = FALSE, ...)
 }
 
 
@@ -45,6 +46,9 @@ A numeric vector of length two indicating the size of shapes for nodes and facto
 }
   \item{estpoint}{
 An integer indicating the estimation point to display if the output object of a time-varying MGM is provided. 
+}
+  \item{negDashed}{
+If \code{negDashed = TRUE}, edges with negative sign are dashed.
 }
   \item{\dots}{
 Arguments passed to qgraph.
