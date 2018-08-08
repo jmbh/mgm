@@ -33,9 +33,9 @@ mgmsampler <- function(factors,
     
     for(row in 1:rows_ord) {
       
-      if(!all(level[factors[[ord]][, row]] == dim(interactions[[ord]][[row]]))) {
+      if(!all(level[factors[[ord]][row, ]] == dim(interactions[[ord]][[row]]))) {
         stop(paste0("The dimensions of the interaction ",
-                    paste0(factors[[ord]][, row], collapse = "-"), 
+                    paste0(factors[[ord]][row, ], collapse = "-"), 
                            " is specified incorrectly. Please correct the 'interactions' argument."
                     ))
       }
