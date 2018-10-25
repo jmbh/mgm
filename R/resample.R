@@ -83,7 +83,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       set.seed(seeds[b]) # for cross validation
       if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
-  
+      
       l_b_models[[b]] <- mgm(data = data[l_ind[[b]], ],
                              type = o_call$type,
                              level = o_call$level,
@@ -133,6 +133,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                       breaks = Qt,
                       labels = FALSE)
     ind_blocks[1] <- 1 # for some reason the first entry is NA
+    
     
     # Storage
     l_ind <- list() 
@@ -221,23 +222,21 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   
   if("mvar" %in% class(object)) {
     
-    # browser()
-    
     # --- Define bootstrap samples ---
     
     # Compute design matrix to find out how many rows it has
     if(!is.null(o_call$beepvar) & !is.null(o_call$dayvar)) {
       o_call$consec <- beepday2consec(beepvar = o_call$beepvar,
-                               dayvar = o_call$dayvar)
+                                      dayvar = o_call$dayvar)
     } # if: specification of consecutiveness via beepvar and dayvar
-
+    
     data_lagged <- lagData(data = data,
                            lags = o_call$lags,
                            consec = o_call$consec)
     
     n_design <- nrow(data_lagged$data_response) # data_response has the first 1:max_lag already excluded; this is not great and should be put into $included at some point
     ind_valid_rows <-  (1:n_design)[data_lagged$included]
-
+    
     # Take bootstrap sample from rows in design matrix
     l_ind <- list()
     
@@ -314,18 +313,18 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     # Compute design matrix to find out how many rows it has
     if(!is.null(o_call$beepvar) & !is.null(o_call$dayvar)) {
       o_call$consec <- beepday2consec(beepvar = o_call$beepvar,
-                               dayvar = o_call$dayvar)
-    } # if: specification of consecutiveness via beepvar and dayvar
+                                      dayvar = o_call$dayvar)
+    } # if: specification of consecutiveness via beepvar and dayvar; otherwise: already specified
     
     data_lagged <- lagData(data = data, 
                            lags = o_call$lags, 
                            consec = o_call$consec)
     
-
+    
     # add false for excluded 1:max_lags time points at beginning of time series
-    max_lags <- max(o_call$lags)
+    # max_lags <- max(o_call$lags)
     # full_included_vec <- c(rep(FALSE, max_lags), data_lagged$included)
-
+    
     timepoints_design <- o_call$timepoints[data_lagged$included]
     
     # Break data into blocks of equal time-duration (unsing timepoints vector)
@@ -361,14 +360,14 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       
     } # end: loop bootstraps
     
-    # browser()
-    
-    
+
     # --- Estimate tvmvar on bootstrap samples ---
     
     if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=nB, initial=0, char="-", style = 3) # initialize progress bar
     
     l_b_models <- list()
+    
+    # browser()
     
     for(b in 1:nB) {
       
@@ -481,7 +480,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     collect_array_wS <- collect_array
     ind_negative <- which(collect_array_sign == -1, arr.ind = TRUE)
     collect_array_wS[ind_negative] <- collect_array_wS[ind_negative] * -1
-     
+    
     # Compute quantiles
     quantile_array <- apply(collect_array, 1:4, function(x) quantile(x, probs = quantiles))
     quantile_array_res <- array(dim = c(p, p, nlags, n_estpoints, nquantiles))
@@ -513,7 +512,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     collect_array_wS <- collect_array
     ind_negative <- which(collect_array_sign == -1, arr.ind = TRUE)
     collect_array_wS[ind_negative] <- collect_array_wS[ind_negative] * -1
-
+    
     # Compute quantiles
     quantile_array <- apply(collect_array_wS, 1:2, function(x) quantile(x, probs = quantiles))
     quantile_array_res <- array(dim = c(p, p, nquantiles))

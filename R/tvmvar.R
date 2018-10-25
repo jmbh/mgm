@@ -116,7 +116,6 @@ tvmvar <- function(data,         # n x p data matrix
   
   # -------------------- Compute Weightings -------------------
 
-  
   # Define time vector: if not provided, assume equally spaced time points
   if(missing(timepoints)) {
     timevec <- seq(0, 1, length = n_var)
@@ -129,7 +128,6 @@ tvmvar <- function(data,         # n x p data matrix
     timevec <- timepoints / max(timepoints)
   }
   tvmvar_object$call$timepoints_cut <- timevec
-  
   
   # Normalize time estimation points to interval [0,1]
   estpoints_norm <- estpoints
@@ -172,8 +170,6 @@ tvmvar <- function(data,         # n x p data matrix
   l_mvar_models <- list()
   
   for(i in 1:no_estpoints) {
-    
-    # browser()
     
     l_mvar_models[[i]] <- mvar(data = data,
                                type = type,

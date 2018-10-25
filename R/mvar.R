@@ -230,10 +230,10 @@ mvar <- function(data,         # n x p data matrix
       # overwrite above
       data_lagged <- lagData(data = data, 
                              lags = lags, 
-                             consec = NULL) # consec comes out of the bootstrap args$boot_ind
+                             consec = consec)
       
-      data_response <- data_lagged$data_response
-      l_data_lags <- data_lagged$l_data_lags
+      data_response <- data_lagged$data_response[data_lagged$included, ]
+      l_data_lags <- lapply(data_lagged$l_data_lags, function(x) x[data_lagged$included, ] )
       
       # overwrite data with bootstrap sample, passed on from resample()
       data_response <- data_response[args$boot_ind, ] # args$boot_ind is defined such that it only selects valid rows
@@ -244,8 +244,6 @@ mvar <- function(data,         # n x p data matrix
       
     }
   }
-  
-  # browser()
   
   # -------------------- Input Checks Local (for each set of predictors) -------------------
   
@@ -261,8 +259,6 @@ mvar <- function(data,         # n x p data matrix
                        weights = weights_design)
     
   }
-  
-  # browser()
   
   # ----- Storage: Create empty mgm object -----
   
@@ -327,7 +323,6 @@ mvar <- function(data,         # n x p data matrix
   
   # Progress bar
   if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=p, initial=0, char="-", style = 3)
-  
   
   # Save number of parameters of standard (non-overparameterized) design matrices for tau threshold
   npar_standard <- rep(NA, p)
@@ -397,7 +392,6 @@ mvar <- function(data,         # n x p data matrix
       
       if(n_alpha>1) {
         
-        
         # For: alpha
         for(a in 1:n_alpha) {
           
@@ -415,6 +409,7 @@ mvar <- function(data,         # n x p data matrix
             # Recompute variables for training set
             n_train <- nrow(train_X)
             nadj_train <- sum(weights_design[ind != fold])
+          
             
             l_foldmodels[[fold]] <- nodeEst(y = train_y,
                                             X = train_X,
@@ -471,8 +466,6 @@ mvar <- function(data,         # n x p data matrix
       }
       
       # Refit Model on whole data, with selected alpha
-      
-      # browser()
       
       model <- nodeEst(y = y,
                        X = X,
