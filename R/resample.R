@@ -162,8 +162,6 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     
     # --- Estimate mgms on bootstrap samples ---
     
-    # browser()
-    
     l_b_models <- list() # Storage
     
     if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=nB, initial=0, char="-", style = 3) # initialize progress bar
@@ -328,8 +326,6 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     timepoints_design <- o_call$timepoints[data_lagged$included]
     
     # Break data into blocks of equal time-duration (unsing timepoints vector)
-    # browser()
-    
     Qt <- quantile(timepoints_design, probs = seq(0, 1, length = blocks + 1))
     ind_blocks <- cut(x = timepoints_design,  # important: indices in the design matrix
                       breaks = Qt,
@@ -366,8 +362,6 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=nB, initial=0, char="-", style = 3) # initialize progress bar
     
     l_b_models <- list()
-    
-    # browser()
     
     for(b in 1:nB) {
       
@@ -424,8 +418,6 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   # ----------------------------------------------------------------------------------------
   
   # Compute Aux variables
-  
-  browser()
   
   model_obj <- object
   obj_class <- class(model_obj)[2]

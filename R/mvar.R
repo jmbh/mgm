@@ -371,10 +371,6 @@ mvar <- function(data,         # n x p data matrix
       
     }
     
-    
-    # browser()
-    
-    
     # ----- Fit each neighborhood using the same procedure as in mgm -----
     
     # ----- Tuning Parameter Selection (lambda and alpha) -----
