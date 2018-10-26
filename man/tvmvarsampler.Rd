@@ -77,6 +77,7 @@ n_lags <- length(lags)
 N <- 5000
 
 # Specify thresholds
+thresholds <- list()
 thresholds[[1]] <- matrix(0, ncol=2, nrow=N)
 thresholds[[2]] <- matrix(0, ncol=2, nrow=N)
 thresholds[[3]] <- matrix(0, ncol=4, nrow=N)
