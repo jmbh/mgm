@@ -1,7 +1,10 @@
+Changes in Version 1.2-5
+  o Fix bug in resample()
+  o Improved input checks in mgmsampler()
+
 Changes in Version 1.2-4
   o Updated help files
   o Added two example data sets for higher-order (moderated) MGMs
-  o Fix bug in resample()
 
 Changes in Version 1.2-3
   o Bugfix in bwSelect()

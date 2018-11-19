@@ -44,6 +44,13 @@ mgmsampler <- function(factors,
   } # end for: ord
 
   
+  # Are all parameters specified as matrices?
+  for(i in 1:n_order) {
+    n_ints <- length(interactions[[i]])
+    for(row in 1:n_ints) if(class( interactions[[i]][[row]]) != "matrix") stop("Parameters have to be provided as matrices (in 'interaction' list)")
+  }
+  
+  
   # ----- Input Checks -----
   
   # 1) Do matrices in factors match the corresponding order?
