@@ -1,6 +1,7 @@
 Changes in Version 1.2-5
   o Fix bug in resample()
   o Improved input checks in mgmsampler()
+  o Fixed bug in prediction from mvar() objects
 
 Changes in Version 1.2-4
   o Updated help files

@@ -369,7 +369,8 @@ predict.mgm <- function(object, # One of the four mgm objects
                                                       data = data, 
                                                       consec = consec)
         
-        if(!is.null(consec)) n_pred <- sum(corePred$included) #+ 1 # this is stupid; the $included should better be defined on all rows
+        # if(!is.null(consec)) 
+        n_pred <- sum(corePred$included) #+ 1 # this is stupid; the $included should better be defined on all rows
         
         # browser()
         
@@ -380,7 +381,8 @@ predict.mgm <- function(object, # One of the four mgm objects
         
         # Save weights (subset by consec, if provided)
         wo <- object_ep$call$weights
-        if(!is.null(consec)) wo <- wo[corePred$included]
+        # if(!is.null(consec)) 
+        wo <- wo[corePred$included]
         l_weights[[ep]] <- wo
 
       } # end for: estpoints
