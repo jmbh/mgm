@@ -123,8 +123,6 @@ predictCore_stat <- function(object,
     l_data_lags <- data_lagged$l_data_lags
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
     
-    # browser()
-    
     data_response <- data_response[predCoreObj$included, ]
     l_data_lags <- lapply(l_data_lags, function(z) z <- z[predCoreObj$included, ])
     

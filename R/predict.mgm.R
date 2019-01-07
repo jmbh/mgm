@@ -367,19 +367,16 @@ predict.mgm <- function(object, # One of the four mgm objects
                                                       consec = consec)
         
         # if(!is.null(consec)) 
-        n_pred <- sum(corePred$included) #+ 1 # this is stupid; the $included should better be defined on all rows
-        
-        # browser()
+        if(cobj == 'tvmvar') n_pred <- sum(corePred$included) else { n_pred <- n}
         
         # Save separate for output:
         l_preds[[ep]] <- do.call(cbind, corePred$pred)
         l_probs[[ep]] <- corePred$prob
         l_true[[ep]] <- corePred$true
         
-        # Save weights (subset by consec, if provided)
+        # Save weights (subset by consec, if provided, if mVAR model)
         wo <- object_ep$call$weights
-        # if(!is.null(consec)) 
-        wo <- wo[corePred$included]
+        if(cobj == 'tvmvar') wo <- wo[corePred$included] 
         l_weights[[ep]] <- wo
 
       } # end for: estpoints
@@ -389,12 +386,10 @@ predict.mgm <- function(object, # One of the four mgm objects
       
       # add up weights
       m_weights <- do.call(cbind, l_weights)
-      
       v_weights <- rowSums(m_weights)
       
       p_ind_con <- which(type != 'c')
       p_ind_cat <- which(type == 'c')
-      
       
       # Storage
       l_w_predict_cat <- list()
@@ -491,7 +486,6 @@ predict.mgm <- function(object, # One of the four mgm objects
     } # end if: tvMethod weighted?
     
     
-    
     # ++++++++++ Prediction Option B.1: 'closestModel' ++++++++++
     
     if(tvMethod == 'closestModel') {
@@ -546,37 +540,13 @@ predict.mgm <- function(object, # One of the four mgm objects
       preds <- do.call(rbind, l_preds)
       probs <- l_probs
       true <- do.call(rbind, l_true)
-      
-      
-      # ----- Calculate Errors (as in stationary case, actually) -----
-      
-      # # Errors Continuous
-      # l_errors_con <- list()
-      # if(!is.null(l_errorCon)) {
-      #   for(e in 1:length(l_errorCon)) {
-      #     v_errors <- rep(NA, p)
-      #     for(j in 1:p)  if(type[j] != 'c')  v_errors[j] <- l_errorCon[[e]](TrueAll[, j], PredAll[, j])
-      #     l_errors_con[[e]] <- v_errors
-      #   }
-      #   names(l_errors_con) <- names(l_errorCon)
-      # }
-      # 
-      # # Errors Categorical
-      # l_errors_cat <- list()
-      # if(!is.null(l_errorCat)) {
-      #   for(e in 1:length(l_errorCat)) {
-      #     v_errors <- rep(NA, p)
-      #     for(j in 1:p)  if(type[j] == 'c')  v_errors[j] <- l_errorCat[[e]](TrueAll[, j], PredAll[, j])
-      #     l_errors_cat[[e]] <- v_errors
-      #   }
-      #   names(l_errors_cat) <- names(l_errorCat)
-      # }
-      
-      
+
     } # end if: tvMethod closestModel?
     
     
   } # end if: time-varying?
+  
+  
 
   # ---------- Compute Nodewise Errors ----------
   
@@ -606,7 +576,6 @@ predict.mgm <- function(object, # One of the four mgm objects
   }
   
   
-  
   # ---------- Compute time-varying Nodewise Errors ----------
   
   if(tvMethod == "weighted") {
@@ -614,7 +583,7 @@ predict.mgm <- function(object, # One of the four mgm objects
     l_tverrors <- list()
     
     for(ep in 1:n_estpoints) {
-      
+
       object_ep <- object$tvmodels[[ep]]
       
       # --- Compute weights (needed if new data is used, otherwise I could use weights_design from the model object) ---
@@ -624,7 +593,16 @@ predict.mgm <- function(object, # One of the four mgm objects
       if(is.null(object$call$timepoints)) {
         timepoints <- seq(0, 1, length = n_pred)
       } else {
-        timepoints <- object$call$timepoints[corePred$included]
+        
+        a_w_predict_con[, , ep]
+        
+        # Adapt timepoints to time-varying mVAR/MGM      
+        if(cobj == 'tvmvar') {
+          timepoints <- object$call$timepoints[corePred$included]
+        } else {
+          timepoints <- object$call$timepoints
+        }
+
       }
       
       # Compute weighting as function of estimation point and abndwidth
