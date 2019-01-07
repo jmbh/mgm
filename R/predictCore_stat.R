@@ -112,23 +112,21 @@ predictCore_stat <- function(object,
   
   if(cobj == 'mvar') {
     
-    # browser()
-    
     # Prepare Data (already cuts max(lags) first observations to compute design matrix)
     data_lagged <- lagData(data = data, 
                            lags = object$call$lags, 
                            consec = consec)
     
     predCoreObj$included <- data_lagged$included # this specifies additionally, whether measurements are successive after the max(lags) measurement
-
+    
     data_response <- data_lagged$data_response
     l_data_lags <- data_lagged$l_data_lags
     data_response <- apply(data_response, 2, as.numeric) # to avoid confusion with labels of categories if there are factors
     
+    # browser()
+    
     data_response <- data_response[predCoreObj$included, ]
     l_data_lags <- lapply(l_data_lags, function(z) z <- z[predCoreObj$included, ])
-    
-    # browser()
     
     nCases <- nrow(data_response)
     
@@ -175,41 +173,6 @@ predictCore_stat <- function(object,
         
       }
       
-      # # ---- Create design matrix -----
-      # 
-      # # append response with predictors
-      # y <- data_response[,v] # response variable v
-      # data_v <- cbind(y, do.call(cbind, l_data_lags)) # combine
-      # data <- data_v[, -1]
-      # 
-      # if(call$overparameterize) {
-      #   
-      #   # Compute augmented type and level vectors
-      #   type_aug <- rep(type, n_lags)
-      #   level_aug <- rep(level, n_lags)
-      #   
-      #   # Construct over-parameterized design matrix
-      #   X <- ModelMatrix(data = data,
-      #                    type = type_aug,
-      #                    level = level_aug,
-      #                    labels = colnames(data),
-      #                    d = 1)
-      #   
-      # } else {
-      #   
-      #   # Construct standard design matrix
-      #   form <- as.formula('y ~ (.)')
-      #   data_df <- data
-      #   type_aug <- rep(type, n_lags)
-      #   for(j in which(type_aug=='c')) data_df[, j] <- as.factor(data_df[, j])
-      # 
-      #   data_df <- as.data.frame(data_df)
-      #   
-      #   X <- model.matrix(form, data = data_df)[, -1] # delete intercept (added by glmnet later)
-      #   
-      # }
-      
-      
       # ---- Prediction -----
       
       if(type[v]=='c') {
@@ -244,8 +207,6 @@ predictCore_stat <- function(object,
     predCoreObj$true <- data_response
     
   } # end if: mvar?
-  
-  # browser()
   
   
   # ----- Return -----

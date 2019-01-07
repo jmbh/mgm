@@ -1,17 +1,18 @@
 Changes in Version 1.2-5
-  o Fix bug in resample()
+  o Bug fix in resample()
   o Improved input checks in mgmsampler()
-  o Fixed bug in prediction from mvar() objects
+  o Bug fix in prediction with mvar() objects
+  o Allow for prediction with time-varying models in new data sets
 
 Changes in Version 1.2-4
   o Updated help files
   o Added two example data sets for higher-order (moderated) MGMs
 
 Changes in Version 1.2-3
-  o Bugfix in bwSelect()
+  o Bug fix in bwSelect()
   o Added verbatim option in resample() to detect zero variance bootstrap samples
   o Fixed warning due to R 3.4.0: "Recycling array of length 1 in vector-array arithmetic is deprecatd.Use c() or as.vector() instead."
-  o Bugfix: resampling did not work together with new mvar() arguments dayvar/beepvar since Version 1.2-2
+  o Bug fix: resampling did not work together with new mvar() arguments dayvar/beepvar since Version 1.2-2
   o Added argument "moderators" to the mgm() function that allows to ...
   o Change default: in earlier versions if overparameterize=TRUE, all thresholds (intercepts) of categorical variables were set to zero. From this version on this threshold is estimated. The thresholds of categoricals can still be set to zero with the new argument "thresholdCat"
   o If scale=TRUE, now interaction terms (k>2 or moderation) are scaled after computing the design matrix to ensure that all predictors have the same mean and standard deviation, which avoids different penalization depending on the scaling of a predictor

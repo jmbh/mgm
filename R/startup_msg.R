@@ -4,5 +4,5 @@
   version <- read.dcf(file=system.file("DESCRIPTION", package=pkgname),
                       fields="Version")
   packageStartupMessage("This is ",paste(pkgname, version))
-  packageStartupMessage("Please report any bugs: https://github.com/jmbh/mgm/issues")
+  packageStartupMessage("Please report issues on Github: https://github.com/jmbh/mgm/issues")
 }
