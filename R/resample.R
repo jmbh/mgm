@@ -232,8 +232,8 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                            lags = o_call$lags,
                            consec = o_call$consec)
     
-    n_design <- nrow(data_lagged$data_response) # data_response has the first 1:max_lag already excluded; this is not great and should be put into $included at some point
-    ind_valid_rows <-  (1:n_design)[data_lagged$included]
+    n_design <- sum(data_lagged$included) 
+    ind_valid_rows <-  (1:n)[data_lagged$included]
     
     # Take bootstrap sample from rows in design matrix
     l_ind <- list()

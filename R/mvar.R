@@ -232,8 +232,8 @@ mvar <- function(data,         # n x p data matrix
                              lags = lags, 
                              consec = consec)
       
-      data_response <- data_lagged$data_response[data_lagged$included, ]
-      l_data_lags <- lapply(data_lagged$l_data_lags, function(x) x[data_lagged$included, ] )
+      data_response <- data_lagged$data_response
+      l_data_lags <- lapply(data_lagged$l_data_lags, function(x) x)
       
       # overwrite data with bootstrap sample, passed on from resample()
       data_response <- data_response[args$boot_ind, ] # args$boot_ind is defined such that it only selects valid rows
