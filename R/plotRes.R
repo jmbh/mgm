@@ -13,12 +13,14 @@ plotRes <- function(object,
   
 {
   
-  
-  # ---------- Preprocessing ----------
+  # ---------- Input Checks ----------
   
   if(!("core" %in% class(object))) stop("plotRes() currently only supports resampled mgm() objects.")
   if(!("resample" %in% class(object))) stop("PplotRes() only takes resample objects as input (see ?resample).")
   if(missing(quantiles)) stop("No quantiles specified.")
+  
+
+  # ---------- A) mgm objects ----------
   
   # Get basic info
   dims <- dim(object$bootParameters)
@@ -120,6 +122,13 @@ plotRes <- function(object,
   # Plot prop>0
   points(TM[, 3], plot_y, pch=20, col="white", cex = cex.bg)
   text(TM[, 3], plot_y, TM[, 6], cex = cex.mean)
+  
+  
+  
+  # ---------- B) mvar objects ----------
+  
+  
+  
   
   
 } # eoF

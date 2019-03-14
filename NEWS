@@ -1,3 +1,6 @@
+Changes in Version 1.2-6
+  o Fix aliasing of internal functions
+
 Changes in Version 1.2-5
   o Bug fix in resample()
   o Improved input checks in mgmsampler()

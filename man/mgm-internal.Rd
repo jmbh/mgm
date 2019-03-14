@@ -1,8 +1,17 @@
 \name{mgm-internal}
 \title{Internal mgm functions}
-\alias{DrawFG, DrawFGtv, FlagSymmetric, autism_data,
-       bwSelPredict, calcLL, calcNeighbors, glmnetRequirements,
-       lagData, nodeEst, ModelMatrix, ModelMatrix_standard}
+
+\alias{DrawFG}
+\alias{DrawFGtv}
+\alias{FlagSymmetric}
+\alias{bwSelPredict}
+\alias{calcLL}
+\alias{calcNeighbors}
+\alias{glmnetRequirements}
+\alias{lagData}
+\alias{nodeEst}
+\alias{ModelMatrix}
+\alias{ModelMatrix_standard}
 
 \description{Internal mgm functions.}
 
