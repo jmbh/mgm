@@ -320,20 +320,18 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                            lags = o_call$lags, 
                            consec = o_call$consec)
     
-    
-    # add false for excluded 1:max_lags time points at beginning of time series
-    # max_lags <- max(o_call$lags)
-    # full_included_vec <- c(rep(FALSE, max_lags), data_lagged$included)
-    
+    # Make use of time-vector to be able to have block-bootstrap on actual time scale  
     timepoints_design <- o_call$timepoints[data_lagged$included]
-    
+
     # Break data into blocks of equal time-duration (unsing timepoints vector)
     Qt <- quantile(timepoints_design, probs = seq(0, 1, length = blocks + 1))
     ind_blocks <- cut(x = timepoints_design,  # important: indices in the design matrix
                       breaks = Qt,
                       labels = FALSE)
-    
     ind_blocks[1] <- 1 # for some reason the first entry is NA
+    
+    # Rows included in the design matrix
+    ind_valid_rows <- (1:nrow(data))[data_lagged$included]
     
     # Storage
     l_ind <- list() 
@@ -346,8 +344,8 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       
       for(b2 in 1:blocks) {
         
-        # Take bootstrap samples within blocks  
-        block_b2 <- which(ind_blocks == b2)
+        # Take bootstrap samples within blocks defined above from rows that are included (ind_valid_rows)
+        block_b2 <- ind_valid_rows[which(ind_blocks == b2)] 
         l_ind_blocks[[b2]] <- sample(x = block_b2, 
                                      size = length(block_b2), 
                                      replace = TRUE)
@@ -366,6 +364,8 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     l_b_models <- list()
     
     for(b in 1:nB) {
+      
+      # browser()
       
       set.seed(seeds[b])
       if(verbatim) print(paste0("Seed = ", seeds[b]))

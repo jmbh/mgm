@@ -141,6 +141,8 @@ mvar <- function(data,         # n x p data matrix
   ind_Gauss <- which(type == 'g')
   if(scale) for(i in ind_Gauss) data[, i] <- scale(data[, i])
   
+  
+  
   # ----- Basic Input Checks -----
   
   # Checks on Data
@@ -224,6 +226,8 @@ mvar <- function(data,         # n x p data matrix
   
   # ----- Use bootstrap instead of original data (called from resample()) -----
   
+  n_lags <- length(lags)
+  
   if(!is.null(args$bootstrap)) {
     if(args$bootstrap) {
       
@@ -238,7 +242,7 @@ mvar <- function(data,         # n x p data matrix
       # overwrite data with bootstrap sample, passed on from resample()
       data_response <- data_response[args$boot_ind, ] # args$boot_ind is defined such that it only selects valid rows
       l_data_lags <- lapply(l_data_lags, function(x) x[args$boot_ind, ])
-      
+
       # overwrite weights
       weights_design <- weights[args$boot_ind]
       
@@ -248,9 +252,6 @@ mvar <- function(data,         # n x p data matrix
   # -------------------- Input Checks Local (for each set of predictors) -------------------
   
   # This checks glmnet requirements wrt categorical predictors, for each lag set
-  
-  
-  n_lags <- length(lags)
   
   for(lag in 1:n_lags) {
     
