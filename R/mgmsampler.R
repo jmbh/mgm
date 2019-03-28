@@ -48,7 +48,7 @@ mgmsampler <- function(factors,
   # Are all parameters specified as matrices?
   for(i in 1:n_order) {
     n_ints <- length(interactions[[i]])
-    for(row in 1:n_ints) if(class( interactions[[i]][[row]]) != "matrix") stop("The parameters of each interaction have to be provided as k-dimensional array.")
+    for(row in 1:n_ints) if(!(class( interactions[[i]][[row]]) %in% c("array","matrix"))) stop("The parameters of each interaction have to be provided as k-dimensional array.")
   }
   
   
