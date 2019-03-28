@@ -1,5 +1,6 @@
 Changes in Version 1.2-7
   o Fixed bug in bootstrap scheme for time-varying VAR models
+  o Provide optional output of chains of Gibbs sampler from mgmsampler()
 
 Changes in Version 1.2-6
   o Fix aliasing of internal functions

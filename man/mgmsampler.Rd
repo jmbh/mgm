@@ -9,7 +9,8 @@ Generates samples from a k-order Mixed Graphical Model
 }
 \usage{
 mgmsampler(factors, interactions, thresholds, sds, type,
-           level, N, nIter = 250, pbar = TRUE, divWarning = 10^3)
+           level, N, nIter = 250, pbar = TRUE, 
+           divWarning = 10^3, returnChains = FALSE)
 }
 
 
@@ -44,10 +45,16 @@ Number of iterations in the Gibbs sampler until a sample is drawn.
   \item{divWarning}{
   \code{mgmsampler()} returns a warning message if the absolute value of a continuous variable the chain of the gibbs sampler is larger than \code{divWarning}. To our best knowledge there is no theory yet defining a parameter space that ensures a proper probability density and hence a converging chain. Defaults to \code{divWarning = 10^3}.
 }
+
+  \item{returnChains}{
+  If \code{returnChains = TRUE}, the sampler provides the entire chain of the Gibbs sampler, for each sampled case. Can be used to check convergence of the Gibbs sampler. Defaults to \code{returnChains = FALSE}.}
 }
+
 \details{
 We use a Gibbs sampler to sample from the join distribution introduced by Yang and colleageus (2014). Note that the contraints on the parameter space necessary to ensure that the joint distribution is normalizable are to our best knowledge unknown. Yang and colleagues (2014) give these constraints for a number of simple pairwise models. In practice, an "improper joint density" will lead to a sampling process that approaches infinity, and hence \code{mgmsampler()} will return \code{Inf} / \code{-Inf} values.
 }
+
+
 \value{
 A list containing:
 

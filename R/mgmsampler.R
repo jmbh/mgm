@@ -9,7 +9,8 @@ mgmsampler <- function(factors,
                        N,
                        nIter = 250,
                        pbar = TRUE,
-                       divWarning = 10^3)
+                       divWarning = 10^3,
+                       returnChains = FALSE)
   
   
 {
@@ -112,7 +113,8 @@ mgmsampler <- function(factors,
   
   # Create Output Object
   mgmsamp_obj <- list('call' = NULL,
-                      'data' = NULL)
+                      'data' = NULL, 
+                      'chains' = NULL)
   
   # Copy the call
   mgmsamp_obj$call <- list('factors' = factors,
@@ -135,6 +137,9 @@ mgmsampler <- function(factors,
   
   if(pbar==TRUE) pb <- txtProgressBar(min = 0, max=N, initial=0, char="-", style = 3)
   
+  # Return chains of Gibbs sampler
+  if(returnChains) chains <- array(NA, dim = c(N, nIter, p))
+
   data <- matrix(NA, nrow = N, ncol = p)
   
   for(case in 1:N) {
@@ -315,27 +320,20 @@ mgmsampler <- function(factors,
             
           } # end: for cat
           
-          # if(v == 2) browser()
           
           v_probabilities <- exp(v_Potential) / sum(exp(v_Potential)) # calc probability for each category
           sampling_seq[iter, v] <- sample(1:level[v], size = 1, prob = v_probabilities) # sample from multinomial distribution
           
         }
-        
-        # print(v)
-        
+
       } # end for: v
-      
-      # print(iter)
       
     } # end for: iter
     
     
+    if(returnChains) chains[case, , ] <- sampling_seq
     
     data[case, ] <- sampling_seq[nIter, ] # Fill in last sampling iteration
-    
-    # browser()
-    
     
     if(pbar==TRUE) setTxtProgressBar(pb, case)
     
@@ -346,6 +344,7 @@ mgmsampler <- function(factors,
   # ---------- Export ----------
   
   mgmsamp_obj$data <- data
+  if(returnChains) mgmsamp_obj$chains <- chains
   
   return(mgmsamp_obj)
   
