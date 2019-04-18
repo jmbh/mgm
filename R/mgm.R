@@ -148,7 +148,7 @@ mgm <- function(data,         # n x p data matrix
   if(ncol(data) != length(type)) stop('Number of variables is not equal to length of type vector.')
   if(!missing(level)) if(ncol(data) != length(level)) stop('Number of variables is not equal to length of level vector.')
   if(nrow(data) != length(weights)) stop('Number of observations is not equal to length of weights vector.')
-  if(!is.null(moderators) & k > 2) stop("Moderator specification is only implemented for first-order moderators. See ?mgm")
+  if(!is.null(moderators) & k > 2) stop("Moderator specification is only implemented for first-order moderation (3-way interactions). See ?mgm")
   
   # Are Poisson variables integers?
   if('p' %in% type) {
@@ -271,6 +271,8 @@ mgm <- function(data,         # n x p data matrix
   for(v in 1:p) {
     
     # ----- Construct Design Matrix -----
+    
+    # browser()
     
     X_standard <- X <- ModelMatrix_standard(data = data,
                                             type = type,

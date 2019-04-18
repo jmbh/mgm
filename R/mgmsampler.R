@@ -48,8 +48,6 @@ mgmsampler <- function(factors,
     
   } # end for: ord
   
-  # browser()
-  
   # Are all parameters specified as matrices?
   for(i in 1:n_order) {
     n_ints <- length(interactions[[i]])

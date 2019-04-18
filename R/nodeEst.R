@@ -47,8 +47,6 @@ nodeEst <- function(y,
 
 
     # ----- Fit Model -----
-  
-    # if(v == 3) browser()
     
     fit <- glmnet(x = X,
                   y = y,
@@ -132,8 +130,7 @@ nodeEst <- function(y,
                                                            v = v)
     # btw: n_neighbors = fit$df
 
-    # if(v==4) browser()
-    
+
     EBIC_lambda <- - 2 * LL_lambda_models + n_neighbors * log(nadj) + 2 * lambdaGam * n_neighbors * log(ncol(X))
 
     EBIC_min <- min(EBIC_lambda)

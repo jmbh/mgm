@@ -49,7 +49,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   if(!is.logical(pbar)) stop('The argument pbar can only be TRUE/FALSE.')    
   if(any(quantiles < 0) | any(quantiles > 1)) stop("Specified quantiles have to be in [0,1].")
   
-  if(!is.null(object$call$k)) if(object$call$k > 2) stop("Currently resampling is only implemented for pairwise mgms/tvmgms.")
+  if(!is.null(object$call$k)) if(object$call$k > 2) warning("Summary statistics in the output are only implemented for pairwise mgms/tvmgms.")
   
   if(!any(c("core", "mvar", "tvmvar", "tvmgm") %in% class(object))) stop("Please provide an mgm object as input.")
   
