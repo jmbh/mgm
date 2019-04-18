@@ -26,29 +26,34 @@ mgmsampler <- function(factors,
   
   # Check whether level are correctly specified according to type
   if(any(level[type!="c"] != 1)) stop("The levels of all non-categorical variable has to be specified as c(1).")
-
+  
   # Check whether all interactions are specified in the correct dimension
   for(ord in 1:n_order) {
     
     rows_ord <- nrow(factors[[ord]])
     
-    for(row in 1:rows_ord) {
-      
-      if(!all(level[factors[[ord]][row, ]] == dim(interactions[[ord]][[row]]))) {
-        stop(paste0("The dimensions of the interaction ",
-                    paste0(factors[[ord]][row, ], collapse = "-"), 
-                           " is specified incorrectly. Please correct the 'interactions' argument."
-                    ))
-      }
-
-    } # end for: rows (interactions)
+    # Only check if there are actually factors of a given dimension
+    if(!is.null(rows_ord)) {
+      for(row in 1:rows_ord) {
+        
+        if(!all(level[factors[[ord]][row, ]] == dim(interactions[[ord]][[row]]))) {
+          stop(paste0("The dimensions of the interaction ",
+                      paste0(factors[[ord]][row, ], collapse = "-"), 
+                      " is specified incorrectly. Please correct the 'interactions' argument."
+          ))
+        }
+        
+      } # end for: rows (interactions)      
+    } # end if: 0> rows?
+    
   } # end for: ord
-
+  
+  # browser()
   
   # Are all parameters specified as matrices?
   for(i in 1:n_order) {
     n_ints <- length(interactions[[i]])
-    for(row in 1:n_ints) if(!(class( interactions[[i]][[row]]) %in% c("array","matrix"))) stop("The parameters of each interaction have to be provided as k-dimensional array.")
+    if(n_ints>0) for(row in 1:n_ints) if(!(class( interactions[[i]][[row]]) %in% c("array","matrix"))) stop("The parameters of each interaction have to be provided as k-dimensional array.")
   }
   
   
@@ -128,7 +133,7 @@ mgmsampler <- function(factors,
                            'pbar' = pbar,
                            'divWarning' = divWarning)
   
-
+  
   # ---------- Optional: Enforce positive definite Gaussian subgraph ----------
   
   # browser()
@@ -139,7 +144,7 @@ mgmsampler <- function(factors,
   
   # Return chains of Gibbs sampler
   if(returnChains) chains <- array(NA, dim = c(N, nIter, p))
-
+  
   data <- matrix(NA, nrow = N, ncol = p)
   
   for(case in 1:N) {
@@ -226,7 +231,7 @@ mgmsampler <- function(factors,
             
           } # end loop: ord
           
-
+          
           # Compute Natural Parameter (collapse and sum all interaction terms)
           natPar <- sum(unlist(l_natPar))
           
@@ -241,7 +246,7 @@ mgmsampler <- function(factors,
           
         } #end if: v == continuous?
         
-
+        
         # A) ------ Categorical conditional ------
         
         if(type[v] == 'c') {
@@ -299,7 +304,7 @@ mgmsampler <- function(factors,
                     
                     # get the parameter for ord-interaction out the the ord-order parameter array
                     row_int <- interactions[[ord]][[row]][m_fill_in]
-      
+                    
                     # multiply it by continuous variables if in interaction and save in list
                     l_row_terms[[row_counter]] <- prod(get_cont[-which(f_ind == v)]) * row_int
                     
@@ -325,7 +330,7 @@ mgmsampler <- function(factors,
           sampling_seq[iter, v] <- sample(1:level[v], size = 1, prob = v_probabilities) # sample from multinomial distribution
           
         }
-
+        
       } # end for: v
       
     } # end for: iter

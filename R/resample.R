@@ -96,6 +96,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                              alphaFolds = o_call$alphaFolds,
                              alphaGam = o_call$alphaGam,
                              k = o_call$k,
+                             moderators = o_call$moderators,
                              ruleReg = o_call$ruleReg,
                              weights = o_call$weights[l_ind[[b]]], # just copying, no other vector describing rows
                              threshold = o_call$threshold,
