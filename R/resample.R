@@ -418,6 +418,9 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   } # end if: tvmvar?
   
   
+  
+  
+  
   # ----------------------------------------------------------------------------------------
   # ----- Summarize parameters in arrays ---------------------------------------------------
   # ----------------------------------------------------------------------------------------
@@ -499,13 +502,12 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     p <- length(model_obj$call$type)
     nquantiles <- length(quantiles)
     
-    
     ## Collect all estimates
     collect_array <- collect_array_sign <- array(NA, dim = c(p, p, nB))
     for(b in 1:nB) collect_array[, , b] <- outlist$models[[b]]$pairwise$wadj
     for(b in 1:nB) collect_array_sign[, , b] <- outlist$models[[b]]$pairwise$signs
     
-    # add sign
+    # Add sign
     collect_array_wS <- collect_array
     ind_negative <- which(collect_array_sign == -1, arr.ind = TRUE)
     collect_array_wS[ind_negative] <- collect_array_wS[ind_negative] * -1

@@ -3,6 +3,7 @@ Changes in Version 1.2-7
   o Provide optional output of chains of Gibbs sampler from mgmsampler()
   o New function condition() allows to condition on values of a set of variables. The main motivation for this function is to make 3-way interactions / moderation more accessible.
   o mgm() now allows one to specify custom sets of moderation effects via the "moderators" argument
+  o Fixed bug in bwSelect in combination with mgm() opjects
 
 Changes in Version 1.2-6
   o Fix aliasing of internal functions

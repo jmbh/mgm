@@ -326,8 +326,6 @@ Reg2Graph <- function(mgmobj) {
     unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
     n_unique <- nrow(unique_set_int_ord)
     
-    if(ord==2) browser()
-    
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
       

@@ -28,7 +28,7 @@ A character vector of length p, containing the label of each variable, where p i
 If \code{TRUE} (default), the edges are ordered by the arithmetic mean of the sampling distribution in decreasing order. If \code{FALSE} they are ordered in increasing order.
 }
   \item{cut}{
-A sequence of integers, specifying which edges are represented. For instance, if \code{decreasing = TRUE} and \code{cut = 1:10}, summaries for the 10 edges with the largest parameter estimate are displayed.
+A sequence of integers, specifying which edges are represented. For instance, if \code{decreasing = TRUE} and \code{cut = 1:10}, summaries for the 10 edges with the largest parameter estimate are displayed. The cut argument can also be used to present the boostrapped CIs in several figures.
 }
   \item{cex.label}{
 Text size of the labels.
