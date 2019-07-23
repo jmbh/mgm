@@ -10,7 +10,7 @@ The function takes an mgm object and a set of variables fixed to given values as
 \usage{
 condition(object, values)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{object}{
 An mgm object, the output of the \code{mgm()} function.
@@ -20,7 +20,11 @@ A list, where the entry name indicates the variable that should be fixed, and th
 }
 }
 \value{
-The function returns an mgm object that is conditional on the provided values. The new mgm object can again be used as input in \code{predict()}, \code{print()}, \code{showInteraction()}, etc..
+The function returns an mgm object that is conditional on the provided values. The new mgm object can again be used as input in \code{predict()}, \code{print()}, \code{showInteraction()}, etc.. 
+}
+
+\details{
+The new conditional object still contains the variables that were fixed, however, they are not related to any of the random variables anymore. We kept the variables in the object to avoid confusion with variable labels and plotting. Also note that \code{mgm()} by default scales all Gaussian variables to mean=0, sd=1. Thus, fixed values should be selected based on the scaled version of variables.
 }
 
 \references{

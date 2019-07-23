@@ -136,7 +136,10 @@ mgm <- function(data,         # n x p data matrix
   if(scale) for(i in ind_Gauss) data[, i] <- scale(data[, i])
   
   
-  
+  # Get unique values for all categorical variables (used in condition.R)
+  unique_cats <- list()
+  for(i in 1:p) if(type[i]=="c") unique_cats[[i]] <- unique(data[, i])
+
   # ----- Basic Checks II -----
   
   # Checks on other arguments
@@ -247,7 +250,8 @@ mgm <- function(data,         # n x p data matrix
                       "npar"=NULL,
                       "n"=nrow(data), 
                       "ind_cat" = ind_cat, 
-                      "ind_binary" = ind_binary)
+                      "ind_binary" = ind_binary, 
+                      "unique_cats" = unique_cats)
   
   if(saveData) mgmobj$call$data <- data
   

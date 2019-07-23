@@ -37,7 +37,7 @@ condition_core <- function(i = i,
   
   # type of predictor (cat vs con)?
   for(q in 1:(n_terms-1)) effects[q, 6] <- ifelse(effects[q, 1] == round(effects[q, 1]), 1, 0) # 1 = continuous, 0 = categorical
-  for(q in which(n_var_i==2)) effects[q, 7] <- ifelse(effects[q, 2] == round(effects[q, 1]), 1, 0) # 1 = continuous, 0 = categorical
+  for(q in which(n_var_i==2)) effects[q, 7] <- ifelse(effects[q, 2] == round(effects[q, 2]), 1, 0) # 1 = continuous, 0 = categorical
   
   # Fill in continuous predictors
   for(q in 1:(n_terms-1)) for(f in 1:nCond) if(effects[q, 1] == m_fixed_values[f, 1]) effects[q, 3] <- m_fixed_values[f, 2]

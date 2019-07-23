@@ -26,11 +26,23 @@ condition <- function(object,
   # ---------- Create Output Object-----------
   
   object_new <- object
+  object_new$call$condition <- values
   
   
   # ---------- Input Checks -----------
   
   if(object$call$k>3) stop("This function is only implemented for first-order moderation (3-way interactions).")
+  if(! ("core" %in% class(object)) ) stop("condition() is currently only implemented for mgm() objects.")
+  
+  # Categorical variables: only condition on categories that exist
+  for(cat in 1:nCond) {
+    if(type[m_fixed_values[cat, 1]] == "c") {
+      if(!(m_fixed_values[cat, 2] %in% object$call$unique_cats[[m_fixed_values[cat, 1]]])) stop("Fixed category does not exist in the data.")
+    }  
+  }
+  
+  # Continuous variables: give warning if one conditions outside 99% quantiles
+  
   
   
   # ---------- Loop over response variables -----------
@@ -80,10 +92,7 @@ condition <- function(object,
         object_new$nodemodels[[i]]$model[[cat]] <- model_i_new
         
       } # end for: response cats
-      
-      
-      # browser()
-      
+
     } # end if: response categorical?
     
   } # end for: response variables
@@ -94,17 +103,9 @@ condition <- function(object,
   # ---------- Aggregation across regressions -----------
   
   object_new2 <- Reg2Graph(object_new)
-  
-  # browser()
-  # 
-  # object$nodemodels[[2]]$model
-  # object_new$nodemodels[[2]]$model
-  # 
-  # object_new2$pairwise$wadj
+
   
   # ---------- Prepare output & return -----------
-  
-  # browser()
   
   return(object_new2)
   
