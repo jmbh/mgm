@@ -37,6 +37,7 @@ export(showInteraction)
 export(plotRes)
 
 export(FactorGraph)
+export(condition)
 
 
 # Export old functions with defunct msg
