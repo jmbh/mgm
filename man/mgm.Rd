@@ -55,7 +55,7 @@ Order up until including which interactions are included in the model. \code{k =
 }
 
   \item{moderators}{
-Integer vector with elements in \code{1:p}, specifying moderation effects to be included in the model. For instance, \code{moderators = c(4)} includes all linear moderation effects of variable 4. This is equivalent to including all 3-way interactions that include variable 4. Note that \code{moderators = 1:p} gives the same model as setting \code{k = 3} (see previous argument). Alternatively, a specific set of moderators can be specified via a M x 3 matrix, where M is the number of moderation effects. For example, \code{moderators = matrix(1:3, nrow=1)} adds the 3-way interaction 1-2-3 to the model. 
+Integer vector with elements in \code{1:p}, specifying moderation effects to be included in the model. For instance, \code{moderators = c(4)} includes all linear moderation effects of variable 4. This is equivalent to including all 3-way interactions that include variable 4. Note that \code{moderators = 1:p} gives the same model as setting \code{k = 3} (see previous argument). Alternatively, a specific set of moderators can be specified via a M x 3 matrix, where M is the number of moderation effects. For example, \code{moderators = matrix(1:3, nrow=1)} adds (only) the 3-way interaction 1-2-3 to the model. 
 }
 
   \item{ruleReg}{

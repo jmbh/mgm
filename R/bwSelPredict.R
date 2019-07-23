@@ -5,6 +5,7 @@ bwSelPredict <- function(data,
                          obj,
                          test,
                          modeltype,
+                         k = NULL,
                          # consec = NULL,
                          ...) # is lags passed on?
 
@@ -16,10 +17,12 @@ bwSelPredict <- function(data,
 
   p <- ncol(data)
 
+  # browser()
+  
   # Fetch arguments
   args <- list(...)
 
-  args$d <- args$k - 1
+  args$d <- k - 1
   n_test <- length(test)
   consec <- args$consec
 
@@ -173,8 +176,21 @@ bwSelPredict <- function(data,
 
   # -------------------- Compute Errors -------------------
 
-  if(modeltype == 'mvar') m_true <- matrix(data_response[test, ], nrow = n_test) # enforce matrix in case n_test = 1
-  if(modeltype == 'mgm') m_true <- matrix(data[test, ], nrow = n_test) # enforce matrix in case n_test = 1
+  if(modeltype == 'mvar')  {
+    if(n_test==1) { 
+      m_true <- matrix(data_response[test, ], nrow = n_test)  # for the case n_test=1
+    } else {
+      m_true <- data_response[test, ]
+    }
+  }
+  
+  if(modeltype == 'mgm') {
+    if(n_test==1) { 
+      m_true <- matrix(data[test, ], nrow = n_test)  # for the case n_test=1
+    } else {
+      m_true <- data[test, ]
+    }
+  }
 
   m_error <- matrix(NA, nrow = n_test, ncol = p)
 

@@ -8,7 +8,7 @@ bwSelect <- function(data,
                      bwFoldsize, # should default to n_var / bwFolds (then proper stratified CV, but very slow for big datasets)
                      modeltype,
                      pbar,
-                     ... # arguments for mvar, passed through by tvmar
+                     ... # arguments for mvar/mgm, passed through by tvmar
 )
 
 
@@ -44,6 +44,7 @@ bwSelect <- function(data,
   if(missing(bwFoldsize)) bwFoldsize <- NULL
   if(missing(pbar)) pbar <- TRUE
   if(is.null(args$saveData)) args$saveData <- FALSE
+  if(is.null(args$k)) args$k <- k <- 2
   if(is.null(args$overparameterize)) args$overparameterize <- FALSE
 
 
@@ -191,7 +192,7 @@ bwSelect <- function(data,
                                        saveModels = TRUE, # otherwise we can't make any predictions
                                        signInfo = FALSE,
                                        ...)
-        
+    
 
         # Make Predictions at test-locations
         l_foldPerform[[fold]] <- bwSelPredict(data = data,
@@ -262,6 +263,7 @@ bwSelect <- function(data,
                                     signInfo = FALSE,
                                     ...)
 
+        # browser()
 
         # Make Predictions at test-locations
         l_foldPerform[[fold]] <- bwSelPredict(data = data,
@@ -272,6 +274,7 @@ bwSelect <- function(data,
                                               lags = args$lags,
                                               modeltype = modeltype,
                                               overparameterize = args$overparameterize,
+                                              k = k,
                                               ...)
 
       }
