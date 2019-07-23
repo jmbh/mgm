@@ -76,7 +76,7 @@ If \code{binarySign = TRUE}, a sign for the interaction within binary nodes and 
 }
 
   \item{scale}{
-If \code{scale = TRUE}, all Gaussian nodes (specified by \code{"g"} in \code{type}) are centered and divided by their standard deviation. Scaling is recommended, because otherwise the penalization of a parameter depends on the variance of the associated predictor.
+If \code{scale = TRUE}, all Gaussian nodes (specified by \code{"g"} in \code{type}) are centered and divided by their standard deviation. Scaling is recommended, because otherwise the penalization of a parameter depends on the variance of the associated predictor. Defaults to \code{scale = TRUE}.
 }
 
   \item{verbatim}{
