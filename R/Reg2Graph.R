@@ -27,6 +27,8 @@ Reg2Graph <- function(mgmobj) {
   ind_cat <- mgmobj$call$ind_cat
   ind_binary <- mgmobj$call$ind_binary
   
+  mSpec <- ifelse(class(mgmobj$callmoderators) == "numeric", "vector", "matrix")
+  
   
   # Storage
   Pars_ind <- list() # storage for interaction-indicators
@@ -36,6 +38,8 @@ Reg2Graph <- function(mgmobj) {
   for(v in 1:p) {
     
     model_obj <- mgmobj$nodemodels[[v]]$model
+    
+    
     
     # ----- Create empty Storage for parameters -----
     
@@ -52,21 +56,32 @@ Reg2Graph <- function(mgmobj) {
       
     } else {
       
-      d <- 2
+      v_Pars_ind[[1]] <- matrix(predictor_set, ncol=1) # main effects
       
-      v_Pars_ind[[1]] <- matrix(predictor_set, ncol=1) # standard terms
-      
-      if(v %in% moderators) {
-        ind_mods <- t(combn((1:p)[-v], 2)) # if moderator, all combinations of other variables
-      } else {
-        ind_mods <- expand.grid((1:p)[-v], moderators[moderators!=v]) # if not moderator, all variables times 
+      # Moderation effects
+      if(mSpec == "vector") {
+        
+        d <- 2
+        
+        if(v %in% moderators) {
+          ind_mods <- t(combn((1:p)[-v], 2)) # if moderator, all combinations of other variables
+        } else {
+          ind_mods <- expand.grid((1:p)[-v], moderators[moderators!=v]) # if not moderator, all variables times 
+        }
+        
+        ind_mods <- ind_mods[!apply(ind_mods, 1, function(x) x[1] == x[2]), ] # remove rows with equal entries
+        
       }
       
-      ind_mods <- ind_mods[!apply(ind_mods, 1, function(x) x[1] == x[2]), ] # remove rows with equal entries
+      if(mSpec == "matrix") {
+        
+        ind_v_inMod <- as.logical(apply(moderators, 1, function(x) v %in% x  ))
+        ind_mods <- t(apply(matrix(moderators[ind_v_inMod], ncol=3), 1, function(x) x[x!=v]))
+        
+      }
+
       v_Pars_ind[[2]] <- ind_mods
-      
       # no interactions k > 2 allowed, if moderators are specified
-      
       
     } # end if: moderators?
     
@@ -248,7 +263,7 @@ Reg2Graph <- function(mgmobj) {
   # Collapse value list across nodes
   Pars_values_flip_red <- lapply(Pars_values_flip, function(x) do.call(c, x))
   
-  
+  # browser()
   
   # 1) Select each interaction
   
@@ -259,11 +274,21 @@ Reg2Graph <- function(mgmobj) {
     for(ord in 1:d) n_terms_d[ord] <- choose(p, ord+1)
   } else {
     n_terms_d[1] <- choose(p, 1+1) # all pairwise interactions
-    mod_terms <- expand.grid((1:p), (1:p), moderators) 
-    id_uni <- FlagSymmetricFast(mod_terms)
-    mod_terms2 <- mod_terms[!duplicated(id_uni), ]
-    ind_diff <- as.numeric(apply(mod_terms2, 1, function(x) !any(duplicated(x))))
-    mod_terms3 <- mod_terms2[ind_diff == 1, ]
+    
+    # Select moderation terms: Standard specification
+    if(mSpec == "vector") {
+      mod_terms <- expand.grid((1:p), (1:p), moderators) 
+      id_uni <- FlagSymmetricFast(mod_terms)
+      mod_terms2 <- mod_terms[!duplicated(id_uni), ]
+      ind_diff <- as.numeric(apply(mod_terms2, 1, function(x) !any(duplicated(x))))
+      mod_terms3 <- mod_terms2[ind_diff == 1, ]  
+    }
+    
+    # Select moderation terms: Custom specification
+    if(mSpec == "matrix") {
+      mod_terms3 <- mgmobj$call$moderators
+    }
+    
     n_terms_d[2] <- nrow(mod_terms3) # ok to have interactions double; will remove them below using FlagSymmetricFast()
   }
   
@@ -301,6 +326,8 @@ Reg2Graph <- function(mgmobj) {
     unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
     n_unique <- nrow(unique_set_int_ord)
     
+    if(ord==2) browser()
+    
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
       
@@ -313,8 +340,6 @@ Reg2Graph <- function(mgmobj) {
         l_w_ind[[j]] <- set_int_ord[ind_inter[j], ]
         l_w_par[[j]] <- set_par_ord[[ind_inter[j]]]
       }
-      
-      # if(i == 2) browser()
       
       # Mapping: Regression parameters -> Edge parameter (mean of absolute values of parameters)
       m_par_seq <- unlist(lapply(l_w_par, function(x) mean(abs(unlist(x)))))
@@ -479,7 +504,7 @@ Reg2Graph <- function(mgmobj) {
   mgmobj$pairwise$signsNodewise <- m_signs
   mgmobj$pairwise$edgecolorNodewise <- sign_colors
   
-
+  
   return(mgmobj)
   
   

@@ -29,6 +29,8 @@ ModelMatrix <- function(data,  # matrix
   p <- ncol(data) # note that we have only the predictors here!!
   n <- nrow(data)
   
+  mSpec <- ifelse(class(moderators) == "numeric", "vector", "matrix")
+  
   # ---------- Input Checks ----------
   
   if(p != length(type)) stop('Length of type has to match the number of columns in data.')
@@ -66,7 +68,7 @@ ModelMatrix <- function(data,  # matrix
         
       }
       
-      # Add Varnames
+      # Add Var names
       cn <- paste0(labels[j], 1:n_labels)
       colnames(ind_matrix) <- cn
       l_ind_datasets[[j]] <- ind_matrix
@@ -81,6 +83,7 @@ ModelMatrix <- function(data,  # matrix
   
   l_ind_datasets_nV <- l_ind_datasets
   Xd1 <- do.call(cbind, l_ind_datasets_nV)
+  
   
   # ---------- Compute all d>1 Interaction Terms ----------
   
@@ -102,34 +105,66 @@ ModelMatrix <- function(data,  # matrix
       l_interactions[[1]] <- list()
       for(i in 1:p) l_interactions[[1]][[i]] <- i
       
-      # Case II: No Moderation
-      # if(v == 2)  browser()
+      # Case II: Moderation
       
-      if(v %in% moderators) {
+      if(mSpec == "vector") {
         
-        l_interactions[[2]] <- combn(1:p, 2, simplify = FALSE) # all combinations of the remaining (here denoted by 1:p) variables
+        browser()
         
-      } else {
+        if(v %in% moderators) {
+          
+          l_interactions[[2]] <- combn(1:p, 2, simplify = FALSE) # all combinations of the remaining (here denoted by 1:p) variables
+          
+        } else {
+          
+          ind_mod_MM <- (1:(p+1) %in% moderators)[-v] # indicator(moderator?) for 1:p predictors
+          n_mods <- sum(ind_mod_MM)
+          which_mod <- which(ind_mod_MM)
+          
+          l_mods <- list()
+          for(i in 1:n_mods) l_mods[[i]] <- expand.grid((1:p)[-which_mod[i]], which_mod[i]) # loop over moderators
+          m_mods <- do.call(rbind, l_mods)
+          m_mods <- as.matrix(m_mods)
+          
+          l_mods_combn <- list()
+          for(i in 1:nrow(m_mods)) l_mods_combn[[i]] <- m_mods[i, ] # turn each row into list entry
+          
+          l_interactions[[2]] <- l_mods_combn
+          
+        } # end: v = moderator?
         
-        ind_mod_MM <- (1:(p+1) %in% moderators)[-v] # indicator(moderator?) for 1:p predictors
-        n_mods <- sum(ind_mod_MM)
-        which_mod <- which(ind_mod_MM)
+      } # end if: vector specification?
+      
+      
+      if(mSpec == "matrix") {
         
-        l_mods <- list()
-        for(i in 1:n_mods) l_mods[[i]] <- expand.grid((1:p)[-which_mod[i]], which_mod[i]) # loop over moderators
-        m_mods <- do.call(rbind, l_mods)
-        m_mods <- as.matrix(m_mods)
+        nrow_mods <- nrow(moderators)
+        ind_v_inMod <- as.logical(apply(moderators, 1, function(x) v %in% x  ))
         
-        l_mods_combn <- list()
-        for(i in 1:nrow(m_mods)) l_mods_combn[[i]] <- m_mods[i, ] # turn each row into list entry
+        if(sum(ind_v_inMod)>0) { # if variable v is involved in at least one interaction
+          # get interaction terms for node v
+          int_terms <- t(apply(matrix(moderators[ind_v_inMod], ncol=3), 1, function(x) x[x!=v]))
+          
+          # To get the predictors on that weird "other variable" vector I use in this script
+          for(i in 1:nrow(int_terms)) for(j in 1:2) if(int_terms[i, j] > v) int_terms[i, j] <- int_terms[i, j] - 1
         
-        l_interactions[[2]] <- l_mods_combn
+          # fill in existing structure:
+          for(i in 1:nrow(int_terms)) l_interactions[[2]][[i]] <- int_terms[i, ]
+        } else {
+          d <- 1 # for the present node v, to skip the below which takes l_interactions[[2]] as input
+        }
         
-      } # end: v = moderator?
+      } # end if: matrix specification?
       
     } # end if: moderators?
     
-    
+  } # end if: d>1    
+  
+  
+  
+  
+  # if statement again here, because it can happen that there is no interaction term in regression on variable v    
+  if(d > 1) {
     
     # storage for all interactions of all orders
     l_collect_terms <- list()
@@ -155,7 +190,7 @@ ModelMatrix <- function(data,  # matrix
         
         # Compute amount of levels of each variable (continuous=1)
         l_indicator_it <- list()
-        for(i in 1:ord) l_indicator_it[[i]] <- 1:level[inter_it[i]]
+        for(i in 1:ord) l_indicator_it[[i]] <- 1:(level[inter_it[i]])
         
         # List all combination of levels of variables in the interaction it
         all_combs <- expand.grid(l_indicator_it)
@@ -200,9 +235,11 @@ ModelMatrix <- function(data,  # matrix
     # l_collect_terms[[1]] <- NULL
     all_HOI_terms <- do.call(cbind, l_collect_terms)
     
-  }
+  } # end if: d>1
   
   # Combine with d=1 size neighborhoods (singletons)
+  
+  # browser()
   
   if(d > 1) {
     X <- cbind(Xd1, all_HOI_terms)
