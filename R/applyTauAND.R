@@ -47,6 +47,7 @@ applyTauAND <- function(i,
     
     # 2-way interactions
     ind_2way <- object$interactions$indicator[[1]]
+    ind_2way <- matrix(ind_2way, ncol=2) # for the case of: only 1 e-way interaction
     out <- apply(ind_2way, 1, function(x) {
       if(i %in% x) {
         TRUE
@@ -73,6 +74,7 @@ applyTauAND <- function(i,
     
     # 3-way interactions
     ind_3way <- object$interactions$indicator[[2]]
+    ind_3way <- matrix(ind_3way, ncol=3) # for the case of: only 1 3-way interaction
     out <- apply(ind_3way, 1, function(x) {
       if(i %in% x) {
         TRUE
