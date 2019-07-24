@@ -163,6 +163,8 @@ Reg2Graph <- function(mgmobj) {
       
       mgmobj$intercepts [[v]] <- model_obj_i[1]
       
+      # browser()
+      
       # Thresholding:
       # p = number of covariances, as it should be
       model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate

@@ -54,8 +54,15 @@ condition <- function(object,
     
     if(type[i] == "g") {
       
-      # Retrieve nodemodel i
+      # Access node model
       model_i <- object$nodemodels[[i]]$model
+      
+      
+      # Apply tau-thresholding & AND rule
+      model_i <- applyTauAND(i = i,
+                             object = object, 
+                             model_i = model_i)
+      
       
       # Condition / fix values
       model_i_new <- condition_core(i = i,
@@ -83,6 +90,11 @@ condition <- function(object,
         
         model_i_cat <- model_i[[cat]]
         
+        # Apply tau-thresholding & AND rule
+        model_i_cat <- applyTauAND(i = i,
+                                   object = object, 
+                                   model_i = model_i_cat)
+        
         # Condition / fix values
         model_i_new <- condition_core(i = i,
                                       model_i = model_i_cat, 
@@ -92,7 +104,7 @@ condition <- function(object,
         object_new$nodemodels[[i]]$model[[cat]] <- model_i_new
         
       } # end for: response cats
-
+      
     } # end if: response categorical?
     
   } # end for: response variables
@@ -103,7 +115,7 @@ condition <- function(object,
   # ---------- Aggregation across regressions -----------
   
   object_new2 <- Reg2Graph(object_new)
-
+  
   
   # ---------- Prepare output & return -----------
   
