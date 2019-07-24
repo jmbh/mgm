@@ -27,7 +27,7 @@ Reg2Graph <- function(mgmobj) {
   ind_cat <- mgmobj$call$ind_cat
   ind_binary <- mgmobj$call$ind_binary
   
-  mSpec <- ifelse(class(mgmobj$callmoderators) == "numeric", "vector", "matrix")
+  mSpec <- ifelse(class(mgmobj$call$moderators) == "numeric", "vector", "matrix")
   
   
   # Storage
@@ -38,8 +38,6 @@ Reg2Graph <- function(mgmobj) {
   for(v in 1:p) {
     
     model_obj <- mgmobj$nodemodels[[v]]$model
-    
-    
     
     # ----- Create empty Storage for parameters -----
     

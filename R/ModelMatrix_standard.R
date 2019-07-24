@@ -40,7 +40,6 @@ ModelMatrix_standard <- function(data,
     # Terms for interactions/moderation
     n_mods <- ifelse(mSpec == "vector", length(moderators), nrow(moderators))
     
-    # browser()
     
     # IIa) Moderator specification: Vector
     if(mSpec == "vector") {
@@ -113,6 +112,9 @@ ModelMatrix_standard <- function(data,
 # if(v==2) browser()
   
   # -------- Output --------
+  
+  # browser()
+  
   
   return(X_standard)
   
