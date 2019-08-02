@@ -16,7 +16,7 @@ condition(object, values)
 An mgm object, the output of the \code{mgm()} function.
 }
   \item{values}{
-A list, where the entry name indicates the variable that should be fixed, and the entry value indicates the value to which the corresponding variable should be fixed. See below for an example.
+A list, where the entry name indicates the column number of the variable that should be fixed, and the entry value indicates the value to which the corresponding variable should be fixed. See below for an example.
 }
 }
 \value{

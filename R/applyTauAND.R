@@ -86,7 +86,7 @@ applyTauAND <- function(i,
     if(sum(out)>0) { # all of this needed only if at least 1 3-way interaction is estimated to be nonzero
     
     ind_3way_i <- matrix(ind_3way[out, ], ncol=3)
-    preds_3way <- aux_m_AND[aux_m_AND[, 4] == 2, 2:3]
+    preds_3way <- matrix(aux_m_AND[aux_m_AND[, 4] == 2, 2:3], ncol=2)
     
     for(v in 1:n_3way) {
       out_v <- apply(ind_3way_i, 1, function(x) preds_3way[v, 1] %in% x & preds_3way[v, 2] %in% x)
