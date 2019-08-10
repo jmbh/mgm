@@ -15,8 +15,6 @@ plotRes <- function(object,
   
   # ---------- Input Checks ----------
   
-  browser()
-  
   if(!("core" %in% class(object))) stop("plotRes() currently only supports resampled mgm() objects.")
   if(!("resample" %in% class(object))) stop("PplotRes() only takes resample objects as input (see ?resample).")
   if(missing(quantiles)) stop("No quantiles specified.")
