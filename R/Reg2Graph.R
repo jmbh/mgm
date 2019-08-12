@@ -27,7 +27,7 @@ Reg2Graph <- function(mgmobj) {
   ind_cat <- mgmobj$call$ind_cat
   ind_binary <- mgmobj$call$ind_binary
   
-  mSpec <- ifelse(class(mgmobj$call$moderators) == "numeric", "vector", "matrix")
+  mSpec <- ifelse(class(moderators) %in% c("integer","numeric"), "vector", "matrix")
   
   
   # Storage
