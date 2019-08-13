@@ -8,10 +8,11 @@ Plot summary of resampled sampling distributions
 Plots a summary of sampling distributions resampled with the resample() function
 }
 \usage{
-plotRes(object, quantiles, labels = NULL, decreasing = TRUE, 
-        cut = NULL, cex.label = 0.75, lwd.qtl = 2, 
-        cex.mean = 0.5, cex.bg = 3.5, 
-        axis.ticks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1))
+plotRes(object, quantiles = c(.05, .95), labels = NULL, 
+        decreasing = TRUE, cut = NULL, cex.label = 0.75, 
+        lwd.qtl = 2, cex.mean = 0.5, cex.bg = 3.5, 
+        axis.ticks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1), 
+        axis.ticks.mod = NULL, layout.width.labels = .2)
 }
 
 \arguments{
@@ -19,7 +20,7 @@ plotRes(object, quantiles, labels = NULL, decreasing = TRUE,
 An output object from the \code{resample()} function.
 }
   \item{quantiles}{
-A numerical vector of length two, specifying the desired lower/upper quantiles, for example \code{c(.05, .95)}.
+A numerical vector of length two, specifying the desired lower/upper quantiles. Defaults to \code{quantiles = c(.05, .95)}.
 }
   \item{labels}{
 A character vector of length p, containing the label of each variable, where p is the number of variables.
@@ -45,11 +46,17 @@ Size of the white background of the number indicating the proportion of the esti
   \item{axis.ticks}{
 A numeric vector indicating the axis ticks and labels for the x-axis.
 }
+  \item{axis.ticks.mod}{
+A numeric vector indicating the axis ticks and labels for the x-axis for moderation effects. If \code{axis.ticks.mod=NULL}, the values from \code{axis.ticks} for pairwise interactions are used.
+}
+  \item{layout.width.labels}{
+A positive numeric value which specifies the width of the left-hand-side legend relative to the width of the data panel (or data panels, in case of a moderator model), which have width = 1. Defaults to \code{layout.width.labels = 0.2}.
 }
 
+}
 
 \details{
-Currently only supports summaries for resampled \code{mgm()} objects. 
+Currently only supports summaries for resampled \code{mgm()} objects, and moderated MGMs with a single moderator.
 }
 
 \value{

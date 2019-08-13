@@ -17,6 +17,7 @@ importFrom("graphics", "abline", "axis", "layout", "par", "plot.new",
              "plot.window", "points", "segments", "text")
 
 importFrom("gtools", "permutations")
+importFrom("graphics", "rect")
 
 # Exported functions
 export(mgm)

@@ -27,9 +27,16 @@ print.mgm <- function(x,
       if(!is.null(x$call$moderators))  {
         
         x$call$k <- 3
-        msg_basic <- paste0(msg_basic,
-                            paste0('\nModerators: Variable ' , x$call$moderators))
         
+        msg_basic <- paste0('mgm fit-object',
+                            '\n\nModel class: ', model_classes[1],
+                            '\nOrder: ' , x$call$k,
+                            '\nNodes: ' , length(x$call$type)) # call again with updated x$call$k
+        
+        msg_basic <- paste0(msg_basic,
+                            paste0('\nModerators: ' , paste(x$call$moderators, collapse = ", ")))
+        
+    
       }
         
       
@@ -38,7 +45,7 @@ print.mgm <- function(x,
         nCond <- length(x$call$condition)
         names <- names(x$call$condition)
         msgCond <- paste0(names, "=", unlist(x$call$condition))
-        msg_basic <- paste0(msg_basic, "\nFixed variables: ", paste(msgCond, collapse = ", "))
+        msg_basic <- paste0(msg_basic, "\nFixed: ", paste(msgCond, collapse = ", "))
         
       }
       
