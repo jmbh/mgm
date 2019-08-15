@@ -102,6 +102,7 @@ plotRes <- function(object,
   mod <- object$call$object$call$moderators
   type <- object$call$object$call$type
   p <- length(type)
+  nB <- object$call$nB
   
   # ----------------------------------------------------------------------
   # ---------- Input Checks ----------------------------------------------
