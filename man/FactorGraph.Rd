@@ -8,9 +8,9 @@ Draws a factor graph of a (time-varying) MGM
 Wrapper function around qgraph() that draws factor graphs for (time-varying) MGMs
 }
 \usage{
-FactorGraph(object, colors, labels, PairwiseAsEdge = FALSE, 
+FactorGraph(object, labels, PairwiseAsEdge = FALSE, 
             Nodewise = FALSE, DoNotPlot = FALSE, 
-            FactorLabels = TRUE, shapes = c("circle", "square"), 
+            FactorLabels = TRUE, colors, shapes,
             shapeSizes = c(8, 4), estpoint = NULL, 
             negDashed = FALSE, ...)
 }
@@ -19,9 +19,6 @@ FactorGraph(object, colors, labels, PairwiseAsEdge = FALSE,
 \arguments{
   \item{object}{
 The output object of \code{mgm()} or \code{tvmgm()}.
-}
-  \item{colors}{
-A character vector of colors for nodes and factors. The first color is for nodes, the second for 2-way interactions, the third for 3-way interactions, etc. Defaults to \code{colors = c("white", "tomato", "lightblue")}.
 }
   \item{labels}{
 A character vector of (variable) node labels.
@@ -38,8 +35,11 @@ If \code{DoNotPlot = TRUE} no factorgraph is plotted. This way the computed fact
   \item{FactorLabels}{
 If \code{FactorLabels = TRUE} the factors are labeled by their order. If \code{FactorLabels = FALSE} no label is shown. Defaults to \code{FactorLabels = TRUE}.
 }
+  \item{colors}{
+A character vector of colors for nodes and factors. The first color is for variable-nodes, the second for 2-way interactions, the third for 3-way interactions, etc. Defaults to \code{colors = c("white", "tomato", "lightblue", "orange")}.
+}
   \item{shapes}{
-A character vector of length two indicating the shapes for nodes and factors. Defaults to \code{shapes = c("circle", "square")}, which gives circles to nodes and squares to factors. See \code{?qgraph} for available shapes.
+A character vector of shapes for for nodes and factors. The first shape is for variable-nodes, the second for 2-way interactions, the third for 3-way interactions, etc. Defaults to \code{shapes = c("circle", "square", "triangle", "diamond")}.
 }
   \item{shapeSizes}{
 A numeric vector of length two indicating the size of shapes for nodes and factors. Defaults to \code{shapeSizes = c(8, 4)}.
@@ -97,15 +97,11 @@ fit_k3 <- mgm(data = autism_data$data,
 # List of estimated interactions
 fit_k3$interactions$indicator
 
-# Plot Factor Graph 
-nodeColors <- c("white", "orange", "lightblue")
-
 FactorGraph(object = fit_k3, 
             PairwiseAsEdge = FALSE, 
             DoNotPlot = FALSE, 
-            colors = nodeColors, 
             labels = 1:7, 
-            layout="spring")
+            layout="circle")
 
 # For more examples see https://github.com/jmbh/mgmDocumentation
 }

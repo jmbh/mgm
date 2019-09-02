@@ -1,13 +1,13 @@
 # jonashaslbeck@gmail.com; March 2016
 
 FactorGraph <- function(object, 
-                        colors, 
                         labels,
                         PairwiseAsEdge = FALSE, 
                         Nodewise = FALSE,
                         DoNotPlot = FALSE, 
                         FactorLabels = TRUE, 
-                        shapes = c('circle', 'square'), 
+                        colors,
+                        shapes, 
                         shapeSizes = c(8, 4), 
                         estpoint = NULL,
                         negDashed = FALSE,
@@ -32,6 +32,8 @@ FactorGraph <- function(object,
     if(estpoint > n_estpoints) stop(paste0("The provided fit object has only ", n_estpoints, " estimation points."))
   } 
   
+  if(object$call$k > 4) stop("Please specify additional colors/shapes for interactions with order > 4.")
+  
   
   # --------- Create FractorGraph object ---------
   
@@ -50,7 +52,8 @@ FactorGraph <- function(object,
   # --------- Fill in defaults ---------
   
   if(missing(labels)) labels <- 1:p
-  if(missing(colors)) colors <- c("white", "tomato", "lightblue")
+  if(missing(colors)) colors <- c("white", "tomato", "lightblue", "orange")
+  if(missing(shapes)) shapes <- c("circle", "square", "triangle", "diamond")
   layout <- "spring"
   cut <- 0
   
@@ -143,15 +146,13 @@ FactorGraph <- function(object,
     
     # ----- Call qgraph -----
     
-    # browser()
-    
     qgraph_object <- qgraph(FG_object$graph,
                             color = colors[FG_object$order + 1],
                             edge.color = edge.color,
                             lty = edge_lty,
                             layout = layout,
                             labels =  labels_ex,
-                            shape = shapes[FG_object$nodetype + 1],
+                            shape = shapes[FG_object$order + 1],
                             vsize = shapeSizes[FG_object$nodetype + 1], 
                             edge.labels = edge.labels,
                             cut = cut,
