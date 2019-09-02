@@ -87,7 +87,8 @@ plotRes <- function(object,
                     cex.bg = 3.5, 
                     axis.ticks = c(-.5, -.25, 0, .25, .5, .75, 1), 
                     axis.ticks.mod = NULL,
-                    layout.width.labels = .2)
+                    layout.width.labels = .2, 
+                    layout.gap.pw.mod = .15)
   
 {
   
@@ -209,6 +210,9 @@ plotRes <- function(object,
     
   } # end if: moderation?
   
+  
+  
+  
   # ----------------------------------------------------------------------
   # ---------- A.1) mgm objects (moderated; 1 moderator) -----------------
   # ----------------------------------------------------------------------
@@ -306,9 +310,11 @@ plotRes <- function(object,
     
     # ----- Setup layout -----
     
-    lmat <- rbind(1:3, 4:6)
+    lmat <- rbind(c(1,2,7,3), 
+                  c(4,5,8,6))
+
     lo <- layout(lmat, 
-                 widths = c(layout.width.labels, 1, 1), 
+                 widths = c(layout.width.labels, 1, layout.gap.pw.mod, 1), 
                  heights = c(.07, .9))
     
     # ----- 0) Plot Top Legend -----
