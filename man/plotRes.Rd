@@ -10,7 +10,7 @@ Plots a summary of sampling distributions resampled with the resample() function
 \usage{
 plotRes(object, quantiles = c(.05, .95), labels = NULL, 
         decreasing = TRUE, cut = NULL, cex.label = 0.75, 
-        lwd.qtl = 2, cex.mean = 0.5, cex.bg = 3.5, 
+        lwd.qtl = 2, cex.mean = 0.55, cex.bg = 2.7, 
         axis.ticks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1), 
         axis.ticks.mod = NULL, layout.width.labels = .2,
         layout.gap.pw.mod = .15)
