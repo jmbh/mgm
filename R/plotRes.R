@@ -68,7 +68,8 @@ plotData <- function(TM,
            y1 = plot_y, lwd = lwd.qtl)
    
   # Plot prop>0
-  points(TM[, 3], plot_y, pch=20, col=bgcol, cex = cex.bg)
+  points(TM[, 3], plot_y, pch=19, col=bgcol, cex = cex.bg)
+  points(TM[, 3], plot_y, pch=21, col="black", cex = cex.bg)
   text(TM[, 3], plot_y, TM[, 6], cex = cex.mean)
   
   
@@ -83,8 +84,8 @@ plotRes <- function(object,
                     cut = NULL,
                     cex.label = .75,
                     lwd.qtl = 2, 
-                    cex.mean = .5, 
-                    cex.bg = 3.5, 
+                    cex.mean = .55, 
+                    cex.bg = 2.7, 
                     axis.ticks = c(-.5, -.25, 0, .25, .5, .75, 1), 
                     axis.ticks.mod = NULL,
                     layout.width.labels = .2, 
