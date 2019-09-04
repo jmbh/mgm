@@ -54,7 +54,7 @@ FactorGraph <- function(object,
   if(missing(labels)) labels <- 1:p
   if(missing(colors)) colors <- c("white", "tomato", "lightblue", "orange")
   if(missing(shapes)) shapes <- c("circle", "square", "triangle", "diamond")
-  layout <- "spring"
+  layout <- "circle"
   cut <- 0
   
   
