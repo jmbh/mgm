@@ -153,7 +153,7 @@ factors[[2]] <- matrix(c(1,2,3), ncol=3, byrow = T) # one 3-way interaction
 
 interactions <- list()
 interactions[[1]] <- NULL
-interactions[[2]] <- vector("list", length = 2)
+interactions[[2]] <- vector("list", length = 1)
 # threeway interaction no1
 interactions[[2]][[1]] <- array(0, dim = c(level[1], level[2], level[3]))
 theta <- 2
