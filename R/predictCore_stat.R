@@ -97,6 +97,8 @@ predictCore_stat <- function(object,
         coefs <- as.numeric(nodeModels[[v]]$model) # get coefficients
         predCoreObj$pred[[v]] <- coefs[1] + X %*% matrix(coefs[-1], nrow=length(coefs[-1])) # predict
         
+        if(type[v]=="p") predCoreObj$pred[[v]] <- exp(predCoreObj$pred[[v]]) # coefficients of poisson regresison are on log scale
+        
       }
       
     } # end of variable loop 'mgm'
@@ -129,7 +131,6 @@ predictCore_stat <- function(object,
     nCases <- nrow(data_response)
     
     for(v in 1:nNodes) {
-      
       
       # ----- Create VAR Design Matrix -----
       
@@ -195,6 +196,8 @@ predictCore_stat <- function(object,
         # predicitions
         coefs <- as.numeric(nodeModels[[v]]$model) # get coefficients
         predCoreObj$pred[[v]] <- coefs[1] + X %*% matrix(coefs[-1], nrow=length(coefs[-1])) # predict
+        
+        if(type[v]=="p") predCoreObj$pred[[v]] <- exp(predCoreObj$pred[[v]])
         
       }
       

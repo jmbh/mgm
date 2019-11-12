@@ -1,3 +1,6 @@
+Changes in Version 1.2-8
+  o Fixed bug in predictions from Poisson variables
+
 Changes in Version 1.2-7
   o Fixed bug in bootstrap scheme for time-varying VAR models
   o Provide optional output of chains of Gibbs sampler from mgmsampler()
