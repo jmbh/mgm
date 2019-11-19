@@ -224,7 +224,7 @@ plotRes <- function(object,
     
     # ----- Get estimates out of model object -----
     
-    m_ind_allpw <- t(combn(1:5, 2)) # list all possible 2-way interactions
+    m_ind_allpw <- t(combn(1:p, 2)) # list all possible 2-way interactions
     n_pw <- nrow(m_ind_allpw) # how many?
     m_pw <- m_mod <- matrix(0, nrow=n_pw, ncol=nB) # Create storage for nB pairwise and moderation effects
     
@@ -292,6 +292,8 @@ plotRes <- function(object,
     ord <- order(tar_mat_pw[,3], decreasing = decreasing)
     tar_mat_pw <- tar_mat_pw[ord, ]
     tar_mat_mod <- tar_mat_mod[ord, ]
+    
+    # browser()
     
     # Subset (cut argument)
     if(is.null(cut)) {
