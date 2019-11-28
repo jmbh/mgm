@@ -2,7 +2,6 @@
 resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvmgm, tvmvar) 
                      data, # the data
                      nB,
-                     seeds,
                      blocks, # type of resampling for time-series data
                      quantiles,
                      pbar, # progress bar
@@ -16,9 +15,12 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   
   if(missing(pbar)) pbar <- TRUE
   if(missing(verbatim)) verbatim <- FALSE
-  if(missing(seeds)) seeds <- 1:nB
+  # if(missing(seeds)) seeds <- 1:nB
+  seeds <- sample(1:10000000, size=nB) # for all methods except "core"; for core the code below resamples seeds that ensure that the model can be fit to all data sets
   if(missing(blocks)) blocks <- 10
   if(missing(quantiles)) quantiles <- c(0.05, .95)
+  
+  
   
   # --- Define aux variables ---
   
@@ -59,18 +61,52 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
   if("core" %in% class(object)) {
     
     # --- Define bootstrap samples ---
+  
+    count_reject <- 0 # count rejections of bootstrap samples
+    used_seeds <- rep(NA, nB)
     
     l_ind <- list()
     for(b in 1:nB) {
       
-      set.seed(seeds[b])
+      check <- TRUE
       
-      l_ind[[b]] <- sample(1:n, 
-                           size = n, 
-                           replace = TRUE)
+      while(check) {
+
+        # Sample seed
+        uniqe_seed <- FALSE
+        while(!uniqe_seed) {
+          seed <- sample(1:10000000, size=1)
+          if(!(seed %in% used_seeds)) uniqe_seed  <- TRUE
+        }
+        
+        set.seed(seed)
+        
+        # Draw bootstap sample
+        l_ind[[b]] <- sample(1:n, 
+                             size = n, 
+                             replace = TRUE)
+        
+        # check whether it is possible to fit the model to bootstrap sample b
+        data_b <- data[l_ind[[b]], ]
+        
+        check <- glmnetRequirements(data = data_b,
+                                    type = o_call$type,
+                                    weights = o_call$weights[l_ind[[b]]],
+                                    bootstrap = TRUE,
+                                    b = b,
+                                    seed_b = seeds[b], silent = TRUE)
+        
+        if(check) count_reject <- count_reject + 1
+        
+      } # end while:
       
-    }
+      used_seeds[b] <- seed 
+
+    } # end for
     
+    if(count_reject > 0) cat(paste0(count_reject, " bootstrap samples were rejected because of insufficient variance."))
+
+    seeds <- used_seeds
     
     # --- Estimate mgms on bootstrap samples ---
     
@@ -84,7 +120,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
-      l_b_models[[b]] <- mgm(data = data[l_ind[[b]], ],
+      l_b_models[[b]] <- mgm(data = data_b,
                              type = o_call$type,
                              level = o_call$level,
                              lambdaSeq = o_call$lambdaSeq,
@@ -173,7 +209,19 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
-      l_b_models[[b]] <- tvmgm(data = data[l_ind[[b]],],
+      
+      data_b <- data[l_ind[[b]], ]
+
+      # Check whether bootstrap sample b passes all glmnet
+      glmnetRequirements(data = data_b,
+                         type = o_call$type,
+                         weights = o_call$weights[l_ind[[b]]],
+                         bootstrap = TRUE,
+                         b = b,
+                         seed_b = seeds[b], silent = FALSE)
+      
+      
+      l_b_models[[b]] <- tvmgm(data = data_b,
                                type = o_call$type,
                                level = o_call$level,
                                timepoints = o_call$timepoints[l_ind[[b]]], # just copying
@@ -365,9 +413,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     l_b_models <- list()
     
     for(b in 1:nB) {
-      
-      # browser()
-      
+
       set.seed(seeds[b])
       if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
@@ -550,7 +596,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     
   }
   
-  
+  outlist$seeds <- seeds
   
   # ----- Return outlist -----
   

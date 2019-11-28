@@ -8,8 +8,8 @@ Resampling scheme for mgm objects
 Fits mgm model types (mgm, mvar, tvmgm, tvmvar) to a specified number of bootstrap samples.
 }
 \usage{
-resample(object, data, nB, seeds, blocks, 
-         quantiles, pbar, verbatim, ...)
+resample(object, data, nB, blocks, quantiles, 
+         pbar, verbatim, ...)
 }
 
 \arguments{
@@ -21,9 +21,6 @@ The n x p data matrix.
 }
   \item{nB}{
 The number of bootstrap samples.
-}
-  \item{seeds}{
-A integer vector of length \code{nB}, providing random seeds for each bootstrap sample. Defaults to \code{seeds = 1:nB}.
 }
   \item{blocks}{
 The number of blocks for the block bootstrap used for time-varying models.
@@ -55,6 +52,8 @@ For tvmar models, \code{bootParameters} is a p x p x nlags x nestpoints x nB arr
 
 Resampling is currently only supported for pairwise MGMs (\code{k = 2}). For mgms, \code{bootParameters} is a p x p x nB array. For tvmgms, \code{bootParameters} is a p x p x nestpoint x nB array.
 
+The seeds for the bootstrap samples are randomly sampled. For MGMs, the seeds are resampled until there are nB bootstrap samples on which an MGM can be estimated. This resampling has been implemented, because especially for small data sets, one can obtain bootstrap samples in which one or several variables have zero variance. For the other model classes, an informative error is returned in case the respective model cannot be estimated on one or more of the bootstrap samples.
+
 }
 \value{
 The output consists of a list with the entries
@@ -71,6 +70,8 @@ The output consists of a list with the entries
 \item{Times}{Returns the running time for each bootstrap model in seconds.}
 
 \item{totalTime}{Returns the running time for all bootstrap models together in seconds.}
+
+\item{seeds}{\code{nB} integers indicating the seeds used to sample the \code{nB} bootstrap samples.}
 
 }
 

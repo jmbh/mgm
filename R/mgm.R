@@ -102,8 +102,6 @@ mgm <- function(data,         # n x p data matrix
   if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
   if(any(is.na(data))) stop('No missing values permitted.')
   
-  # browser()
-  
   # Checks on moderators
   if(!is.null(moderators)) {
     if(!all(moderators == round(moderators))) stop("Moderators have to be specified as integers mapping to the column numbers of variables in the data set.")
@@ -283,9 +281,7 @@ mgm <- function(data,         # n x p data matrix
   for(v in 1:p) {
     
     # ----- Construct Design Matrix -----
-    
-    # browser()
-    
+
     X_standard <- X <- ModelMatrix_standard(data = data,
                                             type = type,
                                             d = d, 
@@ -363,6 +359,7 @@ mgm <- function(data,         # n x p data matrix
             # Recompute variables for training set
             n_train <- nrow(train_X)
             nadj_train <- sum(weights[ind != fold])
+  
             
             l_foldmodels[[fold]] <- nodeEst(y = train_y,
                                             X = train_X,
@@ -422,6 +419,8 @@ mgm <- function(data,         # n x p data matrix
       }
       
       # Refit Model on whole data, with selected alpha
+      
+      # browser()
       
       model <- nodeEst(y = y,
                        X = X,
