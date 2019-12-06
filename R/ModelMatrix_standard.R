@@ -40,7 +40,6 @@ ModelMatrix_standard <- function(data,
     # Terms for interactions/moderation
     n_mods <- ifelse(mSpec == "vector", length(moderators), nrow(moderators))
     
-    
     # IIa) Moderator specification: Vector
     if(mSpec == "vector") {
       
@@ -76,7 +75,7 @@ ModelMatrix_standard <- function(data,
       v_mods <- paste0("V", int_terms[, 1], ".",  " * ", "V", int_terms[, 2], ".", collapse = " + ")
       } else {
         v_mods <- NULL
-        }
+      }
       
       
     } # end if: matrix specification
