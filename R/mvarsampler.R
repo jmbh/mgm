@@ -77,7 +77,6 @@ mvarsampler <- function(coefarray, # v x v2 x cat(v) x cat(v2) x lag array speci
                                   level, 
                                   labels, 
                                   d = 1, 
-                                  v = v,
                                   allCats = TRUE)
 
         potential_lag <- list()
