@@ -65,6 +65,8 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     count_reject <- 0 # count rejections of bootstrap samples
     used_seeds <- rep(NA, nB)
     
+    l_data_b <- list()
+    
     l_ind <- list()
     for(b in 1:nB) {
       
@@ -87,9 +89,9 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                              replace = TRUE)
         
         # check whether it is possible to fit the model to bootstrap sample b
-        data_b <- data[l_ind[[b]], ]
+        l_data_b[[b]] <- data[l_ind[[b]], ]
         
-        check <- glmnetRequirements(data = data_b,
+        check <- glmnetRequirements(data = l_data_b[[b]],
                                     type = o_call$type,
                                     weights = o_call$weights[l_ind[[b]]],
                                     bootstrap = TRUE,
@@ -121,7 +123,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
       if(verbatim) print(paste0("Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
-      l_b_models[[b]] <- mgm(data = data_b,
+      l_b_models[[b]] <- mgm(data = l_data_b[[b]],
                              type = o_call$type,
                              level = o_call$level,
                              lambdaSeq = o_call$lambdaSeq,

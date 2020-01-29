@@ -198,6 +198,7 @@ plotRes <- function(object,
     
     
     # ----- Part B: Data ----
+  
     
     plotData(TM = TM, 
              axis.ticks = axis.ticks, 
@@ -355,11 +356,13 @@ plotRes <- function(object,
              lwd.qtl = lwd.qtl, 
              cex.bg = cex.bg, 
              cex.mean = cex.mean, 
-             margins=margins)
+             margins = margins)
 
     # ----- C) Plot Moderation effects -----
     
     if(is.null(axis.ticks.mod)) axis.ticks.mod <- axis.ticks
+    
+    # browser()
     
     plotData(TM = TM_mod, 
              axis.ticks = axis.ticks.mod, 
@@ -369,7 +372,7 @@ plotRes <- function(object,
              cex.bg = cex.bg, 
              cex.mean = cex.mean, 
              bgcol = "white", 
-             margins=margins)
+             margins = margins)
     
     
     
