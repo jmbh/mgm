@@ -28,6 +28,9 @@ glmnetRequirements <- function(data,
   
   
   # 2) > 1 events per category
+  
+  check_var_2 <- FALSE # for the case of: (1) no categorical variables and (2) silent = TRUE (when called in resample() )
+  
   if('c' %in% type) {
     ind_cat <- which(type == 'c')
     l_frqu <- list()
@@ -49,6 +52,9 @@ glmnetRequirements <- function(data,
   
   
   # 3) For each category: p(K=l) > 10^-5
+  
+  check_var_3 <- FALSE # for the case of: (1) no categorical variables and (2) silent = TRUE (when called in resample() )
+  
   if('c' %in% type) {
     
     # Function to compute weighted table:
@@ -72,7 +78,7 @@ glmnetRequirements <- function(data,
     
   }
   
-  
+
   if(silent) return(any(check_var_1, check_var_2, check_var_3))
   
   

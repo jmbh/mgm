@@ -94,7 +94,8 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
                                     weights = o_call$weights[l_ind[[b]]],
                                     bootstrap = TRUE,
                                     b = b,
-                                    seed_b = seeds[b], silent = TRUE)
+                                    seed_b = seeds[b], 
+                                    silent = TRUE)
         
         if(check) count_reject <- count_reject + 1
         
