@@ -58,6 +58,8 @@ condition <- function(object,
     
     if(type[i] == "g") {
       
+      # if(i==12) browser()
+      
       # Access node model
       model_i <- object$nodemodels[[i]]$model
       
@@ -67,7 +69,7 @@ condition <- function(object,
                              object = object, 
                              model_i = model_i)
       
-      
+    
       # Condition / fix values
       model_i_new <- condition_core(i = i,
                                     model_i = model_i, 
@@ -111,9 +113,11 @@ condition <- function(object,
       
     } # end if: response categorical?
     
+    
   } # end for: response variables
   
   
+  # browser()
   
   
   # ---------- Aggregation across regressions -----------
@@ -127,3 +131,5 @@ condition <- function(object,
   
   
 } # eoF
+
+

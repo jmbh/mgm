@@ -12,6 +12,10 @@ condition_core <- function(i = i,
                            m_fixed_values) {
   
   
+  # ----- Distinguish between two cases: variable i is involved in 3-way interaction or not --
+  
+  # browser()
+  
   names_i <- rownames(model_i)
   n_terms <- nrow(model_i)
   nCond <- nrow(m_fixed_values)
@@ -32,6 +36,8 @@ condition_core <- function(i = i,
   
   n_var_i <- unlist(lapply(names_aux3, length))
   for(q in 1:length(n_var_i)) effects[q, 1:n_var_i[q]] <- as.numeric(unlist(names_aux3[[q]]))
+  
+  
   
   ## Fill in fixed values
   
@@ -62,6 +68,8 @@ condition_core <- function(i = i,
   
   # Fill in parameter values
   effects[, 5] <- model_i[-1, 1]
+  
+  
   
   # --- Fill (new) conditioned model i ---
   
@@ -113,12 +121,13 @@ condition_core <- function(i = i,
         
       } # end if: interaction effects
 
-      
     } # end for: loop parameters
     
   } # end if: variable still random (not fixed)?
   
-  # Collapse lists into new model object
+  
+  
+  # --- Collapse lists into new model object  ---
   model_i_new <- matrix(NA, nrow=n_terms, ncol=1)
   rownames(model_i_new) <- names_i
   for(q in 1:n_terms) model_i_new[q, 1] <- sum(unlist(l_cPars[[q]]))

@@ -7,7 +7,7 @@ ModelMatrix_standard <- function(data,
                                  moderators # moderators, if specified
                                  
 )
-  
+
   
 {
   

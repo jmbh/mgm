@@ -33,8 +33,11 @@ print.mgm <- function(x,
                             '\nOrder: ' , x$call$k,
                             '\nNodes: ' , length(x$call$type)) # call again with updated x$call$k
         
+        
+        if(is.matrix(x$call$moderators)) mod_text <- "Custom specification" else mod_text <- paste(x$call$moderators, collapse = ", ")
+
         msg_basic <- paste0(msg_basic,
-                            paste0('\nModerators: ' , paste(x$call$moderators, collapse = ", ")))
+                            paste0('\nModerators: ' , mod_text)) 
         
     
       }

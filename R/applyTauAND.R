@@ -21,10 +21,18 @@ applyTauAND <- function(i,
   
   # ----- Apply AND-rule ------
   
+  # if(i==12) browser()
+  
   if(object$call$ruleReg == "AND") {
     
+    # print(i)
+    
+    ## This creates an object with the same dimensionality as the glmnet output matrix
+    ## Below we fill into this matrix whether the corresponding parameter has been set to zero by the AND rule in the fitted model
+    ## We take that information from the indicator matrix
+    
     # Aux matrix
-    aux_m_AND <- matrix(NA, nrow(model_i)-1, 5)
+    aux_m_AND <- matrix(NA, nrow(model_i)-1, 5) # columns: parameter value, variable 1, variable 2, order of interaction, parameter value after AND rule
     aux_m_AND[, 1] <- model_i[-1, 1] # copy parameters, without intercept
     
     # get variables out:
@@ -43,6 +51,7 @@ applyTauAND <- function(i,
     n_2way <- sum(aux_m_AND[, 4] == 1)
     n_3way <- sum(aux_m_AND[, 4] == 2)
     
+    
     # -- Loop over indicator matrix --
     
     # 2-way interactions
@@ -56,7 +65,7 @@ applyTauAND <- function(i,
       }
     })
     
-    if(sum(out)>0) { # all of this needed only if at least 1 pairwise interaction is estimated to be nonzero
+    if(sum(out)>0) { # all of this needed only if at least one pairwise interaction is estimated to be nonzero
       
       ind_2way_i <- matrix(ind_2way[out, ], ncol=2) # subset nonzero estimated 2-way interactions that contain variable i in indicator matrix
       preds_2way <- aux_m_AND[aux_m_AND[, 4] == 1, 2] # subset 2-way interactions in model object
@@ -73,29 +82,36 @@ applyTauAND <- function(i,
     }
     
     # 3-way interactions
-    ind_3way <- object$interactions$indicator[[2]]
-    ind_3way <- matrix(ind_3way, ncol=3) # for the case of: only 1 3-way interaction
-    out <- apply(ind_3way, 1, function(x) {
-      if(i %in% x) {
-        TRUE
-      } else { 
-        FALSE
-      }
-    })
     
-    if(sum(out)>0) { # all of this needed only if at least 1 3-way interaction is estimated to be nonzero
-    
-    ind_3way_i <- matrix(ind_3way[out, ], ncol=3)
-    preds_3way <- matrix(aux_m_AND[aux_m_AND[, 4] == 2, 2:3], ncol=2)
-    
-    for(v in 1:n_3way) {
-      out_v <- apply(ind_3way_i, 1, function(x) preds_3way[v, 1] %in% x & preds_3way[v, 2] %in% x)
-      if(sum(out_v) > 0) aux_m_AND[v+n_2way, 5] <- 1 else aux_m_AND[v+n_2way, 5] <- 0
-    }
-    
-    } else {
+    # only execute if there are any 3-way interactions _specified_ involving variable i
+    # (it can happen that no 3-way interaction is specified if the moderators are specified by matrix input)
+    if(n_3way > 0) {
       
-      aux_m_AND[(n_2way+1):(n_2way+n_3way), 5] <- 0
+      ind_3way <- object$interactions$indicator[[2]]
+      ind_3way <- matrix(ind_3way, ncol=3) # for the case of: only one 3-way interaction
+      out <- apply(ind_3way, 1, function(x) {
+        if(i %in% x) {
+          TRUE
+        } else { 
+          FALSE
+        }
+      })
+      
+      if(sum(out)>0) { # all of this needed only if at least one 3-way interaction is estimated to be nonzero
+        
+        ind_3way_i <- matrix(ind_3way[out, ], ncol=3)
+        preds_3way <- matrix(aux_m_AND[aux_m_AND[, 4] == 2, 2:3], ncol=2)
+        
+        for(v in 1:n_3way) {
+          out_v <- apply(ind_3way_i, 1, function(x) preds_3way[v, 1] %in% x & preds_3way[v, 2] %in% x)
+          if(sum(out_v) > 0) aux_m_AND[v+n_2way, 5] <- 1 else aux_m_AND[v+n_2way, 5] <- 0
+        }
+        
+      } else {
+        
+        aux_m_AND[(n_2way+1):(n_2way+n_3way), 5] <- 0
+        
+      }
       
     }
     

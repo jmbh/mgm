@@ -2,8 +2,9 @@ Changes in Version 1.2-8
   o Fixed bug in computing predictions for Poisson variables
   o Fixed bug that only printed 10 pairwise interactions in plotRes() for MNMs
   o resample(): removed seed as an argument; now seeds are randomly drawn; for MGM objects, seeds are resampled until the MGM can be estimated on each of the bootstrap samples; the final seeds are provided in the output
-  o Fixed bug in Reg2Graph()/mgm(): moderators weren't shown in the output when specified as a matrix
+  o Fixed bug in Reg2Graph()/mgm(): moderators were not shown in the output when specified as a matrix
   o Fixed bug in tvmvarsampler()
+  o Fixed bug: Adapted condition() to custom moderator input in mgm()
   
 Changes in Version 1.2-7
   o Fixed bug in bootstrap scheme for time-varying VAR models

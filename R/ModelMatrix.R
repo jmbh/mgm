@@ -29,7 +29,7 @@ ModelMatrix <- function(data,  # matrix
   p <- ncol(data) # note that we have only the predictors here!!
   n <- nrow(data)
   
-  mSpec <- ifelse(class(moderators) %in% c("integer","numeric"), "vector", "matrix")
+  mSpec <- ifelse(class(moderators) %in% c("integer", "numeric"), "vector", "matrix")
   
   # ---------- Input Checks ----------
   
