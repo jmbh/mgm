@@ -1,3 +1,6 @@
+Changes in Version 1.2-9
+
+
 Changes in Version 1.2-8
   o Fixed bug in computing predictions for Poisson variables
   o Fixed bug that only printed 10 pairwise interactions in plotRes() for MNMs

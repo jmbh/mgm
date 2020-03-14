@@ -39,12 +39,12 @@ bwSelect <- function(data,
 
 
   # ----- Fill in Defaults -----
-
+  
   if(missing(bwFolds)) bwFolds <- NULL
   if(missing(bwFoldsize)) bwFoldsize <- NULL
   if(missing(pbar)) pbar <- TRUE
   if(is.null(args$saveData)) args$saveData <- FALSE
-  if(is.null(args$k)) args$k <- k <- 2
+  if(is.null(args$k)) args$k <- 2
   if(is.null(args$overparameterize)) args$overparameterize <- FALSE
 
 
@@ -193,6 +193,7 @@ bwSelect <- function(data,
                                        signInfo = FALSE,
                                        ...)
     
+      
 
         # Make Predictions at test-locations
         l_foldPerform[[fold]] <- bwSelPredict(data = data,
@@ -205,8 +206,6 @@ bwSelect <- function(data,
                                               overparameterize = args$overparameterize,
                                               consec = l_foldModels[[fold]]$call$consec,
                                               ...)
-        
-        # browser()
 
       }
 
@@ -263,7 +262,7 @@ bwSelect <- function(data,
                                     signInfo = FALSE,
                                     ...)
 
-        # browser()
+        
 
         # Make Predictions at test-locations
         l_foldPerform[[fold]] <- bwSelPredict(data = data,
@@ -274,7 +273,7 @@ bwSelect <- function(data,
                                               lags = args$lags,
                                               modeltype = modeltype,
                                               overparameterize = args$overparameterize,
-                                              k = k,
+                                              # k = args$k,
                                               ...)
 
       }

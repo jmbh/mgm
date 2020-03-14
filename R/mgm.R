@@ -1,5 +1,4 @@
 
-
 mgm <- function(data,         # n x p data matrix
                 type,         # p vector indicating the type of each variable
                 level,        # p vector indivating the levels of each variable

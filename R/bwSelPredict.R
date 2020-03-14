@@ -5,9 +5,9 @@ bwSelPredict <- function(data,
                          obj,
                          test,
                          modeltype,
-                         k = NULL,
+                         # k = NULL,
                          # consec = NULL,
-                         ...) # is lags passed on?
+                         ... ) # is lags passed on?
 
 
 
@@ -17,12 +17,10 @@ bwSelPredict <- function(data,
 
   p <- ncol(data)
 
-  # browser()
-  
   # Fetch arguments
   args <- list(...)
 
-  args$d <- k - 1
+  args$d <- args$k - 1
   n_test <- length(test)
   consec <- args$consec
 
