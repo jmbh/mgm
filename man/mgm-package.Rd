@@ -12,8 +12,8 @@ Estimation of time-varying Mixed Graphical models and mixed VAR models via elast
 \tabular{ll}{
 Package: \tab mgm\cr
 Type: \tab Package\cr
-Version: \tab 1.2-1 \cr
-Date: \tab 2017-06-20\cr
+Version: \tab 1.2-9 \cr
+Date: \tab 2020-04-20\cr
 License: \tab GPL-2 \cr
 }
 }
@@ -26,9 +26,7 @@ Maintainer: <jonashaslbeck@gmail.com>
 
 \references{
 
-Haslbeck, J., & Waldorp, L. J. (2018). mgm: Estimating time-varying mixed graphical models in high-dimensional data. arXiv preprint http://arxiv.org/abs/1510.06871v2.
-
-Haslbeck, J., & Waldorp, L. J. (2015). Structure estimation for mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.05677.
+Haslbeck, J. M. B., & Waldorp, L. J. (2020). mgm: Estimating time-varying Mixed Graphical Models in high-dimensional Data. Journal of Statistical Software, 93(8), pp. 1-46. DOI: 10.18637/jss.v093.i08
 
 Loh, P. L., & Wainwright, M. J. (2013). Structure estimation for discrete graphical models: Generalized covariance matrices and their inverses. The Annals of Statistics, 41(6), 3022-3049.
 

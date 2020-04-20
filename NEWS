@@ -1,5 +1,5 @@
 Changes in Version 1.2-9
-
+  o Fixed bug in bwSelect() + tvmgm() when specifying k manually
 
 Changes in Version 1.2-8
   o Fixed bug in computing predictions for Poisson variables

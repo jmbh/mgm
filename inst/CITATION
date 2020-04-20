@@ -1,18 +1,17 @@
-citHeader("To cite mgm in publications use:")
+bibentry(bibtype = "Article",
+  title        = "{mgm}: Estimating Time-Varying Mixed Graphical Models in High-Dimensional Data",
+  author       = c(person(given = c("Jonas", "M.", "B."),
+                          family = "Haslbeck",
+                          email = "jonashaslbeck@gmail.com"),
+                   person(given = c("Lourens", "J."),
+                          family = "Waldorp")),
+  journal      = "Journal of Statistical Software",
+  year         = "2020",
+  volume       = "93",
+  number       = "8",
+  pages        = "1--46",
+  doi          = "10.18637/jss.v093.i08",
 
-citEntry(entry = "Article",
-  title        = "mgm: Structure Estimation for Time-Varying Mixed Graphical Models in high-dimensional Data",
-  author       = personList(as.person("Jonas M. B. Haslbeck"),
-                   as.person("Lourens J. Waldorp")),
-  journal      = "arXiv preprint:1510.06871v2",
-  year         = "2016",
-  url          = "http://arxiv.org/abs/1510.06871v2",
-
-
-  textVersion  =
-paste("Jonas M. B. Haslbeck, Lourens J. Waldorp (2016).",
-       "mgm: Structure Estimation for Time-Varying Mixed Graphical Models in high-dimensional Data",
-       "arXiv preprint:1510.06871v2",
-       "URL http://arxiv.org/abs/1510.06871v2.")
+  header       = "To cite mgm in publications use:"
 )
 

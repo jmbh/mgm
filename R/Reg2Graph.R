@@ -306,7 +306,7 @@ Reg2Graph <- function(mgmobj) {
   l_sign_par <- list() # saves sign (if defined) of all unique interactions
   for(ord in 1:d) l_sign_par[[ord]] <- rep(NA, n_terms_d[ord])
   
-  l_factor_par_full <- l_factor_par_AggNodewise <- l_factor_par_SignNodewise <- l_factor_par # for un-aggregated parameter esimates
+  l_factor_par_full <- l_factor_par_AggNodewise <- l_factor_par_SignNodewise <- l_factor_par # for un-aggregated parameter estimates
   
   # Define set of continous and binary variables: for interactions between these we can assign a sign
   # Depends on binarySign
