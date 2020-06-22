@@ -79,10 +79,10 @@ getSign <- function(l_w_ind,
         sign1 <- sign2 <- 0 # set default in case one direction has zero estimates
         # need to know which list entry in l_w_par corresponds to which regression: cont <- binary or cont -> binary; I do that by the fixed dimensionality of the parameter vector/matrix
         if(is.null(dim(l_w_par[[1]])))  { #is.null -> continuous, else binary
-          sign1 <- sign(l_w_par[[1]][2])
+          sign1 <- sign(as.numeric(l_w_par[[1]][[2]]))
         } else {
-          if(l_w_par[[1]][1,1] != 0) sign1 <- - sign(l_w_par[[1]][1,1]) # positive value for state 1 means negative 'pairwise relationship'
-          if(l_w_par[[1]][2,1] != 0) sign1 <- sign(l_w_par[[1]][2,1])
+          if(l_w_par[[1]][1, 1] != 0) sign1 <- - sign(l_w_par[[1]][1,1]) # positive value for state 1 means negative 'pairwise relationship'
+          if(l_w_par[[1]][2, 1] != 0) sign1 <- sign(l_w_par[[1]][2,1])
         }
         if(is.null(dim(l_w_par[[2]])))  {
           sign2 <- sign(l_w_par[[2]][2])
@@ -108,7 +108,7 @@ getSign <- function(l_w_ind,
   } # end if: overparameterize?
   
   # ---------- B) For overparameterize = FALSE ----------
-  
+
   if(!overparameterize) {
     
     
@@ -129,8 +129,8 @@ getSign <- function(l_w_ind,
     
     if(all(type[pair]=='c')) {
       if(ord == 1) {
-        sign1 <- sign(l_w_par[[1]][2])
-        sign2 <- sign(l_w_par[[2]][2])
+        sign1 <- sign(as.numeric(l_w_par[[1]][[2]]))
+        sign2 <- sign(as.numeric(l_w_par[[2]][[2]]))
         int_sign <- sign(mean(c(sign1, sign2)))
         
         outlist$voteSign <- int_sign
@@ -154,14 +154,14 @@ getSign <- function(l_w_ind,
         if(length(l_w_par[[1]]) == 1) {
           sign1 <- sign(as.numeric(l_w_par[[1]])) # if interaction A is cont <- binary
         } else {
-          sign1 <- sign(as.numeric(l_w_par[[1]][2])) # if interaction A is binary <- cont
+          sign1 <- sign(as.numeric(l_w_par[[1]][[2]])) # if interaction A is binary <- cont
         }
         
         # same for second interaction
         if(length(l_w_par[[2]]) == 1) {
           sign2 <- sign(as.numeric(l_w_par[[2]]))
         } else {
-          sign2 <- sign(as.numeric(l_w_par[[2]][2]))
+          sign2 <- sign(as.numeric(l_w_par[[2]][[2]]))
         }
         
         int_sign <- sign(mean(c(sign1, sign2)))
