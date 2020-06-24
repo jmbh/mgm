@@ -468,10 +468,21 @@ Reg2Graph <- function(mgmobj) {
   sign_colors[m_signs == 1] <- 'darkgreen'
   sign_colors[m_signs == -1] <- 'red'
   
+  # Create sign color matrix [colorblind]
+  sign_colors_cb <- matrix('darkgrey', p, p)
+  sign_colors_cb[m_signs == 1] <- 'darkblue'
+  sign_colors_cb[m_signs == -1] <- 'red'
+  
+  # Create lty matrix [addition to colorblind]
+  sign_ltys <- matrix(1, p, p)
+  sign_ltys[m_signs == -1] <- 2
+  
   # Save in output
   mgmobj$pairwise$wadj <- wadj
   mgmobj$pairwise$signs <- m_signs
   mgmobj$pairwise$edgecolor <- sign_colors
+  mgmobj$pairwise$edgecolor_cb <- sign_colors_cb
+  mgmobj$pairwise$edge_lty <- sign_ltys
   
   
   # ---------- Fill into p x p Nodewise Matrix ---------
@@ -503,10 +514,21 @@ Reg2Graph <- function(mgmobj) {
   sign_colors[m_signs == 1] <- 'darkgreen'
   sign_colors[m_signs == -1] <- 'red'
   
+  # Create sign color matrix [colorblind]
+  sign_colors_cb <- matrix('darkgrey', p, p)
+  sign_colors_cb[m_signs == 1] <- 'darkblue'
+  sign_colors_cb[m_signs == -1] <- 'red'
+  
+  # Create lty matrix [addition to colorblind]
+  sign_ltys <- matrix(1, p, p)
+  sign_ltys[m_signs == -1] <- 2
+  
   # Save in output
   mgmobj$pairwise$wadjNodewise <- m_wadj
   mgmobj$pairwise$signsNodewise <- m_signs
   mgmobj$pairwise$edgecolorNodewise <- sign_colors
+  mgmobj$pairwise$edgecolor_cbNodewise <- sign_colors_cb
+  mgmobj$pairwise$edge_ltyNodewise <- sign_ltys
   
   
   return(mgmobj)

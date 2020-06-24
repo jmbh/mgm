@@ -1,6 +1,7 @@
 Changes in Version 1.2-10
   o Added a simulated example data set to illustrate estimating group differences using moderation
   o Fixed problems in computing binary signs created by R 4.0.0
+  o Added colorblind color scheme to pairwise output
   
 Changes in Version 1.2-9
   o Fixed bug in bwSelect() + tvmgm() when specifying k manually
