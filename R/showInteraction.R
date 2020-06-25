@@ -59,6 +59,7 @@ showInteraction <- function(object,
     # Get row of specified interaction
     int_row <- which(apply(matrix(object$interactions$indicator[[n_order-1]], ncol=n_order), 1, function(x) all(x %in% int))) # get row of interaction in "int" in interaction list
     
+    # Is the interaction nonzero?
     if(length(int_row) == 0) {
       
       outlist$edgeweight <- 0
@@ -93,13 +94,14 @@ showInteraction <- function(object,
                 if(object$call$overparameterize) par_mat[i_resp, ] <- int_i[[i_resp]] else par_mat[i_resp, -1] <- int_i[[i_resp]]
               } 
             } else {
-              par_mat[, 1] <- int_i
+              int_i_ul <- unlist(int_i)
+              par_mat[, 1] <- int_i_ul
             }
             
           } else { # if response = continuous
             
             if(type_int[-i] == "c") { # if predictor = categorical
-              par_mat[1, -1] <- int_i
+              par_mat[1, -1] <- int_i # first column = dummy coded
             } else {
               par_mat[1, 1] <- int_i
             }
