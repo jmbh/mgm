@@ -45,7 +45,7 @@ condition <- function(object,
     }  
   }
   
-  # Continuous variables: give warning if one conditions outside 99% quantiles
+  # TODO: Continuous variables: give warning if one conditions outside 99% quantiles
   
   
   
@@ -98,7 +98,7 @@ condition <- function(object,
         
         # Apply tau-thresholding & AND rule
         model_i_cat <- applyTauAND(i = i,
-                                   object = object, 
+                                   object = object,
                                    model_i = model_i_cat)
         
         # Condition / fix values
@@ -122,7 +122,9 @@ condition <- function(object,
   
   # ---------- Aggregation across regressions -----------
   
-  object_new2 <- Reg2Graph(object_new)
+  
+  
+  object_new2 <- Reg2Graph(object_new, thresholding=FALSE)
   
   
   # ---------- Prepare output & return -----------

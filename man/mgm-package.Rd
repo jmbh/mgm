@@ -12,8 +12,8 @@ Estimation of time-varying Mixed Graphical models and mixed VAR models via elast
 \tabular{ll}{
 Package: \tab mgm\cr
 Type: \tab Package\cr
-Version: \tab 1.2-9 \cr
-Date: \tab 2020-04-20\cr
+Version: \tab 1.2-10 \cr
+Date: \tab 2020-06-27\cr
 License: \tab GPL-2 \cr
 }
 }

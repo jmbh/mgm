@@ -7,7 +7,7 @@
 # - output object with processed glmnet output
 
 
-Reg2Graph <- function(mgmobj) {
+Reg2Graph <- function(mgmobj, thresholding=TRUE) {
   
   # -------------------- Processing glmnet Output -------------------
   
@@ -79,7 +79,7 @@ Reg2Graph <- function(mgmobj) {
         ind_mods <- t(apply(matrix(moderators[ind_v_inMod], ncol=3), 1, function(x) x[x!=v]))
         
       }
-
+      
       v_Pars_ind[[2]] <- ind_mods
       # no interactions k > 2 allowed, if moderators are specified
       
@@ -116,14 +116,15 @@ Reg2Graph <- function(mgmobj) {
         mgmobj$intercepts [[v]][[cat]] <- model_obj_i[1]
         
         # Thresholding:
-        # p = number of covariances, as it should be
-        model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate
-        if(threshold == 'LW') tau <- sqrt(d) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
-        if(threshold == 'HW') tau <- d * sqrt(log(npar_standard[v]) / n)
-        if(threshold == 'none') tau <- 0
-        model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
-        mgmobj$nodemodels[[v]]$tau <- tau # Save tau
-        
+        if(thresholding) {
+          # p = number of covariances, as it should be
+          model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate
+          if(threshold == 'LW') tau <- sqrt(d) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
+          if(threshold == 'HW') tau <- d * sqrt(log(npar_standard[v]) / n)
+          if(threshold == 'none') tau <- 0
+          model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
+          mgmobj$nodemodels[[v]]$tau <- tau # Save tau
+        }
         
         for(ord in 1:d) {
           
@@ -171,13 +172,15 @@ Reg2Graph <- function(mgmobj) {
       # browser()
       
       # Thresholding:
-      # p = number of covariances, as it should be
-      model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate
-      if(threshold == 'LW') tau <- sqrt(d) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
-      if(threshold == 'HW') tau <- d * sqrt(log(npar_standard[v]) / n)
-      if(threshold == 'none') tau <- 0
-      model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
-      mgmobj$nodemodels[[v]]$tau <- tau # Save tau
+      if(thresholding) {
+        # p = number of covariances, as it should be
+        model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate
+        if(threshold == 'LW') tau <- sqrt(d) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
+        if(threshold == 'HW') tau <- d * sqrt(log(npar_standard[v]) / n)
+        if(threshold == 'none') tau <- 0
+        model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
+        mgmobj$nodemodels[[v]]$tau <- tau # Save tau
+      }
       
       for(ord in 1:d) {
         

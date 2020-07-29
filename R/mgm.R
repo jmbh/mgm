@@ -512,7 +512,7 @@ mgm <- function(data,         # n x p data matrix
     mgmobj$factors <- NULL
   }
   
-  # Switch warings back on
+  # Switch warnings back on
   if(!warnings) {
     options(warn = oldw)
   }

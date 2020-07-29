@@ -20,7 +20,7 @@ condition_core <- function(i = i,
   n_terms <- nrow(model_i)
   nCond <- nrow(m_fixed_values)
   
-  # --- Get a nicer object for main effects / interactions --
+  # --- Get a nicer object for main effects / interactions ---
   
   effects <- matrix(NA, nrow = n_terms-1, ncol=7)
   colnames(effects) <- c("Variable1", "Variable2", "Fixed1", "Fixed2", "Parameter", "Type1", "Type2")
@@ -39,7 +39,7 @@ condition_core <- function(i = i,
   
   
   
-  ## Fill in fixed values
+  # --- Fill in fixed values ---
   
   # type of predictor (cat vs con)?
   for(q in 1:(n_terms-1)) effects[q, 6] <- ifelse(effects[q, 1] == round(effects[q, 1]), 1, 0) # 1 = continuous, 0 = categorical
@@ -126,9 +126,10 @@ condition_core <- function(i = i,
   } # end if: variable still random (not fixed)?
   
   
-  
   # --- Collapse lists into new model object  ---
+  
   model_i_new <- matrix(NA, nrow=n_terms, ncol=1)
+  
   rownames(model_i_new) <- names_i
   for(q in 1:n_terms) model_i_new[q, 1] <- sum(unlist(l_cPars[[q]]))
   
