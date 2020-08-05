@@ -1,3 +1,7 @@
+Changes in Version 1.2-11
+  o Fixed bug: switch off thresholding when using using internal function Reg2Graph() in condition()
+  o Extend condition() to Poisson variables
+
 Changes in Version 1.2-10
   o Added a simulated example data set to illustrate estimating group differences using moderation
   o Fixed problems in computing binary signs created by R 4.0.0
