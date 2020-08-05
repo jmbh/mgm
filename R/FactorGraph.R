@@ -12,7 +12,7 @@ FactorGraph <- function(object,
                         estpoint = NULL,
                         negDashed = FALSE,
                         ...)
-  
+
 {
   
   # --------- Compute Aux Variables ---------
@@ -119,7 +119,7 @@ FactorGraph <- function(object,
   # Edge lty: allow negative edges to be dashed for greyscale images
   edge_lty <- FG_object$nonzero
   if(negDashed) edge_lty[edge.color == "red"] <- 2
-
+  
   # --------- Plot & Return ---------
   
   if(!DoNotPlot){

@@ -1,4 +1,4 @@
-# jonashaslbeck@gmail.com; July 2019
+# jonashaslbeck@gmail.com; August 2020
 
 # Input:
 # - the nodemodel of node i
@@ -14,14 +14,13 @@ condition_core <- function(i = i,
   
   # ----- Distinguish between two cases: variable i is involved in 3-way interaction or not --
   
-  # browser()
-  
   names_i <- rownames(model_i)
   n_terms <- nrow(model_i)
   nCond <- nrow(m_fixed_values)
   
   # --- Get a nicer object for main effects / interactions ---
   
+  # This lists all non-zero terms and matches them with the fixed values
   effects <- matrix(NA, nrow = n_terms-1, ncol=7)
   colnames(effects) <- c("Variable1", "Variable2", "Fixed1", "Fixed2", "Parameter", "Type1", "Type2")
   
@@ -38,24 +37,24 @@ condition_core <- function(i = i,
   for(q in 1:length(n_var_i)) effects[q, 1:n_var_i[q]] <- as.numeric(unlist(names_aux3[[q]]))
   
   
-  
   # --- Fill in fixed values ---
   
-  # type of predictor (cat vs con)?
+  # type of predictor (cat (coded=0) vs con (coded=1))?
   for(q in 1:(n_terms-1)) effects[q, 6] <- ifelse(effects[q, 1] == round(effects[q, 1]), 1, 0) # 1 = continuous, 0 = categorical
   for(q in which(n_var_i==2)) effects[q, 7] <- ifelse(effects[q, 2] == round(effects[q, 2]), 1, 0) # 1 = continuous, 0 = categorical
   
-  # Fill in continuous predictors
+  # Fill in continuous fixed values
   for(q in 1:(n_terms-1)) for(f in 1:nCond) if(effects[q, 1] == m_fixed_values[f, 1]) effects[q, 3] <- m_fixed_values[f, 2]
   for(q in which(n_var_i==2)) for(f in 1:nCond) if(effects[q, 2] == m_fixed_values[f, 1]) effects[q, 4] <- m_fixed_values[f, 2]
   
-  # Fill in categorical predictors
+  # Fill in categorical fixed values
   for(q in 1:(n_terms-1)) {
     if(effects[q, 6] == 0) {
       var_cat <- strsplit(as.character(effects[q, 1]), "\\.")[[1]]
       for(f in 1:nCond) if(as.numeric(var_cat[1]) == m_fixed_values[f, 1]) if(as.numeric(var_cat[2]) == m_fixed_values[f, 2]) effects[q, 3] <- 1 else effects[q, 3] <- 0  
     }
   }
+  
   for(q in which(n_var_i==2)) {
     if(effects[q, 7] == 0) {
       var_cat <- strsplit(as.character(effects[q, 2]), "\\.")[[1]]
@@ -63,8 +62,6 @@ condition_core <- function(i = i,
     }
   }
   
-  
-  # browser()
   
   # Fill in parameter values
   effects[, 5] <- model_i[-1, 1]
