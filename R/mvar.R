@@ -139,10 +139,11 @@ mvar <- function(data,         # n x p data matrix
   
   # Scale Gaussians
   ind_Gauss <- which(type == 'g')
-  if(scale) for(i in ind_Gauss) data[, i] <- scale(data[, i])
-  
-  
-  
+  if(scale) for(i in ind_Gauss) {
+    if(sd(data[, i])==0) stop(paste0("Variable ", ind_Gauss[i], " has zero variance." ))
+    data[, i] <- scale(data[, i])
+  } 
+
   # ----- Basic Input Checks -----
   
   # Checks on Data
