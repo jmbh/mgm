@@ -7,7 +7,8 @@
 # - output object with processed glmnet output
 
 
-Reg2Graph <- function(mgmobj, thresholding=TRUE) {
+Reg2Graph <- function(mgmobj, 
+                      thresholding=TRUE) {
   
   # -------------------- Processing glmnet Output -------------------
   
@@ -26,10 +27,7 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
   ind_cat <- mgmobj$call$ind_cat
   ind_binary <- mgmobj$call$ind_binary
   
-  mSpec <- ifelse(class(moderators) %in% c("integer","numeric"), "vector", "matrix")
-  
-  
-  # browser()
+  mSpec <- ifelse(any(class(moderators) %in% c("integer","numeric")), "vector", "matrix")
   
   # Storage
   Pars_ind <- list() # storage for interaction-indicators
@@ -38,6 +36,8 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
   
   
   for(v in 1:p) {
+    
+    # print(v)
     
     model_obj <- mgmobj$nodemodels[[v]]$model
     
@@ -49,9 +49,18 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
     v_Pars_ind <- vector('list', length = d) #  1 = pairwise, 2= threeway, etc.
     
     ## Create Indicator list for Present interactions (separate for k-order MGM and moderated MGM)
-    if(is.null(moderators)) {
+    
+    # Check whether variable v is involved in any 3-way interaction
+    if(mSpec == "vector") ind_mod <- TRUE
+    if(mSpec == "matrix") {
+      m_ind_mod <- apply(moderators, 1, function(x) v %in% x)
+      ind_mod <- any(m_ind_mod)
+    }
+    
+    if(!ind_mod) {
       
       # If there are no moderators: All interactions of specified degree (k)
+      d <- 1
       for(ord in 1:d) v_Pars_ind[[ord]] <- t(combn(predictor_set, ord))
       
     } else {
@@ -113,7 +122,7 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
         interaction_names <- rownames(model_obj[[cat]])[-1] # -1 because we remove the intercept
         interaction_order <- str_count(interaction_names, ":") + 1 # get order of each interaction parameter; +1 to put on same scale as ord, so ord=2 = pairwise interaction
         
-        mgmobj$intercepts [[v]][[cat]] <- model_obj_i[1]
+        mgmobj$intercepts[[v]][[cat]] <- model_obj_i[1]
         
         # Thresholding:
         if(thresholding) {
@@ -145,7 +154,7 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
                                                            fixed = TRUE) # not only single chars have to be contained, but exact order)
             select_int <- rowSums(find_int_dummy) == ord # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
             
-            # fill in paramters + rownames into list
+            # fill in parameters + rownames into list
             parmat <- matrix(part_ord[select_int], ncol = 1)
             rownames(parmat) <- int_names_ord[select_int]
             v_Pars_values[[ord]][[t]][[cat]] <- parmat
@@ -168,8 +177,6 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
       interaction_order <- str_count(interaction_names, ":") + 1 # on same scale as ord, so ord=2 = pairwise interaction
       
       mgmobj$intercepts [[v]] <- model_obj_i[1]
-      
-      # browser()
       
       # Thresholding:
       if(thresholding) {
@@ -224,9 +231,7 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
     
   } # end for: v
   
-  
-  # browser()
-  
+
   # --------------------------------------------------------------------------------------------
   # -------------------- Postprocess Regression Estimates into (Factor) Graph Structure --------
   # --------------------------------------------------------------------------------------------
@@ -262,7 +267,7 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
       Pars_ind_flip[[ord]][[v]] <- Pars_ind[[v]][[ord]]
       
       # Reordering value list
-      Pars_values_flip[[ord]][[v]] <- Pars_values[[v]][[ord]]
+      Pars_values_flip[[ord]][[v]] <- Pars_values[[v]][[ord]] 
       
     }
   }
@@ -271,8 +276,6 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
   Pars_ind_flip_red <- lapply(Pars_ind_flip, function(x) do.call(rbind, x)  )
   # Collapse value list across nodes
   Pars_values_flip_red <- lapply(Pars_values_flip, function(x) do.call(c, x))
-  
-  # browser()
   
   # 1) Select each interaction
   
@@ -320,7 +323,6 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
   }
   
   
-  
   # Loop over: order of interactions (ord = 1 = pairwise)
   for(ord in 1:d) {
     
@@ -338,6 +340,10 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
       
+      # print(paste("order ", ord, "i", i))
+      
+      # if(ord == 2 & i == 37)
+      
       l_w_ind <- list()
       l_w_par <- list()
       ind_inter <- which(ids == i)
@@ -354,6 +360,8 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
         x <- unlist(x)
         if(length(x)>1) 0 else sign(x)
       } ))
+      
+      
       
       # Apply AND / OR rule
       if(ruleReg == 'AND') parcompr <- mean(m_par_seq) * !(0 %in% m_par_seq)
@@ -448,8 +456,6 @@ Reg2Graph <- function(mgmobj, thresholding=TRUE) {
   mgmobj$interactions$weightsAgg <- l_factor_par_nz
   mgmobj$interactions$weights <- l_factor_par_full_nz
   mgmobj$interactions$signs <- l_sign_par_nz
-  
-  # browser()
   
   
   # ---------- Fill into p x p Matrix ---------

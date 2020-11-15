@@ -35,7 +35,10 @@ ModelMatrix_standard <- function(data,
     
     # -------- Case II: Moderation --------
     
-    mSpec <- ifelse(class(moderators) %in% c("integer","numeric"), "vector", "matrix")
+    # mSpec <- ifelse(class(moderators) %in% c("integer","numeric"), "vector", "matrix")
+    mSpec <- ifelse(any(class(moderators) %in% c("integer","numeric")), "vector", "matrix")
+    # browser()
+    
     
     # Terms for interactions/moderation
     n_mods <- ifelse(mSpec == "vector", length(moderators), nrow(moderators))

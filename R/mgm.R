@@ -101,11 +101,13 @@ mgm <- function(data,         # n x p data matrix
   if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
   if(any(is.na(data))) stop('No missing values permitted.')
   
+  # browser()
+  
   # Checks on moderators
   if(!is.null(moderators)) {
     if(!all(moderators == round(moderators))) stop("Moderators have to be specified as integers mapping to the column numbers of variables in the data set.")
     if(!all(moderators %in% 1:p)) stop("Specified moderators are larger than number of variables in the data.")
-    if(class(moderators) == "matrix") if(ncol(moderators) != 3) stop("Custom moderators have to be specified in a M x 3 matrix, for M moderators.")
+    if(class(moderators)[1] == "matrix") if(ncol(moderators) != 3) stop("Custom moderators have to be specified in a M x 3 matrix, for M moderators.")
     if(is.matrix(moderators)) if(any(apply(moderators, 1, function(x) any(duplicated(x))))) stop("Currently mgm() does not support the specification of quadratic effects.")
   } # end if: moderators?
   
