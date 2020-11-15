@@ -18,6 +18,7 @@ importFrom("graphics", "abline", "axis", "layout", "par", "plot.new",
 
 importFrom("gtools", "permutations")
 importFrom("graphics", "rect")
+importFrom("stats", "sd") # recommended by build check
 
 # Exported functions
 export(mgm)

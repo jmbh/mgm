@@ -1,6 +1,7 @@
 Changes in Version 1.2-11
   o Fixed bug: switch off thresholding when using using internal function Reg2Graph() in condition()
   o Extend condition() to Poisson variables
+  o Fixed bug: The processing of certain custom moderation models created an error
 
 Changes in Version 1.2-10
   o Added a simulated example data set to illustrate estimating group differences using moderation
