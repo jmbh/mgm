@@ -10,13 +10,12 @@
 Reg2Graph <- function(mgmobj, 
                       thresholding=TRUE) {
   
-  # -------------------- Processing glmnet Output -------------------
-  
-  # Basic info from model object
+  # ----- Basic info from model object ------
   p <- length(mgmobj$call$type) # number of variables
   n <- mgmobj$call$n
-  d <- mgmobj$call$k - 1
   moderators <- mgmobj$call$moderators
+  d <- mgmobj$call$k - 1
+  if(!is.null(moderators)) d <- 2
   type <- mgmobj$call$type
   level <- mgmobj$call$level
   threshold <- mgmobj$call$threshold
@@ -27,47 +26,64 @@ Reg2Graph <- function(mgmobj,
   ind_cat <- mgmobj$call$ind_cat
   ind_binary <- mgmobj$call$ind_binary
   
-  mSpec <- ifelse(any(class(moderators) %in% c("integer","numeric")), "vector", "matrix")
+  # Determine type of moderation specification (if applicable)
+  if(d < 2) {
+    mSpec <- NULL
+  } else {
+    if(any(class(moderators) %in% c("integer","numeric"))) mSpec <- "vector" # as vector
+    if(any(class(moderators) %in% "matrix")) mSpec <- "matrix"# as customary specified
+    if(mgmobj$call$k > 2) mSpec<- "fullk" # all HoIs up to order k
+  }
   
-  # Storage
+  
+  # --------------------------------------------------------------------------------------------
+  # -------------------- Fill glmnet output into list-structure --------------------------------
+  # --------------------------------------------------------------------------------------------
+  
+  # ----- Storage -----
   Pars_ind <- list() # storage for interaction-indicators
-  Pars_values <- list() # storage for actual parameters associate for the interactions indexed in Pars_ind
+  Pars_values <- list() # storage for parameter estimates associated with the interactions indexed in Pars_ind
   mgmobj$intercepts <- vector('list', length = p)
+  v_d_v <- rep(NA, p)
   
-  
+  # ----- Loop over p variables -----
   for(v in 1:p) {
     
     # print(v)
     
     model_obj <- mgmobj$nodemodels[[v]]$model
+    predictor_set <- (1:p)[-v] # set of predictors for variable v (i.e., all others)
     
-    # ----- Create empty Storage for parameters -----
-    
-    predictor_set <- (1:p)[-v] # set of predictors for variable v (all others)
-    
-    # A) Indicator Object for all possible interactions: List contains Matrix
-    v_Pars_ind <- vector('list', length = d) #  1 = pairwise, 2= threeway, etc.
-    
-    ## Create Indicator list for Present interactions (separate for k-order MGM and moderated MGM)
-    
-    # Check whether variable v is involved in any 3-way interaction
-    if(mSpec == "vector") ind_mod <- TRUE
-    if(mSpec == "matrix") {
-      m_ind_mod <- apply(moderators, 1, function(x) v %in% x)
-      ind_mod <- any(m_ind_mod)
+    # ----- Is variable v involved in higher-order / Moderation effects? ------
+    if(!is.null(moderators)) {
+      if(mSpec == "vector") ind_m <- TRUE
+      if(mSpec == "matrix") {
+        m_ind_m <- apply(moderators, 1, function(x) v %in% x)
+        ind_m <- any(m_ind_m)
+      }  
+      if(ind_m) d_v <- 2 else d_v <- 1
+    } else {
+      ind_m <- FALSE
+      d_v <- 1
     }
     
-    if(!ind_mod) {
+    # if k>2 every variable v is involved in some HoI
+    if(mgmobj$call$k > 2){
+      d_v <- d
+      ind_m <- TRUE
+    } 
+    
+    
+    
+    # ----- Create empty Storage for parameters -----
+    v_Pars_ind <- vector('list', length = d_v) #  1 = pairwise, 2 = 3-way, etc.
+    
+    if(!ind_m) {
       
-      # If there are no moderators: All interactions of specified degree (k)
-      d <- 1
-      for(ord in 1:d) v_Pars_ind[[ord]] <- t(combn(predictor_set, ord))
+      # Only pairwise interactions  
+      v_Pars_ind[[1]] <- t(combn(predictor_set, 1))
       
     } else {
-      
-      d <- 2
-      
-      v_Pars_ind[[1]] <- matrix(predictor_set, ncol=1) # main effects
       
       # Moderation effects
       if(mSpec == "vector") {
@@ -80,6 +96,8 @@ Reg2Graph <- function(mgmobj,
         
         ind_mods <- ind_mods[!apply(ind_mods, 1, function(x) x[1] == x[2]), ] # remove rows with equal entries
         
+        v_Pars_ind[[1]] <- matrix(predictor_set, ncol = 1) # main effects
+        v_Pars_ind[[2]] <- ind_mods
       }
       
       if(mSpec == "matrix") {
@@ -87,22 +105,33 @@ Reg2Graph <- function(mgmobj,
         ind_v_inMod <- as.logical(apply(moderators, 1, function(x) v %in% x  ))
         ind_mods <- t(apply(matrix(moderators[ind_v_inMod], ncol=3), 1, function(x) x[x!=v]))
         
+        v_Pars_ind[[1]] <- matrix(predictor_set, ncol = 1) # main effects
+        v_Pars_ind[[2]] <- ind_mods  
+        
       }
       
-      v_Pars_ind[[2]] <- ind_mods
-      # no interactions k > 2 allowed, if moderators are specified
+      
+      
+      if(mSpec == "fullk") {
+        
+        for(ord in 1:d_v) {
+          v_Pars_ind[[ord]] <- t(combn(predictor_set, ord))
+        }
+        
+      }
       
     } # end if: moderators?
     
+    # if(v==11)    browser()
+    
     # Make sure all entries of "v_Pars_ind" are matrices
-    for(j in 1:d) v_Pars_ind[[j]] <- matrix(as.matrix(v_Pars_ind[[j]]), ncol=j)
+    for(ord in 1:d_v) v_Pars_ind[[ord]] <- matrix(as.matrix(v_Pars_ind[[ord]]), ncol=ord)
     
     no_interactions <- unlist(lapply(v_Pars_ind, nrow))
     
     # B) Parameter Object: Same structure as (A), but now with a list entry for each matrix row
-    v_Pars_values <- vector('list', length = d)
-    for(ord in 1:d) v_Pars_values[[ord]] <- vector('list', length = no_interactions[ord])
-    
+    v_Pars_values <- vector('list', length = d_v)
+    for(ord in 1:d_v) v_Pars_values[[ord]] <- vector('list', length = no_interactions[ord])
     
     
     
@@ -128,14 +157,16 @@ Reg2Graph <- function(mgmobj,
         if(thresholding) {
           # p = number of covariances, as it should be
           model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate
-          if(threshold == 'LW') tau <- sqrt(d) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
-          if(threshold == 'HW') tau <- d * sqrt(log(npar_standard[v]) / n)
+          if(threshold == 'LW') tau <- sqrt(d_v) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
+          if(threshold == 'HW') tau <- d_v * sqrt(log(npar_standard[v]) / n)
           if(threshold == 'none') tau <- 0
           model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
           mgmobj$nodemodels[[v]]$tau <- tau # Save tau
         }
         
-        for(ord in 1:d) {
+        # if(v==15) browser()
+        
+        for(ord in 1:d_v) {
           
           part_ord <- model_obj_i[-1][ord == interaction_order] # parameters for interaction of order = ord+1
           gotThemall <- rep(TRUE, length(part_ord)) # sanity check: did I copy all parameters
@@ -176,20 +207,20 @@ Reg2Graph <- function(mgmobj,
       interaction_names <- rownames(model_obj)[-1] # -1 because we remove the intercept
       interaction_order <- str_count(interaction_names, ":") + 1 # on same scale as ord, so ord=2 = pairwise interaction
       
-      mgmobj$intercepts [[v]] <- model_obj_i[1]
+      mgmobj$intercepts[[v]] <- model_obj_i[1]
       
       # Thresholding:
       if(thresholding) {
         # p = number of covariances, as it should be
         model_obj_i_ni <- model_obj_i[-1] # remove intercept, this is no covariate
-        if(threshold == 'LW') tau <- sqrt(d) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
-        if(threshold == 'HW') tau <- d * sqrt(log(npar_standard[v]) / n)
+        if(threshold == 'LW') tau <- sqrt(d_v) * sqrt(sum(model_obj_i_ni^2)) * sqrt(log(npar_standard[v]) / n)
+        if(threshold == 'HW') tau <- d_v * sqrt(log(npar_standard[v]) / n)
         if(threshold == 'none') tau <- 0
         model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
         mgmobj$nodemodels[[v]]$tau <- tau # Save tau
       }
       
-      for(ord in 1:d) {
+      for(ord in 1:d_v) {
         
         if(no_interactions[ord] > 0) { # can be zero for moderated MGMs
           
@@ -214,6 +245,7 @@ Reg2Graph <- function(mgmobj,
             rownames(parmat) <- int_names_ord[select_int]
             v_Pars_values[[ord]][[t]] <- parmat
             
+            # Sanity check
             gotThemall[select_int == TRUE] <- FALSE
             
           }
@@ -229,13 +261,15 @@ Reg2Graph <- function(mgmobj,
     Pars_ind[[v]] <- v_Pars_ind
     Pars_values[[v]] <- v_Pars_values
     
+    # record max order of interaction of node v
+    v_d_v[v] <- d_v
+    
   } # end for: v
   
-
+  
   # --------------------------------------------------------------------------------------------
   # -------------------- Postprocess Regression Estimates into (Factor) Graph Structure --------
   # --------------------------------------------------------------------------------------------
-  
   
   # ----- Reduce to 1 parameter per Factor, apply AND rule and get sign -----
   
@@ -253,38 +287,47 @@ Reg2Graph <- function(mgmobj,
   Pars_values_flip <- vector('list', length = d)
   Pars_values_flip <- lapply(Pars_values_flip, function(x) dummy_list_flip)
   
-  
   # Reordering so I can use do.call() below on inner list level
   for(v in 1:p) {
-    for(ord in 1:d) {
+    for(ord in 1:v_d_v[v]) {
       
       # Reordering indicator list
       Pars_ind_part <- Pars_ind[[v]][[ord]]
       colnames(Pars_ind_part) <- NULL
-      Pars_ind_part <- as.matrix(Pars_ind_part)
       
-      Pars_ind[[v]][[ord]] <- cbind(rep(v, nrow(Pars_ind_part)), Pars_ind_part)
-      Pars_ind_flip[[ord]][[v]] <- Pars_ind[[v]][[ord]]
+      # Are there HoIs with d>1?
+      if(!is.null(Pars_ind_part)) 
+      {
+        Pars_ind_part <- as.matrix(Pars_ind_part)
+        Pars_ind[[v]][[ord]] <- cbind(rep(v, nrow(Pars_ind_part)), Pars_ind_part)
+        Pars_ind_flip[[ord]][[v]] <- Pars_ind[[v]][[ord]]
+        
+        # Reordering value list
+        Pars_values_flip[[ord]][[v]] <- Pars_values[[v]][[ord]] 
+        
+      } else {
+        Pars_ind_flip[[ord]][[v]] <- NULL
+        Pars_values_flip[[ord]][[v]] <- NULL
+      }
       
-      # Reordering value list
-      Pars_values_flip[[ord]][[v]] <- Pars_values[[v]][[ord]] 
-      
-    }
-  }
+    } # end for : ord
+  } # end for: v
   
   # Collapse indicator list across nodes
   Pars_ind_flip_red <- lapply(Pars_ind_flip, function(x) do.call(rbind, x)  )
   # Collapse value list across nodes
   Pars_values_flip_red <- lapply(Pars_values_flip, function(x) do.call(c, x))
   
+  
   # 1) Select each interaction
   
-  # Compute number of interactions for each order
-  #     Note that we could take this information also from the design matrices; however, we compute it theoretically as a sanity check
+  ## Compute number of interactions for each order
+  # Note that we could take this information also from the design matrices; however, we compute it theoretically as a sanity check
+  
+  # Moderation effects in the model?
   n_terms_d <- rep(NA, d)
-  if(is.null(moderators)) {
-    for(ord in 1:d) n_terms_d[ord] <- choose(p, ord+1)
-  } else {
+  
+  if(!is.null(moderators)) {
     n_terms_d[1] <- choose(p, 1+1) # all pairwise interactions
     
     # Select moderation terms: Standard specification
@@ -300,9 +343,14 @@ Reg2Graph <- function(mgmobj,
     if(mSpec == "matrix") {
       mod_terms3 <- mgmobj$call$moderators
     }
-    
     n_terms_d[2] <- nrow(mod_terms3) # ok to have interactions double; will remove them below using FlagSymmetricFast()
-  }
+    
+  } else {
+    
+    for(ord in 1:d) n_terms_d[ord] <- choose(p, ord+1)  # this for loop is actually unnecessary; but who's checking? ;)
+    
+  } # end ifelse: moderation?
+  
   
   # Set up target data structure
   l_factors <- list() # saves all unique interavtions
@@ -314,7 +362,7 @@ Reg2Graph <- function(mgmobj,
   
   l_factor_par_full <- l_factor_par_AggNodewise <- l_factor_par_SignNodewise <- l_factor_par # for un-aggregated parameter estimates
   
-  # Define set of continous and binary variables: for interactions between these we can assign a sign
+  # Define set of continuous and binary variables: for interactions between these we can assign a sign
   # Depends on binarySign
   if(binarySign) {
     set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
@@ -340,10 +388,6 @@ Reg2Graph <- function(mgmobj,
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
       
-      # print(paste("order ", ord, "i", i))
-      
-      # if(ord == 2 & i == 37)
-      
       l_w_ind <- list()
       l_w_par <- list()
       ind_inter <- which(ids == i)
@@ -360,8 +404,6 @@ Reg2Graph <- function(mgmobj,
         x <- unlist(x)
         if(length(x)>1) 0 else sign(x)
       } ))
-      
-      
       
       # Apply AND / OR rule
       if(ruleReg == 'AND') parcompr <- mean(m_par_seq) * !(0 %in% m_par_seq)
