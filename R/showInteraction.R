@@ -55,7 +55,6 @@ showInteraction <- function(object,
                     "sign" = NULL,
                     "parameters" = list())
     
-    
     # Get row of specified interaction
     int_row <- which(apply(matrix(object$interactions$indicator[[n_order-1]], ncol=n_order), 1, function(x) all(x %in% int))) # get row of interaction in "int" in interaction list
     

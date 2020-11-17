@@ -66,7 +66,7 @@ plotData <- function(TM,
            y0 = plot_y, 
            x1 = TM[, 5],
            y1 = plot_y, lwd = lwd.qtl)
-   
+  
   # Plot prop>0
   points(TM[, 3], plot_y, pch=19, col=bgcol, cex = cex.bg)
   points(TM[, 3], plot_y, pch=21, col="black", cex = cex.bg)
@@ -90,7 +90,7 @@ plotRes <- function(object,
                     axis.ticks.mod = NULL,
                     layout.width.labels = .2, 
                     layout.gap.pw.mod = .15)
-  
+
 {
   
   
@@ -116,9 +116,24 @@ plotRes <- function(object,
   # if(missing(quantiles)) stop("No quantiles specified.")
   if(object$call$object$call$k > 3) stop("Currently only implemented with mgms with k <= 3.")
   
-  # Input checks: single moderator
-  if(length(mod) > 1) stop("plotRes() is currently only implemented for MNNs with a single moderator.")
+  # Check whether there is only a single moderator
+  if(class(mod)[1] == "numeric") if(length(mod) > 1) stop("plotRes() is currently only implemented for MNNs with a single moderator.")
   
+  if(class(mod)[1] == "matrix") {
+    
+    # find whether one variable is in each 3-way interaction; if yes, that's the one we treat as the moderator
+    n_mod <- nrow(mod)
+    m_check <- matrix(NA, n_mod, p)
+    
+    for(i in 1:p) for(m in 1:n_mod) m_check[m, i] <- i %in% mod[m, ] 
+    v_check <- apply(m_check, 2, function(x) all(x == TRUE))
+    
+    mod_fix <- which(v_check)
+    if(is.null(mod_fix)) stop("plotRes() is currently only implemented for MNNs with a single moderator.")
+    
+    # pretend that we have all possible moderation effect of mod; this will result in unmodeled moderation effects to be set to zero (as they should be) 
+    mod <- mod_fix
+  }
   
   
   # ----------------------------------------------------------------------
@@ -198,7 +213,7 @@ plotRes <- function(object,
     
     
     # ----- Part B: Data ----
-  
+    
     
     plotData(TM = TM, 
              axis.ticks = axis.ticks, 
@@ -316,7 +331,7 @@ plotRes <- function(object,
     
     lmat <- rbind(c(1,2,7,3), 
                   c(4,5,8,6))
-
+    
     lo <- layout(lmat, 
                  widths = c(layout.width.labels, 1, layout.gap.pw.mod, 1), 
                  heights = c(.07, .9))
@@ -330,7 +345,7 @@ plotRes <- function(object,
     plot.new() 
     plot.window(xlim=c(0, 1), ylim=c(0,1))
     text(0.5, 0.5, "Pairwise effects", cex=1.5, adj = 0.5)
-
+    
     plot.new() 
     plot.window(xlim=c(0, 1), ylim=c(0,1))
     text(0.5, 0.5, "Moderation effects", cex=1.5, adj = 0.5)
@@ -357,7 +372,7 @@ plotRes <- function(object,
              cex.bg = cex.bg, 
              cex.mean = cex.mean, 
              margins = margins)
-
+    
     # ----- C) Plot Moderation effects -----
     
     if(is.null(axis.ticks.mod)) axis.ticks.mod <- axis.ticks
