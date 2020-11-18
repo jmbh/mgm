@@ -1,0 +1,17 @@
+
+
+
+summary.mgm <- function(x,
+                      ...)
+  
+  
+  
+{
+  
+  
+  
+  
+  
+}
+
+

@@ -89,7 +89,8 @@ plotRes <- function(object,
                     axis.ticks = c(-.5, -.25, 0, .25, .5, .75, 1), 
                     axis.ticks.mod = NULL,
                     layout.width.labels = .2, 
-                    layout.gap.pw.mod = .15)
+                    layout.gap.pw.mod = .15, 
+                    table = FALSE)
 
 {
   
@@ -188,6 +189,7 @@ plotRes <- function(object,
       TM <- tar_mat[cut, ]
     }
     
+    if(!table) {
     # ---------- Plotting ----------  
     
     # Compute aux variables for plotting
@@ -214,7 +216,6 @@ plotRes <- function(object,
     
     # ----- Part B: Data ----
     
-    
     plotData(TM = TM, 
              axis.ticks = axis.ticks, 
              ylim = ylim, 
@@ -224,6 +225,13 @@ plotRes <- function(object,
              cex.mean = cex.mean, 
              margins=margins)
     
+    
+    # Return table insteaed
+    } else {
+      
+      return(TM)
+
+    }
     
   } # end if: moderation?
   
@@ -239,8 +247,6 @@ plotRes <- function(object,
     # ---------- Preprocessing ----------  
     
     # ----- Get estimates out of model object -----
-    
-    # browser()
     
     m_ind_allpw <- t(combn(1:p, 2)) # list all possible 2-way interactions
     n_pw <- nrow(m_ind_allpw) # how many?
@@ -317,8 +323,6 @@ plotRes <- function(object,
     tar_mat_pw <- tar_mat_pw[ord, ]
     tar_mat_mod <- tar_mat_mod[ord, ]
     
-    # browser()
-    
     # Subset (cut argument)
     if(is.null(cut)) {
       TM_pw <- tar_mat_pw
@@ -328,6 +332,8 @@ plotRes <- function(object,
       TM_mod <- tar_mat_mod[cut, ]
     }
     
+    if(!table) {
+      
     # ---------- Plotting ---------- 
     
     n_rows <- nrow(TM_pw)
@@ -395,7 +401,15 @@ plotRes <- function(object,
              bgcol = "white", 
              margins = margins)
     
-    
+    # Return table instead
+    } else {
+      
+      # make table
+      colnames(TM_mod)[3:6] <- c("Mod_Mean", "Mod_qtl_low", "Mod_qtl_high", "Mod_propLtZ") 
+      out_table <- cbind(TM_pw, TM_mod)
+      return(out_table)
+      
+    }
     
   } # end if: moderation?
   

@@ -13,7 +13,7 @@ plotRes(object, quantiles = c(.05, .95), labels = NULL,
         lwd.qtl = 2, cex.mean = 0.55, cex.bg = 2.7, 
         axis.ticks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1), 
         axis.ticks.mod = NULL, layout.width.labels = .2,
-        layout.gap.pw.mod = .15)
+        layout.gap.pw.mod = .15, table = FALSE)
 }
 
 \arguments{
@@ -54,6 +54,9 @@ A numeric vector indicating the axis ticks and labels for the x-axis for moderat
 A positive numeric value which specifies the width of the left-hand-side legend relative to the width of the data panel (or data panels, in case of a moderator model), which have width = 1. Defaults to \code{layout.width.labels = 0.2}.}
 \item{layout.gap.pw.mod}{
 A positive numeric value which specifies the width of the gap between the stability of pairwise effects and moderation effects. Defaults to \code{layout.gap.pw.mod = 0.15}.
+}
+\item{table}{
+If \code{table = TRUE}, the output is presented as a table instead of a figure. Defaults to \code{table = FALSE}.
 }
 }
 
