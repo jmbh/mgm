@@ -240,6 +240,8 @@ plotRes <- function(object,
     
     # ----- Get estimates out of model object -----
     
+    # browser()
+    
     m_ind_allpw <- t(combn(1:p, 2)) # list all possible 2-way interactions
     n_pw <- nrow(m_ind_allpw) # how many?
     m_pw <- m_mod <- matrix(0, nrow=n_pw, ncol=nB) # Create storage for nB pairwise and moderation effects
@@ -257,28 +259,34 @@ plotRes <- function(object,
         ind_pw <- which(apply(m_ind_allpw, 1, function(x) sum(x %in% mod_b_pw[i, ])) == 2)
         m_pw[ind_pw, b] <- mod_b$interactions$weightsAgg[[1]][[i]][1]
         
-        # add sign if applicable
-        if(all(type[mod_b_pw] == "g")) {
-          v_est <- unlist(mod_b$interactions$weights[[1]][[i]])
-          v_sign <- sign(v_est)
-          sign_sel <- as.numeric(names(which.max(table(v_sign)))) # ugly!
-          m_pw[ind_pw, b] <- m_pw[ind_pw, b] * sign_sel
-        }
+        # Add sign if applicable
+        if(mod_b$interactions$signs[[1]][[i]] == -1) m_pw[ind_pw, b] <- m_pw[ind_pw, b] * -1
+          
+        # # add sign if applicable
+        # if(all(type[mod_b_pw] == "g")) {
+        #   v_est <- unlist(mod_b$interactions$weights[[1]][[i]])
+        #   v_sign <- sign(v_est)
+        #   sign_sel <- as.numeric(names(which.max(table(v_sign)))) # ugly!
+        #   m_pw[ind_pw, b] <- m_pw[ind_pw, b] * sign_sel
+        # }
         
       } # end: pw int
       
       # Loop moderation & get moderation
       if(nrow(mod_b_m) > 0) for(i in 1:nrow(mod_b_m)) {
         ind_mod <- which(apply(m_ind_allpw, 1, function(x) sum(x %in% mod_b_m[i, ][-which(mod_b_m[i, ]==mod)])) == 2)
-        m_mod[ind_mod, b] <- mod_b$interactions$weightsAgg[[2]][[i]][1]
+        m_mod[ind_mod, b] <- mod_b$interactions$weightsAgg[[2]][[i]][1] #* mod_b$interactions$signs[[2]][[i]] # add sign
         
-        # add sign if applicable
-        if(all(type[mod_b_m] == "g")) {
-          v_est <- unlist(mod_b$interactions$weights[[2]][[i]])
-          v_sign <- sign(v_est)
-          sign_sel <- as.numeric(names(which.max(table(v_sign)))) # ugly!
-          m_mod[ind_mod, b] <- m_mod[ind_mod, b] * sign_sel
-        }
+        # Add sign if applicable
+        if(mod_b$interactions$signs[[2]][[i]] == -1) m_mod[ind_mod, b]  <- m_mod[ind_mod, b]  * -1
+        
+        # # add sign if applicable
+        # if(all(type[mod_b_m] == "g")) {
+        #   v_est <- unlist(mod_b$interactions$weights[[2]][[i]])
+        #   v_sign <- sign(v_est)
+        #   sign_sel <- as.numeric(names(which.max(table(v_sign)))) # ugly!
+        #   m_mod[ind_mod, b] <- m_mod[ind_mod, b] * sign_sel
+        # }
         
       } # end: mod 
       
@@ -376,8 +384,6 @@ plotRes <- function(object,
     # ----- C) Plot Moderation effects -----
     
     if(is.null(axis.ticks.mod)) axis.ticks.mod <- axis.ticks
-    
-    # browser()
     
     plotData(TM = TM_mod, 
              axis.ticks = axis.ticks.mod, 
