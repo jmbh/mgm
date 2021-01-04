@@ -19,7 +19,9 @@ bwSelPredict <- function(data,
 
   # Fetch arguments
   args <- list(...)
-
+  
+  
+  # if(is.null(args$k)) args$k <- 2
   args$d <- args$k - 1
   n_test <- length(test)
   consec <- args$consec
@@ -60,7 +62,7 @@ bwSelPredict <- function(data,
 
   }
 
-  # -------------------- Compute Preditions -------------------
+  # -------------------- Compute Predictions -------------------
 
   m_pred <- matrix(NA, nrow = n_test, ncol = p)
 
