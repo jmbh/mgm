@@ -14,8 +14,6 @@ getSign <- function(l_w_ind,
   
   # ---------- Compute Aux Variables ----------
   
-  # browser()
-  
   pair <- l_w_ind[[1]]
   
   outlist <- list("voteSign" = NULL,

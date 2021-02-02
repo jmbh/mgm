@@ -74,7 +74,6 @@ Reg2Graph <- function(mgmobj,
     } 
     
     
-    
     # ----- Create empty Storage for parameters -----
     v_Pars_ind <- vector('list', length = d_v) #  1 = pairwise, 2 = 3-way, etc.
     
@@ -122,8 +121,6 @@ Reg2Graph <- function(mgmobj,
       
     } # end if: moderators?
     
-    # if(v==11)    browser()
-    
     # Make sure all entries of "v_Pars_ind" are matrices
     for(ord in 1:d_v) v_Pars_ind[[ord]] <- matrix(as.matrix(v_Pars_ind[[ord]]), ncol=ord)
     
@@ -163,8 +160,6 @@ Reg2Graph <- function(mgmobj,
           model_obj_i[abs(model_obj_i) < tau] <- 0 # set all parameter estimates below threshold to zero
           mgmobj$nodemodels[[v]]$tau <- tau # Save tau
         }
-        
-        # if(v==15) browser()
         
         for(ord in 1:d_v) {
           
@@ -319,6 +314,7 @@ Reg2Graph <- function(mgmobj,
   Pars_values_flip_red <- lapply(Pars_values_flip, function(x) do.call(c, x))
   
   
+
   # 1) Select each interaction
   
   ## Compute number of interactions for each order

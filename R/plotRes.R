@@ -106,6 +106,9 @@ plotRes <- function(object,
   type <- object$call$object$call$type
   p <- length(type)
   nB <- object$call$nB
+  binarySign <- object$call$object$call$binarySign
+  ind_cat <- object$call$object$call$ind_cat
+  ind_binary <- object$call$object$call$ind_binary
   
   # ----------------------------------------------------------------------
   # ---------- Input Checks ----------------------------------------------
@@ -136,6 +139,15 @@ plotRes <- function(object,
     mod <- mod_fix
   }
   
+  
+  
+  # Define set of continuous and binary variables: for interactions between these we can assign a sign
+  # Depends on binarySign
+  if(binarySign) {
+    set_signdefined <- c(which(type == 'p'), which(type == 'g'), ind_cat[ind_binary])
+  } else {
+    set_signdefined <- c(which(type == 'p'), which(type == 'g'))
+  }
   
   # ----------------------------------------------------------------------
   # ---------- A.1) mgm objects (unmoderated) ----------------------------
@@ -236,8 +248,6 @@ plotRes <- function(object,
   } # end if: moderation?
   
   
-  
-  
   # ----------------------------------------------------------------------
   # ---------- A.1) mgm objects (moderated; 1 moderator) -----------------
   # ----------------------------------------------------------------------
@@ -278,22 +288,32 @@ plotRes <- function(object,
         
       } # end: pw int
       
-      # Loop moderation & get moderation
+      # Loop moderation & get moderation effects
       if(nrow(mod_b_m) > 0) for(i in 1:nrow(mod_b_m)) {
+        
         ind_mod <- which(apply(m_ind_allpw, 1, function(x) sum(x %in% mod_b_m[i, ][-which(mod_b_m[i, ]==mod)])) == 2)
         m_mod[ind_mod, b] <- mod_b$interactions$weightsAgg[[2]][[i]][1] #* mod_b$interactions$signs[[2]][[i]] # add sign
         
-        # Add sign if applicable
+        
+        
+        # Add sign if applicable !!!! THIS DOES NOT WORK !!! because no signs are defined in Reg2Graph() for 3-way interactions; there was a reason I did the complicated thing below
         if(mod_b$interactions$signs[[2]][[i]] == -1) m_mod[ind_mod, b]  <- m_mod[ind_mod, b]  * -1
         
-        # # add sign if applicable
-        # if(all(type[mod_b_m] == "g")) {
-        #   v_est <- unlist(mod_b$interactions$weights[[2]][[i]])
-        #   v_sign <- sign(v_est)
-        #   sign_sel <- as.numeric(names(which.max(table(v_sign)))) # ugly!
-        #   m_mod[ind_mod, b] <- m_mod[ind_mod, b] * sign_sel
-        # }
-        
+        # add sign if applicable
+        if(all(mod_b_m[i, ] %in% set_signdefined)) {
+          v_est <- rep(NA, 3)
+          for(k in 1:3) {
+            if(type[mod_b_m[i, k]] == "c") {
+              v_est[k] <- mod_b$interactions$weights[[2]][[i]][[k]][[2]]
+            } else {
+              v_est[k] <- mod_b$interactions$weights[[2]][[i]][[k]]
+            }
+          }
+          v_sign <- sign(v_est)
+          sign_sel <- as.numeric(names(which.max(table(v_sign)))) # ugly!
+          m_mod[ind_mod, b] <- m_mod[ind_mod, b] * sign_sel
+        }
+
       } # end: mod 
       
     } # end: bootstrap it

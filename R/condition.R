@@ -58,8 +58,6 @@ condition <- function(object,
     
     if(type[i] == "g") {
       
-      # if(i==12) browser()
-      
       # Access node model
       model_i <- object$nodemodels[[i]]$model
       
