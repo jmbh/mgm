@@ -1,3 +1,6 @@
+Changes in Version 1.2-12
+  o Removed dependency on matrixcalc package which as been archived
+
 Changes in Version 1.2-11
   o Fixed bug: switch off thresholding when using using internal function Reg2Graph() in condition()
   o Extend condition() to Poisson variables

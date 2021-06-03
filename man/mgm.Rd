@@ -261,7 +261,7 @@ d_iter <- mgmsampler(factors = factors,
                      pbar = TRUE)
 
 
-# 3.1) Estimate order 3 MGM usind standard parameterization
+# 3.1) Estimate order 3 MGM using standard parameterization
 d_est_stand <- mgm(data = d_iter$data,
                    type = type,
                    level = level,
@@ -279,7 +279,7 @@ coefs_stand
 # interactions are present or not
 
 
-# 3.2) Estimate order 3 MGM usind overparameterization
+# 3.2) Estimate order 3 MGM using overparameterization
 d_est_over <- mgm(data = d_iter$data,
                   type = type,
                   level = level,

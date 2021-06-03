@@ -1,10 +1,10 @@
 # exportPattern("^[[:alpha:]]+")
 
 
-# Packages mgm depends on
+# --- Packages mgm depends on ---
+# import(matrixcalc) # archived on CRAN
 import(stringr)
 import(glmnet)
-import(matrixcalc)
 import(Hmisc)
 import(qgraph) # for FactorGraph()
 
@@ -20,7 +20,8 @@ importFrom("gtools", "permutations")
 importFrom("graphics", "rect")
 importFrom("stats", "sd") # recommended by build check
 
-# Exported functions
+
+# --- Exported functions ---
 export(mgm)
 export(mvar)
 
