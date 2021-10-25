@@ -67,6 +67,11 @@ predict.mgm <- function(object, # One of the four mgm objects
 {
   
   
+  
+  # ----- Check for NAs in the data ----- 
+  
+  if(any(is.na(data))) stop("The data contains missing values. Please provide a complete data set without missing values.")
+  
   # ----- Fill in defaults ----- 
   
   if(missing(consec)) consec <- NULL
