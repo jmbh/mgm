@@ -118,6 +118,10 @@ mvar <- function(data,         # n x p data matrix
   
   # ----- Compute Auxilliary Variables II -----
   
+  # ----- Basic Input Checks I -----
+  
+  if(any(is.na(data))) stop('No missing values permitted.')
+  
   # Empirical Levels of each variable
   emp_lev <- rep(NA, p)
   ind_cat <- which(type=='c')
@@ -144,13 +148,12 @@ mvar <- function(data,         # n x p data matrix
     data[, i] <- scale(data[, i])
   } 
 
-  # ----- Basic Input Checks -----
+  # ----- Basic Input Checks II -----
   
   # Checks on Data
   if(nrow(data) < 2) ('The data matrix has to have at least 2 rows.')
   if(missing(data)) stop('No data provided')
   if(ncol(data)<2) stop('At least 2 variables required')
-  if(any(is.na(data))) stop('No missing values permitted.')
   if(any(!is.finite(as.matrix(data)))) stop('No infinite values permitted.')
   if(any(!(apply(data, 2, class) %in% c('numeric', 'integer')))) stop('Only integer and numeric values permitted.')
   
