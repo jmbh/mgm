@@ -1,5 +1,9 @@
 # mgm
 
+[![CRAN
+Version](http://www.r-pkg.org/badges/version/mgm)](https://cran.r-project.org/package=mgm)
+[![Downloads](https://cranlogs.r-pkg.org/badges/mgm)](https://cran.r-project.org/package=mgm)
+
 The package includes functions to estimate, visualize and resample time-varying k-order Mixed Graphical Models (MGMs) and mixed Vector Autoregressive (mVAR) models.
 
 
