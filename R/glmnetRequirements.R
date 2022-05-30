@@ -79,6 +79,7 @@ glmnetRequirements <- function(data,
   }
   
 
+  # If any of the three checks fails, return TRUE
   if(silent) return(any(check_var_1, check_var_2, check_var_3))
   
   

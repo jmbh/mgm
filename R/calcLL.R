@@ -27,7 +27,8 @@ calcLL <- function(X,
     if(type[v] == 'g') {
       beta_vector <- matrix(coef(fit, s = lambda), ncol = 1)
       predicted_mean <- cbind(rep(1, n), X) %*% as.vector(beta_vector)
-      LL_model <- dnorm(y, mean = predicted_mean, sd = 1, log = TRUE)
+      sd_residual <- sd(y-predicted_mean)
+      LL_model <- dnorm(y, mean = predicted_mean, sd = sd_residual, log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }
 
@@ -69,7 +70,8 @@ calcLL <- function(X,
     if(type[v] == 'g') {
       beta_vector <- matrix(coef(fit, s = 1)[1], ncol = 1) # only intercept here
       predicted_mean <- rep(1, n) * as.vector(beta_vector)
-      LL_model <- dnorm(y, mean = predicted_mean, sd = 1, log = TRUE)
+      sd_residual <- sd(y-predicted_mean)
+      LL_model <- dnorm(y, mean = predicted_mean, sd = sd_residual, log = TRUE)
       mean_LL_model <- sum(LL_model * weights)
     }
 
@@ -107,30 +109,30 @@ calcLL <- function(X,
   }
 
 
-  if(LLtype == 'saturated') {
-
-    if(type[v] == 'g') {
-      predicted_mean <- y
-      LL_model <- dnorm(y, mean = predicted_mean, sd = 1, log = TRUE)
-      mean_LL_model <- sum(LL_model * weights)
-    }
-
-    if(type[v] == 'p') {
-      predicted_mean <- y
-      LL_model <- dpois(y, exp(predicted_mean), log = TRUE)
-      mean_LL_model <- sum(LL_model * weights)
-    }
-
-    if(type[v] == 'c') {
-
-      mean_LL_model <- 0
-
-      # For discrete RVs,the saturated model has Likelihood = 1 and LL = log(1) = 0
-      # e.g. http://stats.stackexchange.com/questions/114073/logistic-regression-how-to-obtain-a-saturated-model
-
-    }
-
-  }
+  # if(LLtype == 'saturated') {
+  # 
+  #   if(type[v] == 'g') {
+  #     predicted_mean <- y
+  #     LL_model <- dnorm(y, mean = predicted_mean, sd = 1, log = TRUE)
+  #     mean_LL_model <- sum(LL_model * weights)
+  #   }
+  # 
+  #   if(type[v] == 'p') {
+  #     predicted_mean <- y
+  #     LL_model <- dpois(y, exp(predicted_mean), log = TRUE)
+  #     mean_LL_model <- sum(LL_model * weights)
+  #   }
+  # 
+  #   if(type[v] == 'c') {
+  # 
+  #     mean_LL_model <- 0
+  # 
+  #     # For discrete RVs,the saturated model has Likelihood = 1 and LL = log(1) = 0
+  #     # e.g. http://stats.stackexchange.com/questions/114073/logistic-regression-how-to-obtain-a-saturated-model
+  # 
+  #   }
+  # 
+  # }
 
 
 

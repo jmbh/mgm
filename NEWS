@@ -1,3 +1,6 @@
+Changes in Version 1.2-13
+  o Fixed bug: in EBIC calculations, the standard deviation in the likelihood function was set equal to 1. Now it is set to the standard deviation of the residual as it should be.
+
 Changes in Version 1.2-12
   o Removed dependency on matrixcalc package which as been archived
   o Improved mvar() input checks

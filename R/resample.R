@@ -120,7 +120,7 @@ resample <- function(object, # one of the four mgm model objects (mgm, mvar, tvm
     for(b in 1:nB) {
       
       set.seed(seeds[b]) # for cross validation
-      if(verbatim) print(paste0("Seed = ", seeds[b]))
+      if(verbatim) print(paste0("Bootstrap sample = ", b, " Seed = ", seeds[b]))
       tt <- proc.time()[3]
       
       l_b_models[[b]] <- mgm(data = l_data_b[[b]],
