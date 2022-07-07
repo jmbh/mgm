@@ -36,8 +36,7 @@ ModelMatrix <- function(data,  # matrix
   
   if(p != length(type)) stop('Length of type has to match the number of columns in data.')
   if(p != length(level)) stop('Length of level has to match the number of columns in data.')
-  if(!(class(level) == 'integer' | class(level) == 'numeric')) stop('level has to be an integer vector.')
-  
+  if(!(inherits(level, "numeric") | inherits(level, "integer"))) stop('level has to be an integer vector.')
   
   # ---------- Calculate Indicator Functions for all Variables ----------
   

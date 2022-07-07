@@ -253,13 +253,13 @@ predict.mgm <- function(object, # One of the four mgm objects
   
   # Continuous
   l_errorCon <- list()
-  if(class(errorCon)=='character') {
+  if(inherits(errorCon, "character")) { # this is the same as class(errorCon) == "character", but this seems not to be allowed anymore on CRAN [Jult, 2022]
     
     if('R2' %in% errorCon & !('RMSE' %in% errorCon)) l_errorCon <- list('R2' = f_error_R2)
     if('RMSE' %in% errorCon & !('R2' %in% errorCon)) l_errorCon <- list('RMSE' = f_error_RMSE)
     if(all(c('R2', 'RMSE') %in% errorCon)) l_errorCon <- list('RMSE' = f_error_RMSE, 'R2' = f_error_R2)
     
-  } else if(class(errorCon)=='list') {
+  } else if(inherits(errorCon, "list")) {
     
     l_errorCon <- errorCon
     
@@ -277,16 +277,15 @@ predict.mgm <- function(object, # One of the four mgm objects
   }
   
   
-  
   # Categorical
   l_errorCat <- list()
-  if(class(errorCat)=='character') {
+  if(inherits(errorCat, "character")) {
     
     if('CC' %in% errorCat & !('nCC' %in% errorCat)) l_errorCat <- list('CC' = f_error_CC)
     if('nCC' %in% errorCat & !('CC' %in% errorCat)) l_errorCat <- list('nCC' = f_error_nCC)
     if(all(c('CC', 'nCC') %in% errorCat)) l_errorCat <- list('CC' = f_error_CC, 'nCC' = f_error_nCC)
     
-  } else if(class(errorCat)=='list') {
+  } else if(inherits(errorCat, "list")) {
     
     for(e in 1:length(errorCat)) {
       if(l_errorCat[[e]] == 'CC') l_errorCat[[e]] <- f_error_CC
