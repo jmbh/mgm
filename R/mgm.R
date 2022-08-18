@@ -284,8 +284,10 @@ mgm <- function(data,         # n x p data matrix
   
   l_mods_ind <- list() # collect moderator terms for later output-processing
   
-  for(v in 1:p) {
-    
+  #for(v in 1:p) {
+  out <- foreach::`%dopar%`(
+    foreach::foreach(v = 1:p, .packages = "mgm"), 
+    {  
     # ----- Construct Design Matrix -----
     
     X_standard <- X <- ModelMatrix_standard(data = data,
@@ -294,8 +296,8 @@ mgm <- function(data,         # n x p data matrix
                                             v = v, 
                                             moderators = moderators)
     
-    npar_standard[v] <- ncol(X_standard)
-    
+    #npar_standard[v] <- ncol(X_standard)
+    npar_standard_v <- ncol(X_standard)
     
     if(overparameterize) {
       
@@ -445,7 +447,8 @@ mgm <- function(data,         # n x p data matrix
                        overparameterize = overparameterize,
                        thresholdCat = thresholdCat)
       
-      mgmobj$nodemodels[[v]] <- model
+      # mgmobj$nodemodels[[v]] <- model
+      mgmobj_nodemodels_v <- model
       
     }
     
@@ -483,19 +486,27 @@ mgm <- function(data,         # n x p data matrix
       }
       
       ind_minEBIC_model <- which.min(EBIC_Seq)
-      mgmobj$nodemodels[[v]] <- l_alphaModels[[ind_minEBIC_model]]
+      # mgmobj$nodemodels[[v]] <- l_alphaModels[[ind_minEBIC_model]]
+      mgmobj_nodemodels_v <- l_alphaModels[[ind_minEBIC_model]]
       
       
     } # end if: alpha EBIC?
     
     
     # Update Progress Bar
-    if(pbar==TRUE) setTxtProgressBar(pb, v)
+    #if(pbar==TRUE) setTxtProgressBar(pb, v)
     
-  } # end for: p
+    # return 
+    list(nodemodels = mgmobj_nodemodels_v, npar = npar_standard_v)
+    
+  }) # end for: p
   
-  mgmobj$call$npar <- npar_standard
+  # extract the node models and add to mgmobj
+  mgmobj$nodemodels <- lapply(out, `[[`, "nodemodels")
   
+  # record npar_standard
+  mgmobj$call$npar <- lapply(out, `[[`, "npar")
+  mgmobj$call$npar <- mgmobj$call$npar[[length(mgmobj$call$npar)]]
   
   # --------------------------------------------------------------------------------------------
   # -------------------- Processing glmnet output ----------------------------------------------
