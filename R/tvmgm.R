@@ -10,7 +10,9 @@ tvmgm <- function(data,         # n x p data matrix
 )
 
 {
-
+  
+  message("mgm-parallel")
+  
   # -------------------- Input Checks -------------------
 
   args <- list(...)
