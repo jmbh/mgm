@@ -265,6 +265,7 @@ bwSelect <- function(data,
                                     zero_weights = l_zero_weights[[fold]], # vector indicating zero weights for test cases
                                     saveModels = TRUE, # otherwise we can't make predictions
                                     signInfo = FALSE,
+                                    mgm_par = TRUE,
                                     ...)
 
         

@@ -25,7 +25,9 @@ tvmgm <- function(data,         # n x p data matrix
 
 
   # ----- Fill in Defaults -----
-
+  
+  if(is.null(args$mgm_par)) args$mgm_par <- FALSE
+  
   if(is.null(args$lambdaSeq)) args$lambdaSeq <- NULL
   if(is.null(args$lambdaSel)) args$lambdaSel <- 'EBIC'
   if(is.null(args$lambdaFolds)) args$lambdaFolds <- 10
@@ -161,41 +163,78 @@ tvmgm <- function(data,         # n x p data matrix
 
   # Storage
   l_tvmgm_models <- list()
-
-  for(i in 1:no_estpoints) {
-
-    l_tvmgm_models[[i]] <- mgm(data = data,
-                               type = type,
-                               level = level,
-                               lambdaSeq = args$lambdaSeq,
-                               lambdaSel = args$lambdaSel,
-                               lambdaFolds = args$lambdaFolds,
-                               lambdaGam = args$lambdaGam,
-                               alphaSeq = args$alphaSeq,
-                               alphaSel = args$alphaSel,
-                               alphaFolds = args$alphaFolds,
-                               alphaGam = args$alphaGam,
-                               k = args$k,
-                               ruleReg = args$ruleReg,
-                               weights = l_weights[[i]],
-                               threshold = args$threshold,
-                               method = args$method,
-                               binarySign = args$binarySign,
-                               scale = args$scale,
-                               verbatim = args$verbatim,
-                               pbar = FALSE,
-                               warnings = args$warnings,
-                               saveModels = args$saveModels,
-                               saveData = args$saveData,
-                               overparameterize = args$overparameterize,
-                               signInfo = FALSE) # to avoid msg for each model
-
-
-    # Update Progress Bar
-    if(args$pbar==TRUE) setTxtProgressBar(pb, i)
-
-  } # End for: timepoints
-
+  
+  # parallelize mgm
+  if (args$mgm_par){
+    
+    for(i in 1:no_estpoints) {
+      
+      l_tvmgm_models[[i]] <- mgm.par(data = data,
+                                     type = type,
+                                     level = level,
+                                     lambdaSeq = args$lambdaSeq,
+                                     lambdaSel = args$lambdaSel,
+                                     lambdaFolds = args$lambdaFolds,
+                                     lambdaGam = args$lambdaGam,
+                                     alphaSeq = args$alphaSeq,
+                                     alphaSel = args$alphaSel,
+                                     alphaFolds = args$alphaFolds,
+                                     alphaGam = args$alphaGam,
+                                     k = args$k,
+                                     ruleReg = args$ruleReg,
+                                     weights = l_weights[[i]],
+                                     threshold = args$threshold,
+                                     method = args$method,
+                                     binarySign = args$binarySign,
+                                     scale = args$scale,
+                                     verbatim = args$verbatim,
+                                     pbar = FALSE,
+                                     warnings = args$warnings,
+                                     saveModels = args$saveModels,
+                                     saveData = args$saveData,
+                                     overparameterize = args$overparameterize,
+                                     signInfo = FALSE) # to avoid msg for each model
+  
+      # Update Progress Bar
+      if(args$pbar==TRUE) setTxtProgressBar(pb, i)
+  
+    } # End for: timepoints
+  
+  }else{
+    
+    # otherwise, parallelize along the est_points
+    l_tvmgm_models <- foreach::`%dopar%`(
+      foreach::foreach(i = 1:no_estpoints, .packages = "mgm"),
+      {
+        mgm(data = data,
+            type = type,
+            level = level,
+            lambdaSeq = args$lambdaSeq,
+            lambdaSel = args$lambdaSel,
+            lambdaFolds = args$lambdaFolds,
+            lambdaGam = args$lambdaGam,
+            alphaSeq = args$alphaSeq,
+            alphaSel = args$alphaSel,
+            alphaFolds = args$alphaFolds,
+            alphaGam = args$alphaGam,
+            k = args$k,
+            ruleReg = args$ruleReg,
+            weights = l_weights[[i]],
+            threshold = args$threshold,
+            method = args$method,
+            binarySign = args$binarySign,
+            scale = args$scale,
+            verbatim = args$verbatim,
+            pbar = FALSE,
+            warnings = args$warnings,
+            saveModels = args$saveModels,
+            saveData = args$saveData,
+            overparameterize = args$overparameterize,
+            signInfo = FALSE) # to avoid msg for each model
+        
+        }) # End for: timepoints
+    }
+  
   # Save into output list
   tvmgmobj$tvmodels <- l_tvmgm_models
 
