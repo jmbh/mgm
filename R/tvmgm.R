@@ -162,39 +162,42 @@ tvmgm <- function(data,         # n x p data matrix
   # Storage
   l_tvmgm_models <- list()
 
-  for(i in 1:no_estpoints) {
-
-    l_tvmgm_models[[i]] <- mgm(data = data,
-                               type = type,
-                               level = level,
-                               lambdaSeq = args$lambdaSeq,
-                               lambdaSel = args$lambdaSel,
-                               lambdaFolds = args$lambdaFolds,
-                               lambdaGam = args$lambdaGam,
-                               alphaSeq = args$alphaSeq,
-                               alphaSel = args$alphaSel,
-                               alphaFolds = args$alphaFolds,
-                               alphaGam = args$alphaGam,
-                               k = args$k,
-                               ruleReg = args$ruleReg,
-                               weights = l_weights[[i]],
-                               threshold = args$threshold,
-                               method = args$method,
-                               binarySign = args$binarySign,
-                               scale = args$scale,
-                               verbatim = args$verbatim,
-                               pbar = FALSE,
-                               warnings = args$warnings,
-                               saveModels = args$saveModels,
-                               saveData = args$saveData,
-                               overparameterize = args$overparameterize,
-                               signInfo = FALSE) # to avoid msg for each model
+  # for(i in 1:no_estpoints) {
+  l_tvmgm_models <- foreach::`%dopar%`(
+    foreach::foreach(i = 1:no_estpoints, .packages = "mgm"),
+    {
+      # l_tvmgm_models[[i]] <-
+      mgm(data = data,
+          type = type,
+          level = level,
+          lambdaSeq = args$lambdaSeq,
+          lambdaSel = args$lambdaSel,
+          lambdaFolds = args$lambdaFolds,
+          lambdaGam = args$lambdaGam,
+          alphaSeq = args$alphaSeq,
+          alphaSel = args$alphaSel,
+          alphaFolds = args$alphaFolds,
+          alphaGam = args$alphaGam,
+          k = args$k,
+          ruleReg = args$ruleReg,
+          weights = l_weights[[i]],
+          threshold = args$threshold,
+          method = args$method,
+          binarySign = args$binarySign,
+          scale = args$scale,
+          verbatim = args$verbatim,
+          pbar = FALSE,
+          warnings = args$warnings,
+          saveModels = args$saveModels,
+          saveData = args$saveData,
+          overparameterize = args$overparameterize,
+          signInfo = FALSE) # to avoid msg for each model
 
 
     # Update Progress Bar
-    if(args$pbar==TRUE) setTxtProgressBar(pb, i)
+    # if(args$pbar==TRUE) setTxtProgressBar(pb, i)
 
-  } # End for: timepoints
+  }) # End for: timepoints
 
   # Save into output list
   tvmgmobj$tvmodels <- l_tvmgm_models
