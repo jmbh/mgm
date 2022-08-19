@@ -13,7 +13,9 @@ bwSelect <- function(data,
 
 
 {
-
+  
+  message("mgm-parallel")
+  
   # -------------------- Input Checks -------------------
 
   args <- list(...)
