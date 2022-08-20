@@ -10,8 +10,7 @@ tvmgm <- function(data,         # n x p data matrix
 )
 
 {
-  if (nrow(data) == length(estpoints)) message("mgm-parallel")
-  
+
   # -------------------- Input Checks -------------------
 
   args <- list(...)
