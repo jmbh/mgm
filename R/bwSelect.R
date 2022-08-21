@@ -19,6 +19,7 @@ bwSelect <- function(data,
   args <- list(...)
   
   if(is.null(args$mgm_par)) args$mgm_par <- TRUE
+  if(is.null(args$tvmgm_par)) args$tvmgm_par <- FALSE
   
   # Input checks specific for mvar()
   if(modeltype == 'mvar') {
@@ -266,6 +267,7 @@ bwSelect <- function(data,
                                     saveModels = TRUE, # otherwise we can't make predictions
                                     signInfo = FALSE,
                                     mgm_par = args$mgm_par,
+                                    tvmgm_par = args$tvmgm_par,
                                     ...)
 
         
