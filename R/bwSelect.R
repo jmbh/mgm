@@ -17,7 +17,9 @@ bwSelect <- function(data,
   # -------------------- Input Checks -------------------
 
   args <- list(...)
-
+  
+  if(is.null(args$mgm_par)) args$mgm_par <- TRUE
+  
   # Input checks specific for mvar()
   if(modeltype == 'mvar') {
     if(is.null(args$lags)) stop('No lags specified')
@@ -263,7 +265,7 @@ bwSelect <- function(data,
                                     zero_weights = l_zero_weights[[fold]], # vector indicating zero weights for test cases
                                     saveModels = TRUE, # otherwise we can't make predictions
                                     signInfo = FALSE,
-                                    mgm_par = TRUE,
+                                    mgm_par = args$mgm_par,
                                     ...)
 
         

@@ -4,6 +4,6 @@
   version <- read.dcf(file=system.file("DESCRIPTION", package=pkgname),
                       fields="Version")
   pkgname <- paste0(pkgname, "-parallel")
-  packageStartupMessage("This is ",paste(pkgname, version))
-  packageStartupMessage("Please report issues on Github: https://github.com/jmbh/mgm/issues")
+  packageStartupMessage("This is ", pkgname)
+  packageStartupMessage("A parallel version of the mgm package")
 }
