@@ -2,7 +2,7 @@ Package: mgm
 Type: Package
 Title: Estimating Time-Varying k-Order Mixed Graphical Models
 Version: 1.2-13
-Date: 2022-07-07
+Date: 2022-12-22
 Author: Jonas Haslbeck
 Maintainer: Jonas Haslbeck  <jonashaslbeck@gmail.com>
 Depends: R (>= 3.5.0)
