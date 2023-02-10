@@ -42,28 +42,46 @@ getSign <- function(l_w_ind,
     
     if(all(type[pair]=='c')) {
       
-      if(ord == 1) {
-        ## only need to check parameters for one category, because of symmetry
-        # regression1
-        sign1 <- 0 #  default in case regression1 led to a zero estimate
-        if(l_w_par[[1]][[1]][1] != 0) sign1 <- sign(l_w_par[[1]][[1]][1])
-        if(l_w_par[[1]][[1]][2] != 0) sign1 <- - sign(l_w_par[[1]][[1]][2])
-        # regression2
-        sign2 <- 0 #  default in case regression1 led to a zero estimate
-        if(l_w_par[[2]][[1]][1] != 0) sign2 <- sign(l_w_par[[2]][[1]][1])
-        if(l_w_par[[2]][[1]][2] != 0) sign2 <- - sign(l_w_par[[2]][[1]][2])
-        int_sign <- sign(mean(c(sign1, sign2))) # Majority vote
+      # Loop through terms (there are "ord" terms)
+      v_sign_ord_j <- rep(NA, ord+1)
+      for(ord_j in 1:(ord+1)) {
         
-        outlist$voteSign <- int_sign
-        outlist$Signs <- c(sign1, sign2)
+        sign_j <- 0 #  default in case regression1 led to a zero estimate
+        if(l_w_par[[ord_j]][[1]][1] != 0) sign_j <- sign(l_w_par[[ord_j]][[1]][1])
+        if(l_w_par[[ord_j]][[1]][2] != 0) sign_j <- - sign(l_w_par[[ord_j]][[1]][2])
         
-      } else {
-        int_sign <- 0 # no sign defined for interactions of order k>2
+        v_sign_ord_j[ord_j] <- sign_j
         
-        outlist$Signs <- NA
-        outlist$voteSign <- int_sign
-        
-      }
+      } # end loop: ord_j
+      
+      # Majority vote
+      int_sign <- sign(mean(v_sign_ord_j))
+      
+      outlist$Signs <- NA
+      outlist$voteSign <- int_sign
+      
+      # if(ord == 1) {
+      #   ## only need to check parameters for one category, because of symmetry
+      #   # regression1
+      #   sign1 <- 0 #  default in case regression1 led to a zero estimate
+      #   if(l_w_par[[1]][[1]][1] != 0) sign1 <- sign(l_w_par[[1]][[1]][1])
+      #   if(l_w_par[[1]][[1]][2] != 0) sign1 <- - sign(l_w_par[[1]][[1]][2])
+      #   # regression2
+      #   sign2 <- 0 #  default in case regression1 led to a zero estimate
+      #   if(l_w_par[[2]][[1]][1] != 0) sign2 <- sign(l_w_par[[2]][[1]][1])
+      #   if(l_w_par[[2]][[1]][2] != 0) sign2 <- - sign(l_w_par[[2]][[1]][2])
+      #   int_sign <- sign(mean(c(sign1, sign2))) # Majority vote
+      #   
+      #   outlist$voteSign <- int_sign
+      #   outlist$Signs <- c(sign1, sign2)
+      #   
+      # } else {
+      #   int_sign <- 0 # no sign defined for interactions of order k>2
+      #   
+      #   outlist$Signs <- NA
+      #   outlist$voteSign <- int_sign
+      #   
+      # }
       
       
     } # end if: II)
@@ -73,40 +91,66 @@ getSign <- function(l_w_ind,
     
     if(any(type[pair] %in% 'c') & any(type[pair] %in% c('p', 'g')) ) {
       
-      if(ord == 1) {
-        sign1 <- sign2 <- 0 # set default in case one direction has zero estimates
-        # need to know which list entry in l_w_par corresponds to which regression: cont <- binary or cont -> binary; I do that by the fixed dimensionality of the parameter vector/matrix
-        if(is.null(dim(l_w_par[[1]])))  { #is.null -> continuous, else binary
-          sign1 <- sign(as.numeric(l_w_par[[1]][[2]]))
+      
+      # Loop through terms (there are "ord" terms)
+      v_sign_ord_j <- rep(NA, ord+1)
+      for(ord_j in 1:(ord+1)) {
+
+        if(!any(class(l_w_par[[ord_j]])=="list"))  { #is.null -> continuous, else binary
+          sign_j <- sign(as.numeric(l_w_par[[ord_j]][[2]]))
         } else {
-          if(l_w_par[[1]][1, 1] != 0) sign1 <- - sign(l_w_par[[1]][1,1]) # positive value for state 1 means negative 'pairwise relationship'
-          if(l_w_par[[1]][2, 1] != 0) sign1 <- sign(l_w_par[[1]][2,1])
+          sign_j <- 0 #  default in case regression1 led to a zero estimate
+          if(l_w_par[[ord_j]][[1]][1] != 0) sign2 <- - sign(l_w_par[[ord_j]][[1]][1]) # positive value for state 1 means negative 'pairwise relationship'
+          if(l_w_par[[ord_j]][[2]][1] != 0) sign2 <- sign(l_w_par[[ord_j]][[2]][1])
         }
-        if(is.null(dim(l_w_par[[2]])))  {
-          sign2 <- sign(l_w_par[[2]][2])
-        } else {
-          if(l_w_par[[2]][1,1] != 0) sign2 <- - sign(l_w_par[[2]][1,1]) # positive value for state 1 means negative 'pairwise relationship'
-          if(l_w_par[[2]][2,1] != 0) sign2 <- sign(l_w_par[[2]][2,1])
-        }
-        int_sign <- sign(mean(c(sign1,sign2))) # Majority vote
+
+        v_sign_ord_j[ord_j] <- sign_j
         
-        outlist$voteSign <- int_sign
-        outlist$Signs <- c(sign1, sign2)
-        
-      } else {
-        int_sign <- 0 # no sign defined for interactions of order k>2
-        
-        outlist$Signs <- NA
-        outlist$voteSign <- int_sign
-      }
+      } # end loop: ord_j
+      
+      # Majority vote
+      int_sign <- sign(mean(v_sign_ord_j))
+      
+      outlist$Signs <- NA
+      outlist$voteSign <- int_sign
+      
+      # if(ord == 1) {
+      #   sign1 <- sign2 <- 0 # set default in case one direction has zero estimates
+      #   # need to know which list entry in l_w_par corresponds to which regression: cont <- binary or cont -> binary; I do that by the fixed dimensionality of the parameter vector/matrix
+      #   if(is.null(dim(l_w_par[[1]])))  { #is.null -> continuous, else binary
+      #     sign1 <- sign(as.numeric(l_w_par[[1]][[2]]))
+      #   } else {
+      #     if(l_w_par[[1]][1, 1] != 0) sign1 <- - sign(l_w_par[[1]][1,1]) # positive value for state 1 means negative 'pairwise relationship'
+      #     if(l_w_par[[1]][2, 1] != 0) sign1 <- sign(l_w_par[[1]][2,1])
+      #   }
+      #   if(is.null(dim(l_w_par[[2]])))  {
+      #     sign2 <- sign(l_w_par[[2]][2])
+      #   } else {
+      #     if(l_w_par[[2]][1,1] != 0) sign2 <- - sign(l_w_par[[2]][1,1]) # positive value for state 1 means negative 'pairwise relationship'
+      #     if(l_w_par[[2]][2,1] != 0) sign2 <- sign(l_w_par[[2]][2,1])
+      #   }
+      #   int_sign <- sign(mean(c(sign1,sign2))) # Majority vote
+      #   
+      #   outlist$voteSign <- int_sign
+      #   outlist$Signs <- c(sign1, sign2)
+      #   
+      # } else {
+      #   int_sign <- 0 # no sign defined for interactions of order k>2
+      #   
+      #   outlist$Signs <- NA
+      #   outlist$voteSign <- int_sign
+      # }
       
     } # end if: III)
     
     
   } # end if: overparameterize?
   
+  
+  
+  
   # ---------- B) For overparameterize = FALSE ----------
-
+  
   if(!overparameterize) {
     
     
@@ -126,20 +170,37 @@ getSign <- function(l_w_ind,
     # II) ----- binary-binary -----
     
     if(all(type[pair]=='c')) {
-      if(ord == 1) {
-        sign1 <- sign(as.numeric(l_w_par[[1]][[2]]))
-        sign2 <- sign(as.numeric(l_w_par[[2]][[2]]))
-        int_sign <- sign(mean(c(sign1, sign2)))
+      
+      # Loop through terms (there are "ord" terms)
+      v_sign_ord_j <- rep(NA, ord+1)
+      for(ord_j in 1:(ord+1)) {
         
-        outlist$voteSign <- int_sign
-        outlist$Signs <- c(sign1, sign2)
+        sign_j <- sign(as.numeric(l_w_par[[ord_j]][[2]])) # if interaction A is binary <- cont
+        v_sign_ord_j[ord_j] <- sign_j
         
-      } else {
-        int_sign <- 0 # no sign defined for interactions of order k>2
-        
-        outlist$Signs <- NA
-        outlist$voteSign <- int_sign
-      }
+      } # end loop: ord_j
+      
+      # Majority vote
+      int_sign <- sign(mean(v_sign_ord_j))
+      
+      outlist$Signs <- NA
+      outlist$voteSign <- int_sign
+      
+      # if(ord == 1) {
+      #   sign1 <- sign(as.numeric(l_w_par[[1]][[2]]))
+      #   sign2 <- sign(as.numeric(l_w_par[[2]][[2]]))
+      #   int_sign <- sign(mean(c(sign1, sign2)))
+      #   
+      #   outlist$voteSign <- int_sign
+      #   outlist$Signs <- c(sign1, sign2)
+      #   
+      # } else {
+      #   int_sign <- 0 # no sign defined for interactions of order k>2
+      #   
+      #   outlist$Signs <- NA
+      #   outlist$voteSign <- int_sign
+      # }
+      
     } # end if: II)
     
     
@@ -147,31 +208,49 @@ getSign <- function(l_w_ind,
     
     if(any(type[pair] %in% 'c') & any(type[pair] %in% c('p', 'g')) ) {
       
-      if(ord == 1) {
+      # if(ord == 1) {
+      
+      # if(length(l_w_par[[1]]) == 1) {
+      #   sign1 <- sign(as.numeric(l_w_par[[1]])) # if interaction A is cont <- binary
+      # } else {
+      #   sign1 <- sign(as.numeric(l_w_par[[1]][[2]])) # if interaction A is binary <- cont
+      # }
+      # 
+      # # same for second interaction
+      # if(length(l_w_par[[2]]) == 1) {
+      #   sign2 <- sign(as.numeric(l_w_par[[2]]))
+      # } else {
+      #   sign2 <- sign(as.numeric(l_w_par[[2]][[2]]))
+      # }
+      # 
+      # int_sign <- sign(mean(c(sign1, sign2)))
+      # 
+      # outlist$voteSign <- int_sign
+      # outlist$Signs <- c(sign1, sign2)
+      
+      # } else {
+      
+      # Loop through terms (there are "ord" terms)
+      v_sign_ord_j <- rep(NA, ord+1)
+      for(ord_j in 1:(ord+1)) {
         
-        if(length(l_w_par[[1]]) == 1) {
-          sign1 <- sign(as.numeric(l_w_par[[1]])) # if interaction A is cont <- binary
+        if(length(l_w_par[[ord_j]]) == 1) {
+          sign_j <- sign(as.numeric(l_w_par[[ord_j]])) # if interaction A is cont <- binary
         } else {
-          sign1 <- sign(as.numeric(l_w_par[[1]][[2]])) # if interaction A is binary <- cont
+          sign_j <- sign(as.numeric(l_w_par[[ord_j]][[2]])) # if interaction A is binary <- cont
         }
         
-        # same for second interaction
-        if(length(l_w_par[[2]]) == 1) {
-          sign2 <- sign(as.numeric(l_w_par[[2]]))
-        } else {
-          sign2 <- sign(as.numeric(l_w_par[[2]][[2]]))
-        }
+        v_sign_ord_j[ord_j] <- sign_j
         
-        int_sign <- sign(mean(c(sign1, sign2)))
-        
-        outlist$voteSign <- int_sign
-        outlist$Signs <- c(sign1, sign2)
-        
-      } else {
-        int_sign <- 0 # no sign defined for interactions of order k>2
-        outlist$Signs <- NA
-        outlist$voteSign <- int_sign
-      }
+      } # end loop: ord_j
+      
+      # Majority vote
+      int_sign <- sign(mean(v_sign_ord_j))
+      
+      outlist$Signs <- NA
+      outlist$voteSign <- int_sign
+      
+      # }
       
     } # end if: III)
     

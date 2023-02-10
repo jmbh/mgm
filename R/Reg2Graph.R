@@ -8,7 +8,7 @@
 
 
 Reg2Graph <- function(mgmobj, 
-                      thresholding=TRUE) {
+                      thresholding = TRUE) {
   
   # ----- Basic info from model object ------
   p <- length(mgmobj$call$type) # number of variables
@@ -44,12 +44,10 @@ Reg2Graph <- function(mgmobj,
   Pars_ind <- list() # storage for interaction-indicators
   Pars_values <- list() # storage for parameter estimates associated with the interactions indexed in Pars_ind
   mgmobj$intercepts <- vector('list', length = p)
-  v_d_v <- rep(NA, p)
+  v_d_v <- rep(NA, p) # object to record max order of each node
   
   # ----- Loop over p variables -----
   for(v in 1:p) {
-    
-    # print(v)
     
     model_obj <- mgmobj$nodemodels[[v]]$model
     predictor_set <- (1:p)[-v] # set of predictors for variable v (i.e., all others)
@@ -108,7 +106,6 @@ Reg2Graph <- function(mgmobj,
         v_Pars_ind[[2]] <- ind_mods  
         
       }
-      
       
       
       if(mSpec == "fullk") {
@@ -235,7 +232,7 @@ Reg2Graph <- function(mgmobj,
                                                            fixed = TRUE) # not only single chars have to be contained, but exact order
             select_int <- rowSums(find_int_dummy) == (ord) # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
             
-            # fill in paramters + rownames into list
+            # fill in parameters + row-names into list
             parmat <- matrix(part_ord[select_int], ncol = 1)
             rownames(parmat) <- int_names_ord[select_int]
             v_Pars_values[[ord]][[t]] <- parmat
@@ -314,7 +311,7 @@ Reg2Graph <- function(mgmobj,
   Pars_values_flip_red <- lapply(Pars_values_flip, function(x) do.call(c, x))
   
   
-
+  
   # 1) Select each interaction
   
   ## Compute number of interactions for each order
@@ -381,6 +378,8 @@ Reg2Graph <- function(mgmobj,
     unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
     n_unique <- nrow(unique_set_int_ord)
     
+    
+    
     # loop over: unique interaction of order = ord
     for(i in 1:n_unique) {
       
@@ -410,7 +409,7 @@ Reg2Graph <- function(mgmobj,
         
         pair <- l_w_ind[[1]] # order doesn't matter, could take any but the first entry is always filled independent of "ord", so first
         
-        if(sum(!(pair %in% set_signdefined)) == 0) { # check of all involved varibales are g, p, or binary
+        if(sum(!(pair %in% set_signdefined)) == 0) { # check of all involved variables are g, p, or binary
           
           # Computes combined sign (if defined) over k terms for same interaction
           sign_object <- getSign(l_w_ind, 
@@ -513,73 +512,73 @@ Reg2Graph <- function(mgmobj,
   # Create sign color matrix
   sign_colors <- matrix('darkgrey', p, p)
   sign_colors[m_signs == 1] <- 'darkgreen'
-  sign_colors[m_signs == -1] <- 'red'
-  
-  # Create sign color matrix [colorblind]
-  sign_colors_cb <- matrix('darkgrey', p, p)
-  sign_colors_cb[m_signs == 1] <- 'darkblue'
-  sign_colors_cb[m_signs == -1] <- 'red'
-  
-  # Create lty matrix [addition to colorblind]
-  sign_ltys <- matrix(1, p, p)
-  sign_ltys[m_signs == -1] <- 2
-  
-  # Save in output
-  mgmobj$pairwise$wadj <- wadj
-  mgmobj$pairwise$signs <- m_signs
-  mgmobj$pairwise$edgecolor <- sign_colors
-  mgmobj$pairwise$edgecolor_cb <- sign_colors_cb
-  mgmobj$pairwise$edge_lty <- sign_ltys
-  
-  
-  # ---------- Fill into p x p Nodewise Matrix ---------
-  
-  m_wadj <-  m_signs <- matrix(0, p, p)
-  
-  # get table of unique pairwise interactions (copied from above)
-  ord <- 1
-  set_int_ord <- Pars_ind_flip_red[[ord]]
-  row.names(set_int_ord) <- NULL
-  ids <- FlagSymmetricFast(x = set_int_ord) # BOTTLE NECK, now better with native solution, but still problematic for huge p
-  unique_set_int_ord <- cbind(set_int_ord, ids)[!duplicated(ids), ]
-  unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
-  
-  n_edges <- nrow(unique_set_int_ord)
-  ED <- unique_set_int_ord
-  
-  for(i in 1:n_edges) {
-    m_wadj[ED[i,1], ED[i,2]] <- l_factor_par_AggNodewise[[1]][[i]][[2]]
-    m_wadj[ED[i,2], ED[i,1]] <- l_factor_par_AggNodewise[[1]][[i]][[1]]
-    
-    m_signs[ED[i,1], ED[i,2]] <- l_factor_par_SignNodewise[[1]][[i]][[2]]
-    m_signs[ED[i,2], ED[i,1]] <- l_factor_par_SignNodewise[[1]][[i]][[1]]
-  }
-  
-  
-  # Create sign color matrix
-  sign_colors <- matrix('darkgrey', p, p)
-  sign_colors[m_signs == 1] <- 'darkgreen'
-  sign_colors[m_signs == -1] <- 'red'
-  
-  # Create sign color matrix [colorblind]
-  sign_colors_cb <- matrix('darkgrey', p, p)
-  sign_colors_cb[m_signs == 1] <- 'darkblue'
-  sign_colors_cb[m_signs == -1] <- 'red'
-  
-  # Create lty matrix [addition to colorblind]
-  sign_ltys <- matrix(1, p, p)
-  sign_ltys[m_signs == -1] <- 2
-  
-  # Save in output
-  mgmobj$pairwise$wadjNodewise <- m_wadj
-  mgmobj$pairwise$signsNodewise <- m_signs
-  mgmobj$pairwise$edgecolorNodewise <- sign_colors
-  mgmobj$pairwise$edgecolor_cbNodewise <- sign_colors_cb
-  mgmobj$pairwise$edge_ltyNodewise <- sign_ltys
-  
-  
-  return(mgmobj)
-  
-  
+    sign_colors[m_signs == -1] <- 'red'
+      
+    # Create sign color matrix [colorblind]
+    sign_colors_cb <- matrix('darkgrey', p, p)
+    sign_colors_cb[m_signs == 1] <- 'darkblue'
+      sign_colors_cb[m_signs == -1] <- 'red'
+        
+      # Create lty matrix [addition to colorblind]
+      sign_ltys <- matrix(1, p, p)
+      sign_ltys[m_signs == -1] <- 2
+      
+      # Save in output
+      mgmobj$pairwise$wadj <- wadj
+      mgmobj$pairwise$signs <- m_signs
+      mgmobj$pairwise$edgecolor <- sign_colors
+      mgmobj$pairwise$edgecolor_cb <- sign_colors_cb
+      mgmobj$pairwise$edge_lty <- sign_ltys
+      
+      
+      # ---------- Fill into p x p Nodewise Matrix ---------
+      
+      m_wadj <-  m_signs <- matrix(0, p, p)
+      
+      # get table of unique pairwise interactions (copied from above)
+      ord <- 1
+      set_int_ord <- Pars_ind_flip_red[[ord]]
+      row.names(set_int_ord) <- NULL
+      ids <- FlagSymmetricFast(x = set_int_ord) # BOTTLE NECK, now better with native solution, but still problematic for huge p
+      unique_set_int_ord <- cbind(set_int_ord, ids)[!duplicated(ids), ]
+      unique_set_int_ord <- matrix(unique_set_int_ord, ncol = ord+1+1)
+      
+      n_edges <- nrow(unique_set_int_ord)
+      ED <- unique_set_int_ord
+      
+      for(i in 1:n_edges) {
+        m_wadj[ED[i,1], ED[i,2]] <- l_factor_par_AggNodewise[[1]][[i]][[2]]
+        m_wadj[ED[i,2], ED[i,1]] <- l_factor_par_AggNodewise[[1]][[i]][[1]]
+        
+        m_signs[ED[i,1], ED[i,2]] <- l_factor_par_SignNodewise[[1]][[i]][[2]]
+        m_signs[ED[i,2], ED[i,1]] <- l_factor_par_SignNodewise[[1]][[i]][[1]]
+      }
+      
+      
+      # Create sign color matrix
+      sign_colors <- matrix('darkgrey', p, p)
+      sign_colors[m_signs == 1] <- 'darkgreen'
+        sign_colors[m_signs == -1] <- 'red'
+          
+        # Create sign color matrix [colorblind]
+        sign_colors_cb <- matrix('darkgrey', p, p)
+        sign_colors_cb[m_signs == 1] <- 'darkblue'
+          sign_colors_cb[m_signs == -1] <- 'red'
+            
+          # Create lty matrix [addition to colorblind]
+          sign_ltys <- matrix(1, p, p)
+          sign_ltys[m_signs == -1] <- 2
+          
+          # Save in output
+          mgmobj$pairwise$wadjNodewise <- m_wadj
+          mgmobj$pairwise$signsNodewise <- m_signs
+          mgmobj$pairwise$edgecolorNodewise <- sign_colors
+          mgmobj$pairwise$edgecolor_cbNodewise <- sign_colors_cb
+          mgmobj$pairwise$edge_ltyNodewise <- sign_ltys
+          
+          
+          return(mgmobj)
+          
+          
 } # end of function
 
