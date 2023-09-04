@@ -42,6 +42,8 @@ nodeEst <- function(y,
   if(lambdaSel == 'EBIC') {
     
     
+    # if(v==3) browser()FA
+    
     # ----- Fit Model -----
     
     fit <- glmnet(x = X,

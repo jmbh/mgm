@@ -285,6 +285,8 @@ mgm <- function(data,         # n x p data matrix
   
   l_mods_ind <- list() # collect moderator terms for later output-processing
   
+  # browser()
+  
   for(v in 1:p) {
     
     # ----- Construct Design Matrix -----
@@ -339,7 +341,7 @@ mgm <- function(data,         # n x p data matrix
     
     # alpha Section via CV
     
-    if(alphaSel == 'CV') {
+    if(alphaSel == "CV") {
       
       l_alphaModels <- list() # Storage
       ind <- sample(1:alphaFolds, size = n, replace = TRUE) # fold-indicators, use same for each alpha
