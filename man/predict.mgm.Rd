@@ -12,7 +12,8 @@ Computes predictions and prediction errors from a mgm model-object (\code{mgm}, 
 }
 \usage{
 \method{predict}{mgm}(object, data, errorCon, errorCat, 
-        tvMethod, consec, beepvar, dayvar, \dots)
+        tvMethod, consec, beepvar, dayvar, errordecimals=3, 
+        \dots)
 }
 
 \arguments{
@@ -43,6 +44,8 @@ Specifies how predictions and errors are computed for time-varying models: \code
 }
 
 \item{dayvar}{See \code{beepvar}.}
+
+\item{errordecimals}{Number of decimals to which predictability / prediction error values are rounded. Defaults to \code{errordecimals = 3}.}
 
 \item{...}{Additional arguments.}
 

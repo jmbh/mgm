@@ -9,7 +9,8 @@ f_makeErrorTable <- function(data,
                              p,
                              errorCat,
                              errorCon,
-                             type)
+                             type,
+                             errordecimals)
   
 {
   
@@ -30,8 +31,8 @@ f_makeErrorTable <- function(data,
   
   colnames(ea) <- c('Variable', names_con, names_cat)
   
-  if(length(l_errors_con) > 0) ea[,2:(1+length(l_errorCon))] <- as.numeric(round(do.call(cbind, l_errors_con),3))
-  if(length(l_errors_cat) > 0)  ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1)] <- as.numeric(round(do.call(cbind, l_errors_cat),3))
+  if(length(l_errors_con) > 0) ea[,2:(1+length(l_errorCon))] <- as.numeric(round(do.call(cbind, l_errors_con), errordecimals))
+  if(length(l_errors_cat) > 0)  ea[,(2+length(l_errorCon)):(length(l_errorCat)+length(l_errorCon)+1)] <- as.numeric(round(do.call(cbind, l_errors_cat), errordecimals))
   
   # Intercept performance for categoricals
   if(all(c('CC', 'nCC', 'CCmarg') %in% errorCat)) {
@@ -41,7 +42,7 @@ f_makeErrorTable <- function(data,
     nCC <- ea[ , which(colnames(ea) =='nCC')]
     for(j in which(type=='c')) CCmarg[j] <- (nCC[j] - CC[j]) / (nCC[j] - 1)
     
-    ea <- cbind(ea, round(CCmarg, 3))
+    ea <- cbind(ea, round(CCmarg, errordecimals))
     dimnames(ea)[[2]][dim(ea)[2]] <- 'CCmarg'
   }
   
@@ -61,6 +62,7 @@ predict.mgm <- function(object, # One of the four mgm objects
                         consec,
                         beepvar, 
                         dayvar,
+                        errordecimals=3,
                         ...)
   
   
@@ -682,7 +684,8 @@ predict.mgm <- function(object, # One of the four mgm objects
                                      p,
                                      errorCat,
                                      errorCon,
-                                     type)
+                                     type,
+                                     errordecimals)
   
   
   # ---------- Prepare Remaining Output ----------
