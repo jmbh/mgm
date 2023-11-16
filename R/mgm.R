@@ -114,7 +114,11 @@ mgm <- function(data,         # n x p data matrix
   } # end if: moderators?
   
   
+  # ----- Checking glmnet minimum Variance requirements -----
   
+  glmnetRequirements(data = data,
+                     type = type,
+                     weights = weights)
   
   # ----- Compute Auxilliary Variables II -----
   
@@ -169,17 +173,10 @@ mgm <- function(data,         # n x p data matrix
     for(i in 1:nPois) v_PoisCheck[i] <- sum(data[, ind_Pois[i]] != round(data[, ind_Pois[i]])) > 0
     if(sum(v_PoisCheck) > 0) stop('Only integers permitted for Poisson variables.')
   }
+
   
   
-  # ----- Checking glmnet minimum Variance requirements -----
-  
-  glmnetRequirements(data = data,
-                     type = type,
-                     weights = weights)
-  
-  
-  
-  # ----- Binary Sign => values have to be in {0,1} -----
+  # ----- If BinarySign=TRUE => binary values have to be in {0,1} -----
   
   # compute anyway, because used later for sign extraction
   

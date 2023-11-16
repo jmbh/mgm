@@ -20,12 +20,12 @@ glmnetRequirements <- function(data,
   ind_zero_var <- which(var_check == 0)
   
   check_var_1 <- length(ind_zero_var) > 0
-  
- if(!silent)  if(check_var_1) {
+
+  if(!silent)  if(check_var_1) {
     if(bootstrap) cat(paste0("In boostrap sample ", b, " with seed ", seed_b, " the following error occured:\n"))
     stop(paste0('Please only provide variables with nonzero variance. Variable(s) with zero variance: ', paste(var_names[ind_zero_var], collapse = ', ')))
   } 
-  
+
   
   # 2) > 1 events per category
   
@@ -78,7 +78,7 @@ glmnetRequirements <- function(data,
     
   }
   
-
+  
   # If any of the three checks fails, return TRUE
   if(silent) return(any(check_var_1, check_var_2, check_var_3))
   
