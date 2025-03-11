@@ -9,9 +9,9 @@ Estimating Mixed Graphical Models
 Function to estimate k-degree Mixed Graphical Models via nodewise regression.
 }
 \usage{
-mgm(data, type, level, lambdaSeq, lambdaSel, lambdaFolds,
-    lambdaGam, alphaSeq, alphaSel, alphaFolds, alphaGam, 
-    k, moderators, ruleReg, weights, threshold, method, 
+mgm(data, type, level, regularize, lambdaSeq, lambdaSel, 
+    lambdaFolds, lambdaGam, alphaSeq, alphaSel, alphaFolds, 
+    alphaGam, k, moderators, ruleReg, weights, threshold, method, 
     binarySign, scale, verbatim, pbar, warnings, saveModels, 
     saveData, overparameterize, thresholdCat, signInfo, ...)
 }
@@ -25,6 +25,9 @@ p vector indicating the type of variable for each column in \code{data}. "g" for
 }
   \item{level}{
 p vector indicating the number of categories of each variable. For continuous variables set to 1.
+}
+  \item{regularize}{
+Logical indicating whether regularization is applied. If \code{regularize = FALSE}, all arguments relating to the specification are overwritten and all regularization parameters are set to 0. This also sets \code{threshold = "none"}. Defaults to \code{regularize = TRUE}. Note that the multinomial parameterization used by the \code{glmnet} package used within \code{mgm} is only guaranteed to be uniquely identified with regularization.
 }
   \item{lambdaSeq}{
 A sequence of lambdas that should be searched (see also \code{lambdaSel}). Defaults to \code{NULL}, which uses the  \code{glmnet} default to select a lambda candidate sequence (recommended). See \code{?glmnet} for details.
@@ -72,7 +75,7 @@ A n vector with weights for observations.
 Estimation method, currently only \code{method = "glm"}.
 }
   \item{binarySign}{
-If \code{binarySign = TRUE}, a sign for the interaction within binary nodes and between binary and continuous nodes is provided in the output. Note that in this case the two categories of the binary variables have to be coded in {0,1}. This is to ensure that the interpretation of the sign is unambigous: a positive sign of a parameter means that increasing the associated predictor results in a higher probability for category 1.
+If \code{binarySign = TRUE}, a sign for the interaction within binary nodes and between binary and continuous nodes is provided in the output. Note that in this case the two categories of the binary variables have to be coded in \code{{0,1}}. This is to ensure that the interpretation of the sign is unambigous: a positive sign of a parameter means that increasing the associated predictor results in a higher probability for category 1.
 }
 
   \item{scale}{
@@ -166,6 +169,7 @@ Loh, P. L., & Wainwright, M. J. (2012, December). Structure estimation for discr
 
 Yang, E., Baker, Y., Ravikumar, P., Allen, G. I., & Liu, Z. (2014, April). Mixed Graphical Models via Exponential Families. In AISTATS (Vol. 2012, pp. 1042-1050).
 
+Friedman, J., Hastie, T., & Tibshirani, R. (2010). Regularization paths for generalized linear models via coordinate descent. Journal of statistical software, 33(1), 1.
 }
 
 

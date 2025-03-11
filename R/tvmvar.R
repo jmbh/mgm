@@ -20,6 +20,7 @@ tvmvar <- function(data,         # n x p data matrix
   
   # ----- Fill in Defaults -----
   
+  if(is.null(args$regularize)) args$regularize <- TRUE
   if(is.null(args$lambdaSeq)) args$lambdaSeq <- NULL
   if(is.null(args$lambdaSel)) args$lambdaSel <- 'EBIC'
   if(is.null(args$lambdaFolds)) args$lambdaFolds <- 10
@@ -72,6 +73,7 @@ tvmvar <- function(data,         # n x p data matrix
   tvmvar_object$call <- list('data' = NULL,
                              'type' = type,
                              'level' = level,
+                             'regularize' = args$regularize,
                              'timepoints' = NULL,
                              'estpoints' = estpoints,
                              'estpointsNorm' = NULL,
@@ -174,6 +176,7 @@ tvmvar <- function(data,         # n x p data matrix
     l_mvar_models[[i]] <- mvar(data = data,
                                type = type,
                                level = level,
+                               regularize=args$regularize,
                                lambdaSeq = args$lambdaSeq,
                                lambdaSel = args$lambdaSel,
                                lambdaFolds = args$lambdaFolds,

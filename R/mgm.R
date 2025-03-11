@@ -2,6 +2,7 @@
 mgm <- function(data,         # n x p data matrix
                 type,         # p vector indicating the type of each variable
                 level,        # p vector indivating the levels of each variable
+                regularize,   # New argument Dec 2024: allow to switch off regularization
                 lambdaSeq,    # sequence of considered lambda values (default to glmnet default)
                 lambdaSel,    # way of selecting lambda: CV vs. EBIC
                 lambdaFolds,  # number of folds if lambdaSel = 'CV'
@@ -50,6 +51,7 @@ mgm <- function(data,         # n x p data matrix
   
   # ----- Fill in Defaults -----
   
+  if(missing(regularize)) regularize <- TRUE
   if(missing(lambdaSeq)) lambdaSeq <- NULL
   if(missing(lambdaSel)) lambdaSel <- 'CV'
   if(missing(lambdaFolds)) lambdaFolds <- 10
@@ -66,6 +68,14 @@ mgm <- function(data,         # n x p data matrix
   if(missing(method)) method <- 'glm'
   if(missing(binarySign)) {
     if(!is.null(args$binary.sign)) binarySign <- args$binary.sign else binarySign <- FALSE
+  }
+  
+  # Switching off Regularization
+  if(regularize==FALSE) {
+    # This effectively switches off regularization:
+    lambdaSel <- 'EBIC'
+    lambdaSeq <- 0
+    threshold <- 'none' # Also switch off additional thresholding
   }
   
   if(!is.null(args$binary.sign)) {
@@ -228,6 +238,7 @@ mgm <- function(data,         # n x p data matrix
                       'type' = type,
                       'level' = level,
                       "levelNames" = NULL,
+                      'regularize' = regularize,
                       'lambdaSeq' = lambdaSeq,
                       'lambdaSel' = lambdaSel,
                       'lambdaFolds' = lambdaFolds,

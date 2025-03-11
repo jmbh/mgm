@@ -35,7 +35,7 @@ condition <- function(object,
   # Check whether variables are specified via column name
   if(any(is.na(cond_names))) stop("Variables to condition on have to be specified by column number (not, for example column name). See also ?condition.")
   
-  if(object$call$k>3) stop("This function is only implemented for first-order moderation (3-way interactions).")
+  if(object$call$k>3) stop("This function is only implemented for 'first-order' moderation (i.e., 3-way interactions).")
   if(! ("core" %in% class(object)) ) stop("condition() is currently only implemented for mgm() objects.")
   
   # Categorical variables: only condition on categories that exist

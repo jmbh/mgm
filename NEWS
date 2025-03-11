@@ -1,5 +1,9 @@
+Changes in Version 1.2-16
+  o 
+
 Changes in Version 1.2-14
   o When setting the argument binarySign=TRUE, now also the signs of higher-order (i.e., 3-way and higher) interactions involving binary variables and continuous variables are reported in the output
+  o Fixed new issue creating errors on Unix/Windows machines on CRAN
 
 Changes in Version 1.2-13
   o Fixed bug: in EBIC calculations, the standard deviation in the likelihood function was set equal to 1. Now it is set to the standard deviation of the residual as it should be.

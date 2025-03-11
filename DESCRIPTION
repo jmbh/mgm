@@ -1,7 +1,7 @@
 Package: mgm
 Type: Package
 Title: Estimating Time-Varying k-Order Mixed Graphical Models
-Version: 1.2-15
+Version: 1.2-16
 Date: 2023-09-04
 Author: Jonas Haslbeck
 Maintainer: Jonas Haslbeck  <jonashaslbeck@gmail.com>
@@ -12,7 +12,7 @@ BugReports: https://github.com/jmbh/mgm/issues
 License: GPL (>= 2)
 Imports: glmnet, stringr, Hmisc, qgraph, gtools
 LazyData: true
-Packaged: 2021-06-03 00:00:01 CET; jo
+Packaged: 2025-11-03 00:00:01 CET
 Suggests: 
     testthat (>= 2.0.0)
 Config/testthat/edition: 2

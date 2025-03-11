@@ -172,8 +172,8 @@ Reg2Graph <- function(mgmobj,
             
             # indicates location of parameters for given interaction
             
-            for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'), int_names_ord,
-                                                           int_names_ord,
+            for(cc in 1:ord) find_int_dummy[, cc] <- grepl(pattern = paste0('V', v_Pars_ind[[ord]][t, cc], '.'), #int_names_ord, # March 11th, 2025: somehow we had this argument twice; perhaps a reason for CRAN errors on unix/windows machines
+                                                           x = int_names_ord,
                                                            fixed = TRUE) # not only single chars have to be contained, but exact order)
             select_int <- rowSums(find_int_dummy) == ord # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
             
@@ -227,8 +227,8 @@ Reg2Graph <- function(mgmobj,
           for(t in 1:no_interactions[ord]) {
             
             # indicates location of parameters for given interaction
-            for(cc in 1:ord) find_int_dummy[, cc] <- grepl(paste0('V', v_Pars_ind[[ord]][t, cc], '.'),
-                                                           int_names_ord,
+            for(cc in 1:ord) find_int_dummy[, cc] <- grepl(pattern = paste0('V', v_Pars_ind[[ord]][t, cc], '.'),
+                                                           x = int_names_ord,
                                                            fixed = TRUE) # not only single chars have to be contained, but exact order
             select_int <- rowSums(find_int_dummy) == (ord) # because threeway interaction has 2 predictors; ord = order of interactions in joint distribution
             

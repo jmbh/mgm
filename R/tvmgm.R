@@ -25,6 +25,7 @@ tvmgm <- function(data,         # n x p data matrix
 
   # ----- Fill in Defaults -----
 
+  if(is.null(args$regularize)) args$regularize <- TRUE
   if(is.null(args$lambdaSeq)) args$lambdaSeq <- NULL
   if(is.null(args$lambdaSel)) args$lambdaSel <- 'EBIC'
   if(is.null(args$lambdaFolds)) args$lambdaFolds <- 10
@@ -89,6 +90,7 @@ tvmgm <- function(data,         # n x p data matrix
   tvmgmobj$call <- list('data' = NULL,
                         'type' = type,
                         'level' = level,
+                        'regularize' = args$regularize,
                         'timepoints' = timevec,
                         'estpoints' = estpoints,
                         'estpointsNorm' = NULL,
@@ -166,6 +168,7 @@ tvmgm <- function(data,         # n x p data matrix
     l_tvmgm_models[[i]] <- mgm(data = data,
                                type = type,
                                level = level,
+                               regularize = args$regularize,
                                lambdaSeq = args$lambdaSeq,
                                lambdaSel = args$lambdaSel,
                                lambdaFolds = args$lambdaFolds,

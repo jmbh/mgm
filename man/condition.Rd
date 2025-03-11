@@ -62,7 +62,7 @@ Sigma_b <- diag(2)
 Sigma_b[1, 2] <- Sigma_b[2, 1] <- 0
 Xb <- mvrnorm(n = n, mu = rep(0, 2), Sigma = Sigma_b)
 
-data <- as.data.frame(cbind(rbind(Xa, Xb), c(rep(0, n), rep(1, n))))
+data <- cbind(rbind(Xa, Xb), c(rep(0, n), rep(1, n)))
 colnames(data) <- c("x1", "x2", "x3")
 
 
